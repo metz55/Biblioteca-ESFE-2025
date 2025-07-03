@@ -1,0 +1,142 @@
+﻿using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc;
+using System.Drawing.Drawing2D;
+using Library.DataAccess.Domain;
+using Library.BusinessRules;
+using Microsoft.AspNetCore.Authorization;
+
+namespace Library.Client.MVC.Controllers
+{
+    [Authorize(AuthenticationSchemes = "AdminScheme")]
+    public class AuthorsController : Controller
+    {
+        BLAuthors authorsBL = new BLAuthors();
+
+        // GET: CategoriesController
+        public async Task<IActionResult> Index(Authors pAuthors = null)
+        {
+            if (pAuthors == null)
+                pAuthors = new Authors();
+            if (pAuthors.Top_Aux == -1)
+                pAuthors.Top_Aux = 10;
+            else
+               if (pAuthors.Top_Aux == 1)
+                pAuthors.Top_Aux = 0;
+            var authors = await authorsBL.GetAuthorsAsync(pAuthors);
+            ViewBag.Top = pAuthors.Top_Aux;
+
+            ViewBag.ShowMenu = true;
+            return View(authors);
+        }
+
+        // GET: CategoriesController/Details/5
+        public async Task<ActionResult> Details(int id)
+        {
+            var authors = await authorsBL.GetAuthorsByIdAsync(new Authors { AUTHOR_ID = id });
+            ViewBag.ShowMenu = true;
+            return View(authors);
+        }
+
+        // GET: CategoriesController/Create
+        public async Task<ActionResult> Create()
+        {
+            ViewBag.ShowMenu = true;
+            return View();
+        }
+
+        // POST: CategoriesController/Create
+        //Metodo para crear un nuevo autor mediante el metodo regular y por peticion AJAX
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<ActionResult> Create(Authors pAuthors)
+        {
+            try
+            {
+                int result = await authorsBL.CreateAuthorsAsync(pAuthors);
+
+                // revisa si la peticion es un AJAX
+                if (Request.Headers["X-Requested-With"] == "XMLHttpRequest")
+                {
+                    if (result > 0)
+                    {
+                        return Json(new { success = true, authorId = pAuthors.AUTHOR_ID, authorName = pAuthors.AUTHOR_NAME });
+                    }
+                    else
+                    {
+                        return Json(new { success = false, message = "Ocurrio un error en el guardado de Autor" });
+                    }
+                }
+                else
+                {
+                    // seguimineot regular para las peticiones que no seas AJAX
+                    
+                    return RedirectToAction(nameof(Index));
+                }
+            }
+            catch (Exception ee)
+            {
+                if (Request.Headers["X-Requested-With"] == "XMLHttpRequest")
+                {
+                    return Json(new { success = false, message = ee.Message });
+                }
+                else
+                {
+                    ViewBag.Error = ee.Message;
+                    return View(pAuthors);
+                }
+            }
+        }
+
+
+
+        // GET: CategoriesController/Edit/5
+        public async Task<IActionResult> Edit(int id)
+        {
+            var authors = await authorsBL.GetAuthorsByIdAsync(new Authors { AUTHOR_ID = id });
+            ViewBag.ShowMenu = true;
+            return View(authors);
+        }
+
+        // POST: CategoriesController/Edit/5
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Edit(int id, Authors pAuthors)
+        {
+            try
+            {
+                int result = await authorsBL.UpdateAuthorsAsync(pAuthors);
+                return RedirectToAction(nameof(Index));
+            }
+            catch (Exception ex)
+            {
+                ViewBag.Error = ex.Message;
+                return View(pAuthors);
+            }
+        }
+
+        // GET: CategoriesController/Delete/5
+        public async Task<IActionResult> Delete(int id)
+        {
+            var authors = await authorsBL.GetAuthorsByIdAsync(new Authors { AUTHOR_ID = id });
+            ViewBag.ShowMenu = true;
+            return View(authors);
+        }
+
+        // POST: CategoriesController/Delete/5
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Delete(int id, Authors pAuthors)
+        {
+            try
+            {
+                int result = await authorsBL.DeleteAuthorsAsync(new Authors { AUTHOR_ID = id });
+                return RedirectToAction(nameof(Index));
+            }
+            catch (Exception ex)
+            {
+                ViewBag.Error = ex.Message;
+                return View(pAuthors);
+            }
+        }
+    }
+}

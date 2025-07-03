@@ -1,0 +1,243 @@
+@model IEnumerable<Library.DataAccess.Domain.Loans>
+@using System.Security.Claims
+
+@{
+    ViewData["Title"] = User.Identity.Name ?? "Perfil de Estudiante";
+
+    // Obtener los datos del usuario a partir de las claims
+    var userClaims = User.Identity as ClaimsIdentity;
+    var nombre = userClaims.FindFirst(ClaimTypes.Name)?.Value;
+    var code = userClaims.FindFirst("CodigoEstudiante")?.Value;
+    var correo = userClaims.FindFirst(ClaimTypes.Email)?.Value ?? "Correo no disponible";
+
+    List<Library.DataAccess.Domain.LoanDates2> loanDate = ViewBag.LoanDates as List<Library.DataAccess.Domain.LoanDates2>;
+    
+}
+
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+    <style>
+        .perfil-container {
+            margin-top: 30px;
+        }
+        .student-info {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        .student-info h2 {
+            font-weight: bold;
+            font-size: 26px;
+        }
+        .student-info p {
+            font-size: 18px;
+            margin: 5px 0;
+        }
+        .libros-container {
+            text-align: left;
+        }
+        .scroll-horizontal {
+            display: flex;
+            overflow-x: auto;
+            padding: 10px 0;
+            scrollbar-width: thin; /* Estilo del scrollbar en Firefox */
+        }
+        .book-item {
+            flex: 0 0 auto;
+            width: 180px; /* Aumentar el ancho para más espacio */
+            margin-right: 20px;
+            text-align: center;
+            transition: transform 0.3s ease; /* Transición suave para el zoom */
+        }
+        .book-cover {
+            width: 100%;
+            height: 225px; /* Aumentar la altura para un mejor aspecto */
+            object-fit: cover;
+            border-radius: 8px; /* Bordes redondeados para las imágenes */
+            transition: transform 0.3s ease; /* Transición suave para el zoom */
+        }
+        .book-title {
+            font-size: 16px;
+            margin-left: 5px;
+            margin-top: 5px;
+            margin-bottom: 5px;
+            color: #333333;
+            text-align: start;
+            font-weight: 400;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis; /* Mostrar puntos suspensivos si es muy largo */
+        }
+        .book-category{
+            font-size: 14px;
+            margin-left: 5px;
+            margin-top: 0px;
+            margin-bottom: 7px;
+            text-align: left;
+            color: #2130cf;
+            font-weight: 500;
+            transition: color 0.3s ease;
+        }
+        .text-loan-info {
+            text-align: start;
+            font-weight: bold;
+            margin-left: 5px;
+            margin-top: 0px
+            margin-bottom: 0px;
+            
+        }
+        .text-loan-date{
+            color: #777;
+            text-align: start;
+            margin-left: 5px;
+            margin-right: 0px;
+            margin-top: 0px;
+            margin-bottom: 0px;
+        }
+        .no-books {
+            font-size: 18px;
+            color: #777;
+            margin-top: 20px; /* Margen superior para mejor espaciado */
+        }
+        .logout-btn {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+        }
+        .logout-btn a {
+            display: inline-flex;
+            align-items: center;
+            padding: 10px 20px;
+            font-size: 16px;
+            background-color: #e24857;
+            color: white;
+            border-radius: 5px;
+            text-decoration: none;
+            transition: background-color 0.3s ease;
+        }
+        .logout-btn a:hover {
+            background-color: #c82333;
+        }
+        .logout-btn i {
+            margin-right: 8px;
+        }
+        
+
+    </style>
+</head>
+<body>
+    <div class="card">
+        <div class="card-body">
+    <div class="container perfil-container position-relative">
+        <form action="Logout" method="post">
+            <button type="submit" class="btn btn-danger logout-btn">
+                <i class="fas fa-sign-out-alt"></i> Cerrar Sesión
+            </button>
+        </form>
+
+        <div class="student-info">
+            <h2>Tu Perfil</h2>
+            <p style="font-size: 23px;">@nombre</p>
+            <p class="text-muted">@correo</p>
+        </div>
+
+        <div class="libros-container">
+            <h4>Libros que has prestado</h4>
+            <div class="scroll-horizontal">
+                @if (Model == null || !Model.Any())
+                {
+                    <p class="no-books">No has prestado ningún libro aún.</p>
+                }
+                else
+                {
+                    @foreach (var loan in Model)
+                    {
+                        var loanDateInfo = loanDate?.FirstOrDefault(d => d.ID_LOAN == loan.LOAN_ID);
+                        int diasRestantes = 0;
+                        int horasRestantes = 0;
+
+                        if (loanDateInfo != null)
+                        {
+                            diasRestantes = (loanDateInfo.END_DATE - DateTime.Now).Days;
+                            horasRestantes = (loanDateInfo.END_DATE - DateTime.Now).Hours;
+                        }
+
+                        <div class="book-item m-2">
+                            <img src="@loan.Books.COVER" class="book-cover img-fluid" alt="@loan.Books.TITLE" 
+                                style="cursor: pointer;"
+                                onmouseover="this.style.transform='scale(1.05)'" 
+                                onmouseout="this.style.transform='scale(1)'">
+                            <p class="book-title">
+                                @loan.Books.TITLE
+                            </p>
+                            <hr class="m-2">
+                            @* <p class="book-category">
+                                @loan.Books.Categories.CATEGORY_NAME
+                            </p> *@
+
+
+                            <p class="text-loan-date">
+                                Prestado el @(loanDateInfo?.START_DATE.ToShortDateString() ?? "Fecha no disponible")
+                            </p>
+                            
+                            <p class="text-loan-info">
+                                @if (loanDateInfo != null)
+                                {
+                                    if (diasRestantes >= 1)
+                                    {
+                                        //Se suma 1, teniendo en cuenta que en este punto pueden ser 1 dia con x horas pero en horario normal seria dentro de dos o mas dias!
+                                        //Para una mejor comprension del usuario, se suma 1 dia 
+                                        var d = diasRestantes + 1;
+                                        <span class="text-success">Devolver en @d días</span>
+                                    }
+                                    else if (diasRestantes == 0)
+                                    {
+                                        if(horasRestantes > 0)
+                                        {
+                                            <span class="text-success">Devolver mañana</span>
+                                        }
+                                        else
+                                        {
+                                            <span class="text-success">Devolver hoy</span>
+                                        }
+                                    }
+                                    else if (diasRestantes == -1)
+                                    {
+                                        <span class="text-danger">Debiste entregarlo ayer!</span>
+                                    }
+                                    else
+                                    {
+                                        <span class="text-danger">Debiste entregarlo hace @Math.Abs(diasRestantes) días!</span>
+                                    }
+                                }
+                                else
+                                {
+                                    <span class="text-muted m-0">Fecha no disponible</span>
+                                }
+                            </p>
+                        </div>
+                    }
+
+                }
+            </div>
+        </div>
+    </div>
+    </div>
+    </div>
+
+    <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://kit.fontawesome.com/a076d05399.js"></script> <!-- Para los iconos de FontAwesome -->
+    <script>
+        $(document).ready(function () {
+            $(".book-cover").hover(function () {
+                $(this).css("transform", "scale(1.05)");
+            }, function () {
+                $(this).css("transform", "scale(1)");
+            });
+        });
+    </script>
+</body>
+</html>

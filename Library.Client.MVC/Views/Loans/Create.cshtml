@@ -1,0 +1,111 @@
+﻿@model Library.DataAccess.Domain.Loans
+
+@{
+    ViewData["Title"] = "Create";
+    int[] tops = { 10, 20, 50, 100, 500, 1000, 10000, -1 };
+    int topActual = Convert.ToInt32(ViewBag.Top);
+
+    List<Library.DataAccess.Domain.Loans> loans = ViewBag.Loans as List<Library.DataAccess.Domain.Loans>;
+    List<Library.DataAccess.Domain.Books> books = ViewBag.Books as List<Library.DataAccess.Domain.Books>;
+    List<Library.DataAccess.Domain.LoanTypes> loanTypes = ViewBag.LoanTypes as List<Library.DataAccess.Domain.LoanTypes>;
+    List<Library.DataAccess.Domain.Categories> categories = ViewBag.Categories as List<Library.DataAccess.Domain.Categories>;
+}
+
+<div class="container mt-5">
+    <div class="row justify-content-center">
+        <div class="col-lg-8 col-md-10">
+            <div class="card shadow">
+                <div class="card-body">
+                    <h2 class="text-center mb-4">CREAR NUEVO PRÉSTAMO</h2>
+
+                    @* ALERTAS *@
+                    @if (TempData["Alerta"] != null)
+                    {
+                        <div class="alert alert-success">@TempData["Alerta"]</div>
+                    }
+                    @if (!string.IsNullOrEmpty(ViewBag.Alerta))
+                    {
+                        <div class="alert alert-danger">@ViewBag.Alerta</div>
+                    }
+                    @if (!string.IsNullOrEmpty(ViewBag.Alerta2))
+                    {
+                        <div class="alert alert-danger">@ViewBag.Alerta2</div>
+                    }
+                    @if (!string.IsNullOrEmpty(ViewBag.AlertaPrestamoEx))
+                    {
+                        <div class="alert alert-danger">@ViewBag.AlertaPrestamoEx</div>
+                    }
+
+                    <form asp-action="Create">
+                        <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+
+                        <div class="row mb-3">
+                            <div class="col-md-4">
+                                <input type="text" class="form-control" id="txtCodigoMostrar" placeholder="Código" disabled>
+                                <input asp-for="ID_LENDER" class="form-control" id="txtCodigo" hidden>
+                            </div>
+                            <div class="col-md-8">
+                                <input type="text" class="form-control" id="txtNombreEstudiante" placeholder="Nombre del Estudiante" disabled>
+                            </div>
+                        </div>
+
+                        <div class="row mb-3">
+                            <div class="col-md-6">
+                                <input id="txtTelefono" asp-for="LENDER_CONTACT" type="text" class="form-control" readonly placeholder="Teléfono">
+                            </div>
+                            <div class="col-md-6">
+                                <select asp-for="ID_TYPE" class="form-control">
+                                    <option selected value="0">Tipo de Préstamo</option>
+                                    @foreach (var item in loanTypes)
+                                    {
+                                        <option value="@item.TYPES_ID">@item.TYPES_NAME</option>
+                                    }
+                                </select>
+                                <span asp-validation-for="ID_TYPE" class="text-danger"></span>
+                            </div>
+                        </div>
+
+                        <div class="row mb-3">
+                            <div class="col-md-8">
+                                <input asp-for="ID_BOOK" type="text" id="idBook" hidden />
+                                <input type="text" class="form-control" placeholder="Título del Libro" disabled id="txtTitulo">
+                            </div>
+                            <div class="col-md-4 text-end">
+                                <button type="button" class="btn btn-primary w-100" data-bs-toggle="modal" data-bs-target="#staticBackdrop">
+                                    Buscar Libro
+                                </button>
+                            </div>
+                        </div>
+
+                        <div class="row mb-4">
+                            <h5 class="text-center">Seleccionar Fechas de Préstamo</h5>
+                            <div class="col-md-6">
+                                <label>Fecha de Inicio</label>
+                                <input type="date" class="form-control" id="fechaInicio" name="fechaInicio" />
+                            </div>
+                            <div class="col-md-6">
+                                <label>Fecha de Cierre</label>
+                                <input type="date" class="form-control" id="fechaCierre" name="fechaCierre" />
+                            </div>
+                        </div>
+
+                        <div class="d-flex justify-content-between">
+                            <button type="submit" class="btn btn-success">
+                                Crear Préstamo
+                            </button>
+                            <a asp-action="Index" class="btn btn-secondary">
+                                Regresar
+                            </a>
+                            <button type="button" class="btn btn-info" data-bs-toggle="modal" data-bs-target="#mdlBuscarEstudiantes">
+                                Buscar Estudiante
+                            </button>
+                        </div>
+                    </form>
+
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@* Aquí puedes dejar tus modales y scripts como los tienes *@

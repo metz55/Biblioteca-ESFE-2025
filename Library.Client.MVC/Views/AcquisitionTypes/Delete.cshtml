@@ -1,0 +1,101 @@
+﻿@model Library.DataAccess.Domain.AcquisitionTypes
+
+@{
+    ViewData["Title"] = "Eliminar Tipo de Adquisición";
+}
+
+<style>
+    .delete-card {
+        background: white;
+        border-radius: 15px;
+        box-shadow: 0 0 15px rgba(0,0,0,0.1);
+        padding: 30px;
+        margin: 40px auto;
+        max-width: 800px;
+    }
+
+        .delete-card h3 {
+            text-align: center;
+            color: #dc3545;
+            font-weight: bold;
+            margin-bottom: 20px;
+        }
+
+    .form-table {
+        width: 100%;
+        border-collapse: collapse;
+    }
+
+        .form-table th,
+        .form-table td {
+            padding: 12px;
+            border: 1px solid #dee2e6;
+            vertical-align: middle;
+        }
+
+        .form-table th {
+            background-color: #f8f9fa;
+            text-align: right;
+            width: 30%;
+        }
+
+    @@media (max-width: 768px) {
+        .form-table th, .form-table td
+
+    {
+        display: block;
+        width: 100%;
+    }
+
+    .form-table th {
+        text-align: left;
+        background-color: transparent;
+        font-weight: bold;
+        margin-top: 15px;
+    }
+
+    .btn-group {
+        flex-direction: column;
+    }
+
+    }
+
+    .btn svg {
+        margin-right: 6px;
+    }
+</style>
+
+<div class="delete-card">
+    <h3>🗑️ Eliminar Tipo de Adquisición</h3>
+    <p class="text-center fs-5">¿Está seguro que desea eliminar el siguiente registro?</p>
+
+    <table class="form-table mb-4">
+        <tr>
+            <th>ID</th>
+            <td>@Html.DisplayFor(model => model.ACQUISITION_ID)</td>
+        </tr>
+        <tr>
+            <th>Tipo de Adquisición</th>
+            <td>@Html.DisplayFor(model => model.ACQUISITION_TYPE)</td>
+        </tr>
+    </table>
+
+    <form asp-action="Delete">
+        <input type="hidden" asp-for="ACQUISITION_ID" />
+        <div class="text-center d-flex justify-content-center gap-3 flex-wrap btn-group">
+            <button type="submit" class="btn btn-danger">
+                <i class="bi bi-trash3"></i> Eliminar
+            </button>
+            <a asp-action="Index" class="btn btn-secondary">
+                <i class="bi bi-reply-fill"></i> Cancelar
+            </a>
+        </div>
+    </form>
+</div>
+
+@section Scripts {
+    <script>
+        document.querySelector('.main-content')?.classList.remove('with-menu');
+        document.querySelector('.main-content')?.classList.add('full-width');
+    </script>
+}

@@ -1,0 +1,119 @@
+﻿@{
+    ViewData["Title"] = "Home Page";
+    ViewBag.ShowNavbar = false;
+    Layout = null;
+}
+
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <META HTTP-EQUIV="CACHE-CONTROL" CONTENT="NO-CACHE">
+    <!-- Recarga la pagina si se preciona el boton atras-->
+
+    <link rel="stylesheet" href="~/css/StyleLayout.css" />
+
+    <style>
+        /* Estilos para centrar la imagen */
+        .centered-image {
+            text-align: center;
+            margin-top: 150px;
+            padding-left: 150px;
+        }
+
+            .centered-image img {
+                display: inline-block;
+                max-width: 100%;
+                height: auto;
+            }
+    </style>
+
+    <!-- Viewport Meta Tag -->
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-alpha.6/css/bootstrap.min.css" integrity="sha384-rwoIResjU2yc3z8GV/NPeZWAv56rSmLldC3R/AZzGRnGxQQKnKkoFVhFQhNUwEyJ" crossorigin="anonymous">
+    <!-- fontawesome JS -->
+    <script src="https://use.fontawesome.com/f225000782.js"></script>
+</head>
+<body>
+
+    <div id="menu-container"></div>
+
+    <!-- Aquí va el contenido específico de tu página -->
+    <div class="centered-image">
+        <img src="/img/esfelogo.png" alt="Descripción de la imagen" width="300" height="300">
+    </div>
+
+    <script>
+        // JavaScript para cargar el menú
+        fetch('MainMenu.html')
+            .then(response => response.text())
+            .then(data => {
+                document.getElementById('menu-container').innerHTML = data;
+
+                // Capturar el clic en los enlaces
+                document.getElementById('redireccionBooks').addEventListener('click', function () {
+                    window.location.href = '/Books/Index';
+                });
+
+                document.getElementById('redireccionBlog').addEventListener('click', function () {
+                    window.location.href = '/Posts/Manage';
+                });
+
+                document.getElementById('redireccionBlogCategories').addEventListener('click', function () {
+                    window.location.href = '/PostsCategories/Index';
+                });
+
+                document.getElementById('redireccionListaBook').addEventListener('click', function () {
+                    window.location.href = '/Library/Index';
+                });
+
+                document.getElementById('redireccionAutor').addEventListener('click', function () {
+                    window.location.href = '/Authors/Index';
+                });
+
+                document.getElementById('redireccionEditorial').addEventListener('click', function () {
+                    window.location.href = '/Editorials/Index';
+                });
+
+                document.getElementById('redireccionCiudad').addEventListener('click', function () {
+                    window.location.href = '/Countries/Index';
+                });
+
+                document.getElementById('redireccionEdicion').addEventListener('click', function () {
+                    window.location.href = '/Editions/Index';
+                });
+
+                document.getElementById('redirecionCatalogo').addEventListener('click', function () {
+                    window.location.href = '/Catalogs/Index';
+                });
+
+                document.getElementById('redirecionCategoria').addEventListener('click', function () {
+                    window.location.href = '/Categories/Index';
+                });
+
+                document.getElementById('redirecionTipoAd').addEventListener('click', function () {
+                    window.location.href = '/AcquisitionTypes/Index';
+                });
+
+                document.getElementById('redireccionListaLoans').addEventListener('click', function () {
+                    window.location.href = '/Loans/Index';
+                });
+
+                document.getElementById('redireccionEsLoan').addEventListener('click', function () {
+                    window.location.href = '/ReservationStatus/Index';
+                });
+
+                document.getElementById('redireccionTipoLoan').addEventListener('click', function () {
+                    window.location.href = '/LoanTypes/Index';
+                });
+            });
+    </script>
+
+    <script src="https://code.jquery.com/jquery-3.1.1.slim.min.js" integrity="sha384-A7FZj7v+d/sdmMqp/nOQwliLvUsJfDHW+k9Omg/a/EheAdgtzNs3hpfag6Ed950n" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/tether/1.4.0/js/tether.min.js" integrity="sha384-DztdAPBWPRXSA/3eYEEUWrWCy7G5KFbe8fFjk5JAIxUYHKkDx6Qin1DkWx51bBrb" crossorigin="anonymous"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-alpha.6/js/bootstrap.min.js" integrity="sha384-vBWWzlZJ8ea9aCX4pEW3rVHjgjt7zpkNpZk+02D9phzyeVkE+jo0ieGizqPLForn" crossorigin="anonymous"></script>
+</body>
+</html>

@@ -1,0 +1,76 @@
+﻿@model Library.DataAccess.Domain.Countries
+
+@{
+    ViewData["Title"] = "Detalles del País";
+}
+
+<style>
+    body {
+        overflow-x: hidden;
+        background-color: #f8f9fa;
+    }
+
+    .details-card {
+        background: white;
+        border-radius: 15px;
+        box-shadow: 0 0 10px rgba(0,0,0,0.1);
+        padding: 30px;
+        margin-top: 40px;
+        max-width: 600px;
+        margin-left: auto;
+        margin-right: auto;
+    }
+
+    .section-title {
+        font-weight: bold;
+        color: #343a40;
+        border-bottom: 2px solid #dee2e6;
+        padding-bottom: 5px;
+        margin-bottom: 25px;
+        font-size: 1.7rem;
+        text-align: center;
+    }
+
+    dt {
+        color: #6c757d;
+        text-align: right;
+        font-weight: 600;
+    }
+
+    dd {
+        margin-bottom: 15px;
+    }
+
+    .btn-custom {
+        width: 130px;
+        margin: 5px;
+    }
+</style>
+
+<div class="details-card">
+    <h3 class="section-title">🌍 Detalles del País</h3>
+
+    <dl class="row">
+        <dt class="col-sm-4">ID:</dt>
+        <dd class="col-sm-8">@Html.DisplayFor(model => model.COUNTRY_ID)</dd>
+
+        <dt class="col-sm-4">Nombre:</dt>
+        <dd class="col-sm-8">@Html.DisplayFor(model => model.COUNTRY_NAME)</dd>
+    </dl>
+
+    <div class="text-center mt-4">
+        <a href="@Url.Action("Edit", new { id = Model.COUNTRY_ID })" class="btn btn-warning btn-custom">
+            ✏️ Editar
+        </a>
+        <a href="@Url.Action("Index")" class="btn btn-secondary btn-custom">
+            🔙 Regresar
+        </a>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        document.querySelector('.main-content')?.classList.remove('with-menu');
+        document.querySelector('.main-content')?.classList.add('full-width');
+    </script>
+}

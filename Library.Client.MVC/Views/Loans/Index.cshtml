@@ -1,0 +1,259 @@
+﻿@model IEnumerable<Library.DataAccess.Domain.Loans>
+
+@{
+    ViewData["Title"] = "Index";
+    int numPage = 1;
+    int numRegistros = 0;
+    int numRegistrosPorPage = 10;
+    int[] tops = { 10, 20, 50, 100, 500, 1000, 10000, -1 };
+    int topActual = Convert.ToInt32(ViewBag.Top);
+
+    List<Library.DataAccess.Domain.LoanTypes> loanTypes = ViewBag.LoansTypes as List<Library.DataAccess.Domain.LoanTypes>;
+    List<Library.DataAccess.Domain.ReservationStatus> reservations = ViewBag.ReservationStatus as List<Library.DataAccess.Domain.ReservationStatus>;
+}
+
+<style>
+    .spacer {
+        margin-right: 20px; /* Ajusta el valor según tus preferencias para el espacio horizontal */
+    }
+</style>
+<div class="card">
+    <div class="card-body">
+
+        <h1>PRESTAMOS</h1>
+
+        <div class="d-flex justify-content-between align-items-center">
+            <a asp-action="Create" class="btn btn-success">
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-plus-square" viewBox="0 0 16 16">
+                    <path d="M14 1a1 1 0 0 1 1 1v12a1 1 0 0 1-1 1H2a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1zM2 0a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V2a2 2 0 0 0-2-2z" />
+                    <path d="M8 4a.5.5 0 0 1 .5.5v3h3a.5.5 0 0 1 0 1h-3v3a.5.5 0 0 1-1 0v-3h-3a.5.5 0 0 1 0-1h3v-3A.5.5 0 0 1 8 4" />
+                </svg> Crear
+            </a>
+            <form asp-action="Index" class="d-flex">
+                <div class="spacer">
+                    <input type="text" placeholder="Codigo de Estudiante" class="form-control" name="ID_LENDER" for="ID_LENDER" />
+                </div>
+                <div class="spacer">
+                    <select name="ID_TYPE" id="reservationSelect" class="form-control">
+                        <option selected value="0">Tipo de Prestamo</option>
+                        @foreach (var item in loanTypes)
+                        {
+                            <option value="@item.TYPES_ID">@item.TYPES_NAME</option>
+                        }
+                    </select>
+                </div>
+                <div class="spacer">
+                    <select name="ID_RESERVATION" id="catalogoSelect" class="form-control">
+                        <option selected value="0">Estado de Reservación</option>
+                        @foreach (var item in reservations)
+                        {
+                            if (item.RESERVATION_ID != 2)
+                            {
+                                if (item.RESERVATION_ID != 5)
+                                {
+                                    <option value="@item.RESERVATION_ID">@item.STATUS_NAME</option>
+                                }
+                            }
+                        }
+                    </select>
+                </div>
+                <div class="spacer" style="display: flex; align-items: center;">
+                    <label class="control-label" style="margin-right: 10px;">Top</label>
+                    <select name="top_aux" class="form-control">
+                        @foreach (var item in tops)
+                        {
+                            string strItem = item != -1 ? item.ToString() : "Todos";
+                            if (item != topActual)
+                            {
+                                <option value="@item">@strItem</option>
+                            }
+                            else
+                            {
+                                <option selected value="@item">@strItem</option>
+                            }
+                        }
+                    </select>
+                </div>
+                <div class="spacer" style="display: flex; align-items: center;">
+                    <select id="selectRedireccion" class="form-control">
+                        <option selected value="">Prestamos</option>
+                        <option value="opcion0">Activos</option>
+                        <option value="opcion1">Finalizados</option>
+                        <option value="opcion2">Eliminados</option>
+                    </select>
+                </div>
+                <div class="spacer">
+                    <button id="search-button" type="submit" class="btn btn-info">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-search" viewBox="0 0 16 16">
+                            <path d="M11.742 10.344a6.5 6.5 0 1 0-1.397 1.398h-.001q.044.06.098.115l3.85 3.85a1 1 0 0 0 1.415-1.414l-3.85-3.85a1 1 0 0 0-.115-.1zM12 6.5a5.5 5.5 0 1 1-11 0 5.5 5.5 0 0 1 11 0" />
+                        </svg>
+                        Buscar
+                    </button>
+                </div>
+            </form>
+        </div>
+        <hr />
+        <table id="customers" class="table">
+            <thead>
+                <tr>
+                    <th class="borIz">
+                        @Html.DisplayNameFor(model => model.LOAN_ID)
+                    </th>
+                    <th>
+                        @Html.DisplayNameFor(model => model.ID_TYPE)
+                    </th>
+                    <th>
+                        @Html.DisplayNameFor(model => model.ID_RESERVATION)
+                    </th>
+                    <th>
+                        @Html.DisplayNameFor(model => model.ID_LENDER)
+                    </th>
+                    <th>
+                        @Html.DisplayNameFor(model => model.ID_BOOK)
+                    </th>
+                    <th>
+                        @Html.DisplayNameFor(model => model.STATUS)
+                    </th>
+                    <th class="borDer">Acciones</th>
+                </tr>
+            </thead>
+            <tbody>
+                @{
+                    var loanIds = new List<long>(); // Lista para almacenar los IDs
+                }
+
+                @foreach (var item in Model)
+                {
+                    if (item.ID_RESERVATION != 2 && item.STATUS == true)
+                    {
+                        if (item.ID_RESERVATION != 5 && item.STATUS == true)
+                        {
+                            loanIds.Add(item.ID_LENDER);
+                            <tr>
+                                <td>
+                                    @Html.DisplayFor(modelItem => item.LOAN_ID)
+                                </td>
+                                <td>
+                                    @Html.DisplayFor(modelItem => item.LoanTypes.TYPES_NAME)
+                                </td>
+                                <td>
+                                    @Html.DisplayFor(modelItem => item.ReservationStatus.STATUS_NAME)
+                                </td>
+                                <td Class="tdStudentCode_@item.ID_LENDER">Cargando...</td>
+                                <td>
+                                    @Html.DisplayFor(modelItem => item.Books.TITLE)
+                                </td>
+                                <td>
+                                    @if (item.STATUS == true)
+                                    {
+                                        <span>ACTIVO</span>
+                                    }
+                                    else if (item.STATUS == false)
+                                    {
+                                        <span>ELIMINADO</span>
+                                    }
+                                </td>
+                                <td>
+                                    <a href="@Url.Action("Edit", new { id = item.LOAN_ID })" class="btn btn-warning">
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-pencil-square" viewBox="0 0 16 16">
+                                            <path d="M15.502 1.94a.5.5 0 0 1 0 .706L14.459 3.69l-2-2L13.502.646a.5.5 0 0 1 .707 0l1.293 1.293zm-1.75 2.456-2-2L4.939 9.21a.5.5 0 0 0-.121.196l-.805 2.414a.25.25 0 0 0 .316.316l2.414-.805a.5.5 0 0 0 .196-.12l6.813-6.814z" />
+                                            <path fill-rule="evenodd" d="M1 13.5A1.5 1.5 0 0 0 2.5 15h11a1.5 1.5 0 0 0 1.5-1.5v-6a.5.5 0 0 0-1 0v6a.5.5 0 0 1-.5.5h-11a.5.5 0 0 1-.5-.5v-11a.5.5 0 0 1 .5-.5H9a.5.5 0 0 0 0-1H2.5A1.5 1.5 0 0 0 1 2.5z" />
+                                        </svg>
+                                        Editar
+                                    </a>
+                                </td>
+                            </tr>
+                        }
+                    }
+                    numRegistros++;
+                    if (numRegistros == numRegistrosPorPage)
+                    {
+                        numPage++;
+                        numRegistros = 0;
+                    }
+                }
+                @{
+                    if (numRegistros == 0)
+                    {
+                        numPage--;
+                    }
+                }
+            </tbody>
+        </table>
+        @if (numPage > 1)
+        {
+            <div class="row" style="overflow:auto">
+                <div class="col-md-12">
+                    <ul class="pagination paginationjs" data-numpage="@numPage" data-pageactive="1">
+                        <li class="page-item" data-typepage="Previous"><a class="page-link" href="#">Previous</a></li>
+                        @for (var i = 1; i <= numPage; i++)
+                        {
+                            <li class="page-item" data-page="@i" data-typepage="Item"><a class="page-link" href="#">@i</a></li>
+                        }
+                        <li class="page-item" data-typepage="Next"><a class="page-link" href="#">Next</a></li>
+                    </ul>
+                </div>
+            </div>
+        }
+    </div>
+</div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        var loanIds = @Html.Raw(Json.Serialize(loanIds)); // Serializa la lista de IDs a JavaScript
+        loanIds.forEach(function(id) {
+            fnBuscarEstudiante(id); // Llama a la función para cada ID
+        });
+    });
+
+    function fnBuscarEstudiante(id) {
+        // AJAX
+        $.ajax({
+            method: 'POST',
+            url: '@Url.Action("BuscarEstudianteId", "Loans")',
+            data: { id: id },
+            datatype: 'json',
+            success: function (lista) {
+                var studentCode = lista.studentCode;
+
+                if(studentCode === ""){
+                    $('.tdStudentCode_' + id).text("No disponible");
+                }
+                else{
+                    $('.tdStudentCode_' + id).text(studentCode);
+                }
+            },
+            error: function (error) {
+                $('.tdStudentCode_' + id).text("No disponible");
+            }
+        });
+    }
+
+    // Función para redirigir y restablecer el valor seleccionado inicial
+    function redirigirYRestablecer() {
+        var select = document.getElementById('selectRedireccion');
+        var selectedOption = select.value; // Obtiene el valor de la opción seleccionada
+        // Define la URL de redirección según la opción seleccionada
+        var redirectUrl = '';
+        switch (selectedOption) {
+            case 'opcion0':
+                redirectUrl = '/Loans';
+                break;
+            case 'opcion1':
+                redirectUrl = '/Loans/Status2Loans';
+                break;
+            case 'opcion2':
+                redirectUrl = '/Loans/LoansDelite';
+                break;
+            // Agrega más casos según sea necesario
+        }
+        if (redirectUrl !== '') {
+            // Redirige al usuario a la URL correspondiente
+            window.location.href = redirectUrl;
+        }
+        // Restablece el valor seleccionado inicial
+        select.selectedIndex = 0; // 0 representa el índice de la opción inicial
+    }
+    // Agrega un evento 'change' al select para redirigir y restablecer
+    document.getElementById('selectRedireccion').addEventListener('change', redirigirYRestablecer);
+</script>

@@ -1,0 +1,407 @@
+﻿using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc;
+using System.Drawing.Drawing2D;
+using Library.DataAccess.Domain;
+using Library.Client.MVC.services;
+using Library.BusinessRules;
+using Library.Client.MVC.Models;
+using System.Text.Json;
+using Microsoft.AspNetCore.Authorization;
+
+namespace Library.Client.MVC.Controllers
+{
+    [Authorize(AuthenticationSchemes = "AdminScheme")]
+    public class LoansController : Controller
+    {
+        BLLoans loansBL = new BLLoans();
+        BLLoanTypes loansTypesBL = new BLLoanTypes();
+        BLReservationStatus reservationStatusBL = new BLReservationStatus();
+        BLBooks booksBL = new BLBooks();
+        BLCategories categoriesBL = new BLCategories();
+        BLLoanDates loanDatesBL = new BLLoanDates();
+        private readonly LoanService _loanService;
+
+        public LoansController(LoanService loanService)
+        {
+            _loanService = loanService;
+        }
+
+        public async Task<IActionResult> Index(Books pBooks, Loans pLoans = null)
+        {
+            if (pLoans == null)
+                pLoans = new Loans();
+            if (pLoans.Top_Aux == 0)
+                pLoans.Top_Aux = 10;
+            else if (pLoans.Top_Aux == -1)
+                pLoans.Top_Aux = 0;
+
+
+            var loans = await loansBL.GetIncludePropertiesAsync(pLoans);
+            ViewBag.Categories = await categoriesBL.GetAllCategoriesAsync();
+            ViewBag.Loans = await loansBL.GetAllLoansAsync();
+            ViewBag.LoansTypes = await loansTypesBL.GetAllLoanTypesAsync();
+            ViewBag.ReservationStatus = await reservationStatusBL.GetAllReservationStatusAsync();
+            ViewBag.Books = await booksBL.GetIncludePropertiesAsync(pBooks);
+
+            ViewBag.Top = pLoans.Top_Aux;
+            ViewBag.ShowMenu = true;
+            return View(loans);
+        }
+
+        public async Task<IActionResult> Status2Loans(Books pBooks, Loans pLoans = null)
+        {
+            if (pLoans == null)
+                pLoans = new Loans();
+            if (pLoans.Top_Aux == 0)
+                pLoans.Top_Aux = 10;
+            else if (pLoans.Top_Aux == -1)
+                pLoans.Top_Aux = 0;
+
+
+            var loans = await loansBL.GetIncludePropertiesAsync(pLoans);
+            ViewBag.Categories = await categoriesBL.GetAllCategoriesAsync();
+            ViewBag.Loans = await loansBL.GetAllLoansAsync();
+            ViewBag.LoansTypes = await loansTypesBL.GetAllLoanTypesAsync();
+            ViewBag.ReservationStatus = await reservationStatusBL.GetAllReservationStatusAsync();
+            ViewBag.Books = await booksBL.GetIncludePropertiesAsync(pBooks);
+
+            ViewBag.Top = pLoans.Top_Aux;
+            ViewBag.ShowMenu = true;
+            return View(loans);
+        }
+        public async Task<IActionResult> LoansDelite(Books pBooks, Loans pLoans = null)
+        {
+            if (pLoans == null)
+                pLoans = new Loans();
+            if (pLoans.Top_Aux == 0)
+                pLoans.Top_Aux = 10;
+            else if (pLoans.Top_Aux == -1)
+                pLoans.Top_Aux = 0;
+
+            var loans = await loansBL.GetIncludePropertiesAsync(pLoans);
+            ViewBag.Categories = await categoriesBL.GetAllCategoriesAsync();
+            ViewBag.Loans = await loansBL.GetAllLoansAsync();
+            ViewBag.LoansTypes = await loansTypesBL.GetAllLoanTypesAsync();
+            ViewBag.ReservationStatus = await reservationStatusBL.GetAllReservationStatusAsync();
+            ViewBag.Books = await booksBL.GetIncludePropertiesAsync(pBooks);
+
+            ViewBag.Top = pLoans.Top_Aux;
+            return View(loans);
+        }
+
+        // GET: BooksController/Details/5
+        public async Task<IActionResult> Details(int id)
+        {
+            // Falta terminar 
+            var loans = await loansBL.GetLoansByIdAsync(new Loans { LOAN_ID = id });
+            //Objeto anonimo
+            loans.LoanTypes = await loansTypesBL.GetLoanTypesByIdAsync(new LoanTypes { TYPES_ID = loans.ID_TYPE });
+            loans.ReservationStatus = await reservationStatusBL.GetReservationStatusByIdAsync(new ReservationStatus { RESERVATION_ID = loans.ID_RESERVATION });
+            loans.Books = await booksBL.GetBooksByIdAsync(new Books { BOOK_ID = loans.ID_BOOK });
+            ViewBag.ShowMenu = true;
+            return View(loans);
+        }
+
+        // GET: BooksController/Create
+        public async Task<IActionResult> Create( Books pBooks)
+        {
+            ViewBag.LoanTypes = await loansTypesBL.GetAllLoanTypesAsync();
+            ViewBag.Categories = await categoriesBL.GetAllCategoriesAsync();
+            ViewBag.ReservationStatus = await reservationStatusBL.GetAllReservationStatusAsync();
+            ViewBag.Books = await booksBL.GetIncludePropertiesAsync(pBooks);
+            ViewBag.Error = "";
+            ViewBag.ShowMenu = true;
+            return View();
+        }
+
+        // POST: BooksController/Create
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Create(Loans pLoans, LoanDates pLoanDates,
+            DateTime fechaInicio, DateTime fechaCierre, int resultt, int result, Books2 pBooks)
+        {
+            try
+            {
+                var books = await booksBL.GetBooksByIdAsync(new Books { BOOK_ID = pLoans.ID_BOOK });
+                var reservations = new List<int> { 1, 3, 4 };
+                var cantidadPrestamos = reservations
+                    .Select(async reservation => await loansBL.GetLoansAsync(new Loans { ID_BOOK = pLoans.ID_BOOK, ID_RESERVATION = reservation, STATUS = true }))
+                    .Select(task => task.Result.Count)
+                    .Sum();
+
+                if (pLoans.ID_TYPE > 0 && pLoans.LENDER_CONTACT != null && fechaInicio != DateTime.MinValue && fechaCierre != DateTime.MinValue && pLoans.ID_BOOK > 0)
+                {
+                    var cantidadPrestamosPorEst = reservations
+                        .Select(async reservation => await loansBL.GetLoansAsync(new Loans {  ID_LENDER = pLoans.ID_LENDER, ID_RESERVATION = reservation, STATUS = true }))
+                        .Select(task => task.Result.Count)
+                        .Sum();
+                    if (cantidadPrestamosPorEst < 2)
+                    {
+                        if (cantidadPrestamos < books.EJEMPLARS && books.EXISTENCES > 1)
+                        {
+                            pLoans.STATUS = true;
+                            pLoans.ID_RESERVATION = 1;
+                            pLoans.USER_ID = 1;
+                            pLoans.COPY = 1;
+                            pLoans.FEE = 0;
+                            pLoans.REGISTRATION_DATE = DateTime.Now;
+                            result = await loansBL.CreateLoansAsync(pLoans);
+
+                            pLoanDates.ID_LOAN = pLoans.LOAN_ID;
+                            pLoanDates.START_DATE = fechaInicio;
+                            pLoanDates.END_DATE = fechaCierre;
+                            pLoanDates.STATUS = 1;
+                            resultt = await loanDatesBL.CreateLoanDatesAsync(pLoanDates);
+
+                            pBooks.BOOK_ID = pLoans.ID_BOOK;
+                            pBooks.EXISTENCES = books.EXISTENCES - 1;
+                            int resultUpdate = await booksBL.UpdateExistencesBooksAsync(pBooks);
+
+                            pLoans.Books = await booksBL.GetBooksByIdAsync(new Books{BOOK_ID=pLoans.ID_BOOK});
+                            await _loanService.SendEmailLoanCreated(pLoans, pLoanDates);
+                        }
+                        else
+                        {
+                            ViewBag.Alerta2 = "No hay suficientes ejemplares para realizar el registro";
+                            ViewBag.LoanTypes = await loansTypesBL.GetAllLoanTypesAsync();
+                        }
+                    }
+                    else
+                    {
+                        ViewBag.AlertaPrestamoEx = "No se puede realizar el registro porque ya cuenta dos prestamos activos";
+                        ViewBag.LoanTypes = await loansTypesBL.GetAllLoanTypesAsync();
+                    }
+                }
+                else
+                {
+                    ViewBag.LoanTypes = await loansTypesBL.GetAllLoanTypesAsync();
+                    ViewBag.Alerta = "Por favor ingrese los datos del Prestamo";
+                }
+
+                if (result > 0 && resultt > 0)
+                {
+                    ViewBag.LoanTypes = await loansTypesBL.GetAllLoanTypesAsync();
+                    TempData["Alerta"] = "El Prestamo se registro Exitosamente!!";
+                }
+                ViewBag.ShowMenu = true;
+                return View();
+
+            }
+            catch (Exception ex)
+            {
+                if(result == 0)
+                {
+                    ViewBag.LoanTypes = await loansTypesBL.GetAllLoanTypesAsync();
+                }
+                ViewBag.Error = ex.Message;
+                ViewBag.ShowMenu = true;
+                return View();
+            }
+        }
+
+
+        // GET: BooksController/Edit/5
+        public async Task<IActionResult> Edit(long id)
+        {
+            var loans = await loansBL.GetLoansByIdAsync(new Loans { LOAN_ID = id });
+            ViewBag.LoanTypes = await loansTypesBL.GetAllLoanTypesAsync();
+            ViewBag.ReservationStatus = await reservationStatusBL.GetAllReservationStatusAsync();
+            ViewBag.LoanDates = await loanDatesBL.GetLoanDatesByIdLoanAsync(new LoanDates { ID_LOAN = id });
+
+            //Mostrar el titulo del libro en input de tipo texto
+            var titulo = await booksBL.GetBooksByIdAsync(new Books { BOOK_ID = loans.ID_BOOK });
+            ViewBag.TituloB = titulo.TITLE;
+            ViewBag.Portada = titulo.COVER;
+            ViewBag.Error = "";
+            ViewBag.ShowMenu = true;
+            return View(loans);
+        }
+
+        // POST: BooksController/Edit/5
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Edit(int id, int Maestro, Loans pLoans, DateTime fechaInicio, DateTime fechaCierre, LoanDates pLoanDates, Books2 pBooks)
+        {
+            try
+            {
+                if (pLoans.ID_RESERVATION == 2 || pLoans.ID_RESERVATION == 5)
+                {
+                    var books = await booksBL.GetBooksByIdAsync(new Books { BOOK_ID = pLoans.ID_BOOK });
+                    pBooks.BOOK_ID = pLoans.ID_BOOK;
+                    pBooks.EXISTENCES = books.EXISTENCES + 1;
+                    int resultUpdate = await booksBL.UpdateExistencesBooksAsync(pBooks);
+                }
+
+                if (pLoans.STATUS == false && pLoans.ID_RESERVATION == 2 || pLoans.ID_RESERVATION == 5 && pLoans.STATUS == false)
+                {
+                    pLoans.STATUS = false;
+                }
+                else
+                {
+                    pLoans.STATUS = true;
+                }
+
+                if (fechaInicio != DateTime.MinValue && fechaCierre != DateTime.MinValue && pLoans.ID_RESERVATION != 2 )
+                {
+                    pLoanDates.ID_LOAN = id;
+                    pLoanDates.START_DATE = fechaInicio;
+                    pLoanDates.END_DATE = fechaCierre;
+                    pLoanDates.STATUS = 1;
+
+                    if(pLoans.ID_RESERVATION == 1)
+                    {
+                        pLoans.ID_RESERVATION = 4;
+                    }
+                    else if (pLoans.ID_RESERVATION == 3)
+                    {
+                        pLoans.ID_RESERVATION = 1;
+                    }
+                    int resultt = await loanDatesBL.CreateLoanDatesAsync(pLoanDates);
+                    int result = await loansBL.UpdateLoansAsync(pLoans);
+                }
+                else
+                {
+                    int result = await loansBL.UpdateLoansAsync(pLoans);
+                    return RedirectToAction(nameof(Index));
+                }
+                return RedirectToAction(nameof(Index));
+            }
+            catch (Exception ex)
+            {
+                ViewBag.Error = ex.Message;
+                ViewBag.ShowMenu = true;
+                return View(pLoans);
+            }
+        }
+
+        public async Task<JsonResult>BuscarLibros(Books pBooks)
+        {
+            List<Books> lista = await booksBL.GetBooksAsync(pBooks);
+
+            return Json(lista);
+        }
+        public async Task<JsonResult> ObtenerCategoria(Categories pCategories)
+        {
+            List<Categories> lista = await categoriesBL.GetCategoriesAsync(pCategories);
+            return Json(lista);
+        }
+
+
+        public async Task<JsonResult> BuscarEstudiante(string codigo)
+        {
+            List<Student> StudentList = new List<Student>();
+
+            using (var httpClient = new HttpClient())
+            {
+                try
+                {
+                    using (var response = await httpClient.GetAsync($"http://190.242.151.49/esfeapi/ra/student/code/{codigo}"))
+                    {
+                        string apiResponse = await response.Content.ReadAsStringAsync();
+                        var student = JsonSerializer.Deserialize<Student>(apiResponse, new JsonSerializerOptions { PropertyNameCaseInsensitive = true});
+                        StudentList.Add(student);
+                    }
+                }
+                catch
+                {
+                    Console.WriteLine("Error trying to connect API");
+                }
+                
+            }
+
+            return Json(StudentList);
+        }
+
+
+        public async Task<JsonResult> BuscarEstudianteId(long id)
+        {
+            Student student = new Student();
+
+            using (var httpClient = new HttpClient())
+            {
+                using (var response = await httpClient.GetAsync($"http://190.242.151.49/esfeapi/ra/student/{id}"))
+                {
+                    string apiResponse = await response.Content.ReadAsStringAsync();
+                    student = JsonSerializer.Deserialize<Student>(apiResponse, new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
+                    //StudentList.Add(student);
+                }
+            }
+            //List<Books> lista = await booksBL.GetBooksAsync(pBooks);
+            return Json(student);
+        }
+
+        // GET: BooksController/Edit/5
+        public async Task<IActionResult> Delite(long id)
+        {
+            var loans = await loansBL.GetLoansByIdAsync(new Loans { LOAN_ID = id });
+
+            //Mostrar el titulo del libro en input de tipo texto
+            var titulo = await booksBL.GetBooksByIdAsync(new Books { BOOK_ID = loans.ID_BOOK });
+            var tituloB = titulo.TITLE;
+            ViewBag.TituloB = tituloB;
+            ViewBag.Error = "";
+            ViewBag.ShowMenu = true;
+            return View(loans);
+        }
+
+        // POST: BooksController/Edit/5
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Delite(int id,Loans2 pLoans)
+        {
+            try
+            {
+                pLoans.STATUS = false;
+                int result = await loansBL.UpdateLoans02Async(pLoans);
+                return RedirectToAction(nameof(Status2Loans));
+            }
+            catch (Exception ex)
+            {
+                ViewBag.Error = ex.Message;
+                return View(pLoans);
+            }
+        }
+
+
+
+        //// GET: BooksController/Delete/5
+        //public async Task<IActionResult> Delete(int id)
+        //{
+        //    var books = await booksBL.GetBooksByIdAsync(new Books { BOOK_ID = id });
+
+        //    books.Categories = await categoriesBL.GetCategoriesByIdAsync(new Categories { CATEGORY_ID = books.ID_CATEGORY });
+
+        //    books.AcquisitionTypes = await acquisitionTypesBL.GetAcquisitionTypesByIdAsync(new AcquisitionTypes { ACQUISITION_ID = books.ID_ACQUISITION });
+
+        //    books.Editorials = await editorialsBL.GetEditorialsByIdAsync(new Editorials { EDITORIAL_ID = books.ID_EDITORIAL });
+
+        //    books.Authors = await authorsBL.GetAuthorsByIdAsync(new Authors { AUTHOR_ID = books.ID_AUTHOR });
+
+        //    books.Editions = await editionsBL.GetEditionsByIdAsync(new Editions { EDITION_ID = books.ID_EDITION });
+
+        //    books.Countries = await countriesBL.GetCountriesByIdAsync(new Countries { COUNTRY_ID = books.ID_COUNTRY });
+
+        //    books.Catalogs = await catalogsBL.GetCatalogsByIdAsync(new Catalogs { CATALOG_ID = books.ID_CATALOG });
+
+        //    ViewBag.Error = "";
+        //    return View(books);
+        //}
+
+        //// POST: BooksController/Delete/5
+        //[HttpPost]
+        //[ValidateAntiForgeryToken]
+        //public async Task<IActionResult> Delete(int id, Books pBooks)
+        //{
+        //    try
+        //    {
+        //        int result = await booksBL.DeleteBooksAsync(pBooks);
+        //        return RedirectToAction(nameof(Index));
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        ViewBag.Error = ex.Message;
+        //        return View(pBooks);
+        //    }
+        //}
+    }
+}

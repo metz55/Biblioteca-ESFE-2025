@@ -1,0 +1,144 @@
+﻿@model Library.DataAccess.Domain.Books
+
+@{
+    List<Library.DataAccess.Domain.LoanTypes> loanTypes = ViewBag.LoanTypes as List<Library.DataAccess.Domain.LoanTypes>;
+    ViewData["Title"] = "CreateLoansSt";
+    var studentCode = User.FindFirst("CodigoEstudiante")?.Value ?? "";
+}
+
+<h3>Crear Reservación</h3>
+
+<h1 class="text-center">@ViewBag.Titulo</h1>
+<hr />
+<div class="row">
+    <div class="col-md-12">
+        <form asp-action="CreateLoansSt">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <div class="row">
+                <div class="col-12">
+                    @if (TempData["Alerta"] != null)
+                    {
+                        <div class="alert alert-success anchoalertLibro">
+                            @TempData["Alerta"]
+                        </div>
+                    }
+                    @if (!string.IsNullOrEmpty(ViewBag.AlertaLibro))
+                    {
+                        <div class="alert alert-success anchoalertLibro">
+                            @ViewBag.AlertaLibro
+                        </div>
+                    }
+                    @if (!string.IsNullOrEmpty(ViewBag.AlertaLibro2))
+                    {
+                        <div class="alert alert-danger anchoalertLibro">
+                            @ViewBag.AlertaLibro2
+                        </div>
+                    }
+                    @if (!string.IsNullOrEmpty(ViewBag.Alerta))
+                    {
+                        <div class="alert alert-danger anchoalertLibro">
+                            @ViewBag.Alerta
+                        </div>
+                    }
+                    @if (!string.IsNullOrEmpty(ViewBag.Alerta2))
+                    {
+                        <div class="alert alert-danger anchoalertLibro">
+                            @ViewBag.Alerta2
+                        </div>
+                    }
+                    @if (!string.IsNullOrEmpty(ViewBag.AlertaPrestamoEx))
+                    {
+                        <div class="alert alert-danger anchoalertLibro">
+                            @ViewBag.AlertaPrestamoEx
+                        </div>
+                    }
+                </div>
+                <div class="col-6">
+                    <div class="form-group">
+                        <img src="@ViewBag.Imagen" class="anchodeImagen" />
+                    </div>
+                </div>
+                <div class="col-4">
+                    <div class="form-group">
+                        <input asp-for="BOOK_ID" class="form-control" hidden />
+                    </div>
+                    <div class="form-group">
+                        <label asp-for="ID_CATEGORY" class="control-label"></label>
+                        <input value="@ViewBag.Categoria" class="form-control" disabled="disabled" />
+                    </div>
+                    <div class="form-group">
+                        <label asp-for="ID_AUTHOR" class="control-label"></label>
+                        <input Value="@ViewBag.Autor" class="form-control" disabled="disabled" />
+                    </div>
+                    <div class="form-group">
+                        <label asp-for="ID_EDITORIAL" class="control-label"></label>
+                        <input value="@ViewBag.Editorial" class="form-control" disabled="disabled" />
+                    </div>
+                    <div class="form-group">
+                        <label asp-for="YEAR" class="control-label"></label>
+                        <input value="@ViewBag.Year" class="form-control" disabled="disabled" />
+                    </div>
+                    <br />
+                    <div>
+                        <div class="row">
+                            @using (Html.BeginForm("CreateLoansSt", "Library", FormMethod.Post))
+                            {
+                                <div class="col-5">
+                                    <label>Teléfono:</label>
+                                    <input type="text" class="form-control" id="telefono" placeholder="0101 0101" name="telefono" />
+                                </div>
+                                <div class="col-5">
+                                    <label>Tipo de Prestamo:</label>
+                                    <select class="form-control" id="tipoPrestamo" name="tipoPrestamo">
+                                        <option selected value="0">SELLECIONAR</option>
+                                        @if (loanTypes != null)
+                                        {
+                                            @foreach (var item in loanTypes)
+                                            {
+                                                <option value="@item.TYPES_ID">@item.TYPES_NAME</option>
+                                            }
+                                        }
+                                    </select>
+                                </div>
+                                <div class="col-2">
+                                    <input type="text" class="form-control" id="idLender" name="idLender" hidden/>
+                                </div>
+                            }
+                        </div>
+                    </div>
+                    <br />
+                    <div class="form-group centrar">
+                        <input type="submit" value="Reservar" class="btn btn-primary" /> |
+                        <a asp-action="Index" class="btn btn-secondary">Regresar</a>
+                    </div>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        $(document).ready(function (){
+            loadStudentData()
+        })
+
+        function loadStudentData(){
+                var studentCode = "@studentCode";
+                $.ajax({
+                    method: 'POST',
+                    url: '@Url.Action("BuscarEstudiante", "Loans")',
+                    contentType: 'application/x-www-form-urlencoded',
+                    data: { codigo: studentCode },
+                    datatype: 'json',
+                    success: function(response){
+                        response.map(student=>{
+                           $("#telefono").val(student.cellPhone);
+                           $("#idLender").val(student.id);
+                        })
+                    }
+                });
+            }
+    </script>
+    
+}

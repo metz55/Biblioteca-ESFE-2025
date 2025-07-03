@@ -1,0 +1,103 @@
+﻿@model Library.DataAccess.Domain.Authors
+
+@{
+    ViewData["Title"] = "Crear Autor";
+}
+
+<style>
+    .create-card {
+        background: white;
+        border-radius: 15px;
+        box-shadow: 0 0 15px rgba(0,0,0,0.1);
+        padding: 30px;
+        margin: 40px auto;
+        max-width: 800px;
+    }
+
+        .create-card h3 {
+            text-align: center;
+            color: #198754;
+            font-weight: bold;
+            margin-bottom: 25px;
+        }
+
+    .form-table {
+        width: 100%;
+        border-collapse: collapse;
+    }
+
+        .form-table th,
+        .form-table td {
+            padding: 12px;
+            border: 1px solid #dee2e6;
+            vertical-align: middle;
+        }
+
+        .form-table th {
+            background-color: #f8f9fa;
+            text-align: right;
+            width: 30%;
+        }
+
+    @@media (max-width: 768px) {
+        .form-table th, .form-table td
+
+    {
+        display: block;
+        width: 100%;
+    }
+
+    .form-table th {
+        text-align: left;
+        background-color: transparent;
+        font-weight: bold;
+        margin-top: 15px;
+    }
+
+    .btn-group {
+        flex-direction: column;
+    }
+
+    }
+
+    .btn svg {
+        margin-right: 6px;
+    }
+</style>
+
+<div class="create-card">
+    <h3>✍️ Crear Nuevo Autor</h3>
+
+    <form asp-action="Create">
+        <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
+
+        <table class="form-table">
+            <tr>
+                <th><label asp-for="AUTHOR_NAME"></label></th>
+                <td>
+                    <input asp-for="AUTHOR_NAME" class="form-control" />
+                    <span asp-validation-for="AUTHOR_NAME" class="text-danger"></span>
+                </td>
+            </tr>
+        </table>
+
+        <div class="text-center mt-4 d-flex justify-content-center gap-3 flex-wrap btn-group">
+            <button type="submit" class="btn btn-success">
+                <i class="bi bi-floppy"></i> Guardar
+            </button>
+            <a asp-action="Index" class="btn btn-info">
+                <i class="bi bi-reply-fill"></i> Regresar
+            </a>
+        </div>
+    </form>
+</div>
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+}
+    <script>
+        document.querySelector('.main-content')?.classList.remove('with-menu');
+        document.querySelector('.main-content')?.classList.add('full-width');
+    </script>
+}

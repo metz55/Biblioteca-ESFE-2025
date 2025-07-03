@@ -1,0 +1,85 @@
+﻿@model Library.DataAccess.Domain.Editorials
+
+@{
+    ViewData["Title"] = "Detalles de Editorial";
+}
+
+<style>
+    body {
+        overflow-x: hidden;
+        background-color: #f8f9fa;
+    }
+
+    .details-card {
+        background: white;
+        border-radius: 15px;
+        box-shadow: 0 0 10px rgba(0,0,0,0.1);
+        padding: 30px;
+        margin: 40px auto;
+        max-width: 600px;
+    }
+
+    .section-title {
+        font-weight: bold;
+        color: #343a40;
+        border-bottom: 2px solid #dee2e6;
+        padding-bottom: 8px;
+        margin-bottom: 25px;
+        font-size: 1.7rem;
+        text-align: center;
+    }
+
+    dt {
+        color: #6c757d;
+        font-weight: 600;
+        text-align: right;
+    }
+
+    dd {
+        margin-bottom: 15px;
+        font-size: 1.05rem;
+        color: #555;
+    }
+
+    .btn-custom {
+        width: 130px;
+        margin: 5px;
+        font-weight: 600;
+    }
+</style>
+
+<div class="details-card">
+    <h3 class="section-title">🏢 Detalles de Editorial</h3>
+
+    <dl class="row">
+        <dt class="col-sm-4">ID:</dt>
+        <dd class="col-sm-8">@Html.DisplayFor(model => model.EDITORIAL_ID)</dd>
+
+        <dt class="col-sm-4">Nombre:</dt>
+        <dd class="col-sm-8">@Html.DisplayFor(model => model.EDITORIAL_NAME)</dd>
+    </dl>
+
+    <div class="text-center mt-4">
+        <a href="@Url.Action("Edit", new { id = Model.EDITORIAL_ID })" class="btn btn-warning btn-custom d-inline-flex align-items-center justify-content-center gap-2">
+            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" fill="currentColor" class="bi bi-pencil-square" viewBox="0 0 16 16">
+                <path d="M15.502 1.94a.5.5 0 0 1 0 .706L14.459 3.69l-2-2L13.502.646a.5.5 0 0 1 .707 0l1.293 1.293zm-1.75 2.456-2-2L4.939 9.21a.5.5 0 0 0-.121.196l-.805 2.414a.25.25 0 0 0 .316.316l2.414-.805a.5.5 0 0 0 .196-.12l6.813-6.814z" />
+                <path fill-rule="evenodd" d="M1 13.5A1.5 1.5 0 0 0 2.5 15h11a1.5 1.5 0 0 0 1.5-1.5v-6a.5.5 0 0 0-1 0v6a.5.5 0 0 1-.5.5h-11a.5.5 0 0 1-.5-.5v-11a.5.5 0 0 1 .5-.5H9a.5.5 0 0 0 0-1H2.5A1.5 1.5 0 0 0 1 2.5z" />
+            </svg>
+            Editar
+        </a>
+
+        <a href="@Url.Action("Index")" class="btn btn-secondary btn-custom d-inline-flex align-items-center justify-content-center gap-2">
+            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" fill="currentColor" class="bi bi-reply-fill" viewBox="0 0 16 16">
+                <path d="M5.921 11.9 1.353 8.62a.72.72 0 0 1 0-1.238L5.921 4.1A.716.716 0 0 1 7 4.719V6c1.5 0 6 0 7 8-2.5-4.5-7-4-7-4v1.281c0 .56-.606.898-1.079.62z" />
+            </svg>
+            Regresar
+        </a>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        document.querySelector('.main-content')?.classList.remove('with-menu');
+        document.querySelector('.main-content')?.classList.add('full-width');
+    </script>
+}

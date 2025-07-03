@@ -1,0 +1,41 @@
+@{
+    ViewData["Title"] = "Admin";
+    ViewBag.ShowMenu = true;
+    Layout = "_LayoutP";
+}
+<div class="card" style="background-color: white;">
+    
+
+    <script>
+        const redirectionMap = {
+            redireccionBooks: '/Books/Index',
+            redireccionBlog: '/Posts/Manage',
+            redireccionBlogCategories: '/PostsCategories/Index',
+            redireccionListaBook: '/Library/Index',
+            redireccionAutor: '/Authors/Index',
+            redireccionEditorial: '/Editorials/Index',
+            redireccionCiudad: '/Countries/Index',
+            redireccionEdicion: '/Editions/Index',
+            redirecionCatalogo: '/Catalogs/Index',
+            redirecionCategoria: '/Categories/Index',
+            redirecionTipoAd: '/AcquisitionTypes/Index',
+            redireccionListaLoans: '/Loans/Index',
+            redireccionEsLoan: '/ReservationStatus/Index',
+            redireccionTipoLoan: '/LoanTypes/Index',
+            redireccionUser: '/User/Index'
+        };
+
+        Object.keys(redirectionMap).forEach(id => {
+            const element = document.getElementById(id);
+            if (element) {
+                element.addEventListener('click', () => {
+                    window.location.href = redirectionMap[id];
+                });
+            }
+        });
+    </script>
+
+    <script src="https://code.jquery.com/jquery-3.1.1.slim.min.js" integrity="sha384-A7FZj7v+d/sdmMqp/nOQwliLvUsJfDHW+k9Omg/a/EheAdgtzNs3hpfag6Ed950n" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/tether/1.4.0/js/tether.min.js" integrity="sha384-DztdAPBWPRXSA/3eYEEUWrWCy7G5KFbe8fFjk5JAIxUYHKkDx6Qin1DkWx51bBrb" crossorigin="anonymous"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-alpha.6/js/bootstrap.min.js" integrity="sha384-vBWWzlZJ8ea9aCX4pEW3rVHjgjt7zpkNpZk+02D9phzyeVkE+jo0ieGizqPLForn" crossorigin="anonymous"></script>
+</div>

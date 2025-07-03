@@ -1,0 +1,332 @@
+﻿@model IEnumerable<Library.DataAccess.Domain.Books>
+
+@{
+
+    ViewData["Title"] = "Index";
+    ViewBag.ShowNavbar = false;
+    int numPage = 1;
+    int numRegistros = 0;
+    int numRegistrosPorPage = 12;
+    int[] tops = { 12, 20, 50, 100, 500, 1000, 10000, -1 };
+    int topActual = Convert.ToInt32(ViewBag.Top);
+
+    List<Library.DataAccess.Domain.Categories> categories = ViewBag.Categories as List<Library.DataAccess.Domain.Categories>;
+    List<Library.DataAccess.Domain.AcquisitionTypes> acquisitionTypes = ViewBag.AcquisitionTypes as List<Library.DataAccess.Domain.AcquisitionTypes>;
+    List<Library.DataAccess.Domain.Editorials> editorials = ViewBag.Editorials as List<Library.DataAccess.Domain.Editorials>;
+    List<Library.DataAccess.Domain.Authors> authors = ViewBag.Authors as List<Library.DataAccess.Domain.Authors>;
+    List<Library.DataAccess.Domain.Editions> editions = ViewBag.Editions as List<Library.DataAccess.Domain.Editions>;
+    List<Library.DataAccess.Domain.Countries> countries = ViewBag.Countries as List<Library.DataAccess.Domain.Countries>;
+    List<Library.DataAccess.Domain.Catalogs> catalogs = ViewBag.Catalogs as List<Library.DataAccess.Domain.Catalogs>;
+
+}
+
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"]</title>
+
+
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/normalize/8.0.1/normalize.min.css">
+    @* <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet"> *@
+    <link rel="stylesheet" href="/css/libray.css" />
+</head>
+
+<body>
+    <style>
+        body {
+            overflow-x: hidden; /* Evitar el desbordamiento horizontal */
+        }
+    </style>
+
+    <div class="container">
+        <div class="position-fixed bottom-0 end-0 p-3" style="z-index: 5">
+            <div id="toastError" class="toast align-items-center bg-danger border-0" role="alert" aria-live="assertive" aria-atomic="true" style="display: none;">
+                <div class="d-flex">
+                    <div class="toast-body text-white" style="font-weight: bold;">
+                       @TempData["ErrorMessage"]
+                    </div>
+                    <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
+                </div>
+            </div>
+
+            <div id="toastSuccess" class="toast align-items-center bg-success border-0" role="alert" aria-live="assertive" aria-atomic="true" style="display: none;">
+                <div class="d-flex">
+                    <div class="toast-body text-white" style="font-weight: bold;">
+                        @TempData["SuccessMessage"]
+                    </div>
+                    <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
+                </div>
+            </div>
+        </div>
+
+
+        <div class="row justify-content-center mt-5">
+            <form asp-action="Index" class="col-md-10">
+                <div class="row align-items-end">
+                    <!-- Added align-items-end to align all items at the bottom -->
+                    <!-- Title Input -->
+                    <div class="col-md-3">
+                        <div class="form-group">
+                            <label class="control-label">&nbsp;</label>
+                            <input type="text" placeholder="Titulo" class="form-control" name="TITLE" />
+                        </div>
+                    </div>
+
+                    <!-- Category Dropdown -->
+                    <div class="col-md-2">
+                        <div class="form-group">
+                            <label class="control-label">&nbsp;</label>
+                            <select name="ID_CATEGORY" id="categoriaSelect" class="form-control">
+                                <option selected value="0">Categoria</option>
+                                @foreach (var item in categories)
+                                {
+                                    <option value="@item.CATEGORY_ID">@item.CATEGORY_NAME</option>
+                                }
+                            </select>
+                        </div>
+                    </div>
+
+                    <!-- Catalog Dropdown -->
+                    <div class="col-md-2">
+                        <div class="form-group">
+                            <label class="control-label">&nbsp;</label>
+                            <select name="ID_CATALOG" id="catalogoSelect" class="form-control">
+                                <option selected value="0">Catalogo</option>
+                                @foreach (var item in catalogs)
+                                {
+                                    <option value="@item.CATALOG_ID">@item.CATALOG_NAME</option>
+                                }
+                            </select>
+                        </div>
+                    </div>
+
+                    <!-- Top Dropdown -->
+                    <div class="col-md-2">
+                        <div class="form-group d-flex align-items-center">
+                            <!-- Flexbox for alignment -->
+                            <label class="control-label me-2">Top</label> <!-- Added margin utility -->
+                            <select name="top_aux" class="form-control">
+                                @foreach (var item in tops)
+                                {
+                                    string strItem = item != -1 ? item.ToString() : "Todos";
+                                    if (item != topActual)
+                                    {
+                                        <option value="@item">@strItem</option>
+                                    }
+                                    else
+                                    {
+                                        <option selected value="@item">@strItem</option>
+                                    }
+                                }
+                            </select>
+                        </div>
+                    </div>
+
+                    <!-- Search Button -->
+                    <div class="col-md-2">
+                        <div class="form-group">
+                            <label class="control-label">&nbsp;</label>
+                            <button id="search-button" type="submit" class="btn btn-primary d-flex align-items-center w-100">
+                                <!-- Added w-100 for full width -->
+                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-search me-2" viewBox="0 0 16 16">
+                                    <path d="M11.742 10.344a6.5 6.5 0 1 0-1.397 1.398h-.001q.044.06.098.115l3.85 3.85a1 1 0 0 0 1.415-1.414l-3.85-3.85a1 1 0 0 0-.115-.1zM12 6.5a5.5 5.5 0 1 1-11 0 5.5 5.5 0 0 1 11 0" />
+                                </svg>
+                                Buscar
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </form>
+            <form>
+                <script>
+                    document.addEventListener("DOMContentLoaded", function() {
+                        var categoriaSelect = document.getElementById("categoriaSelect");
+
+                        categoriaSelect.addEventListener("change", function() {
+                            if (categoriaSelect.value !== "0") {
+                                // Envía automáticamente el formulario cuando se cambia la selección
+                                document.forms[0].submit(); // Asegúrate de que este sea el primer formulario en la página
+                            }
+                        });
+                    });
+
+                     document.addEventListener("DOMContentLoaded", function() {
+                        var catalogoSelect = document.getElementById("catalogoSelect");
+
+                        catalogoSelect.addEventListener("change", function() {
+                            if (catalogoSelect.value !== "0") {
+                                // Envía automáticamente el formulario cuando se cambia la selección
+                                document.forms[0].submit(); // Asegúrate de que este sea el primer formulario en la página
+                            }
+                        });
+                    });
+                </script>
+
+            </form>
+        </div>
+    </div>
+
+
+    <div class="row mx-2 pt-5">
+        @foreach (var book in Model)
+        {
+
+            <div class="col-md-3 mb-4">
+                <div class="card">
+                    <img src="@book.COVER" class="card-img-top img-fluid text-center zoom-image" alt="@book.TITLE">
+                    <label class="control-label">&nbsp;</label>
+                    <h5 class="card-title">
+                        @{
+                            const int maxLength = 20; // Definir la longitud máxima deseada
+                            var truncatedTitle = book.TITLE.Length > maxLength ? book.TITLE.Substring(0, maxLength) + "..." : book.TITLE;
+                        }
+                        @truncatedTitle
+                    </h5>
+                    <div class="card-body" role="group" aria-label="Opciones">
+                        @if(User.Identity.IsAuthenticated)
+                        {
+                            @Html.ActionLink("Reservar", "CreateLoansSt", new {  id=book.BOOK_ID  }, new{ @class="btn btn-secondary"})
+                        }
+                        <a class="btn btn-su btn-open-modal" style="margin-inline: -1px; " data-target="#bookModal_@book.BOOK_ID">Características</a>
+                    </div>
+                </div>
+            </div>
+            numRegistros++;
+            if (numRegistros == numRegistrosPorPage)
+            {
+                numPage++;
+                numRegistros = 0;
+            }
+        }
+        @{
+            if (numRegistros == 0)
+            {
+                numPage--;
+            }
+        }
+    </div>
+
+    <!-- Paginación -->
+    @if (numPage > 1)
+    {
+        <div class="row" style="overflow:auto">
+            <div class="col-md-12">
+                <ul class="pagination paginationjs" data-numpage="@numPage" data-pageactive="1">
+                    <li class="page-item" data-typepage="Previous"><a class="page-link" href="#">Anterior</a></li>
+                    @for (var i = 1; i <= numPage; i++)
+                    {
+                        <li class="page-item" data-page="@i" data-typepage="Item"><a class="page-link" href="#">@i</a></li>
+                    }
+                    <li class="page-item" data-typepage="Next"><a class="page-link" href="#">Siguiente</a></li>
+                </ul>
+            </div>
+        </div>
+    }
+
+    @foreach (var libro in Model)
+    {
+        <!-- Definición del modal para cada libro -->
+        <div id="bookModal_@libro.BOOK_ID" class="modal bg-opacity-10" style="background-color:transparent;">
+            <div class="modal-dialog modal-dialog-centered">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title">Características del libro</h5>
+                        <img src="/img/close.png" alt="Cerrar" class="cerrar-modal" data-dismiss="modal">
+                    </div>
+                    <div class="modal-body">
+                        <div class="container">
+                            <div class="row">
+                                <div class="col-md-4">
+                                    <img src="@libro.COVER" class="card-img-top img-fluid text-center" alt="@libro.TITLE">
+                                </div>
+                                <div class="col-md-8">
+                                    <h4>@libro.TITLE</h4>
+                                    <p>Autor: @libro.Authors.AUTHOR_NAME</p>
+                                    <p>Editorial: @libro.Editorials.EDITORIAL_NAME</p>
+
+                                    <!-- Agrega más detalles según las características de tu libro -->
+                                    <!-- Agrega más detalles -->
+                                <ol class="list-group list-group-dot">
+                                        <li>Año de Edición: @libro.YEAR</li>
+                                        <li>Categoría: @libro.Categories.CATEGORY_NAME</li>
+                                        <li>Catalogo: @libro.Catalogs.CATALOG_NAME</li>
+                                        @if(libro.EXISTENCES <= 2)
+                                        {
+                                            <li style="color: red;">El libro solo esta disponible para uso interno</li>
+                                        }
+                                        else{
+                                          <li>Existencia: @libro.EXISTENCES</li>
+                                        }
+                                    </ol>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary btn-clo" data-dismiss="modal">Cerrar</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    }
+
+    <!-- Enlace al archivo JS de jQuery -->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
+    <script>
+            $(document).ready(function () {
+                // Controlar los botones para abrir el modal
+                $(".btn-open-modal").click(function () {
+                    var targetModal = $(this).data("target");
+                    $(targetModal).modal('show');
+                });
+                $(document).ready(function() {
+        // Agrega un controlador de eventos al botón de cierre (clase .close)
+                $(".cerrar-modal").click(function() {
+            // Encuentra el modal padre y lo cierra
+                 $(this).closest(".modal").modal("hide");
+                 });
+                });
+
+                // Controlar el botón "Cerrar" del modal para cerrarlo
+                $(".modal .close, .modal .modal-footer button").click(function () {
+                    var modal = $(this).closest(".modal");
+                    modal.modal('hide');
+                });
+            });
+    </script>
+
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            var errorMessage = '@TempData["ErrorMessage"]';
+            var successMessage = '@TempData["SuccessMessage"]';
+
+            if (errorMessage) {
+                var toastError = new bootstrap.Toast(document.getElementById('toastError'));
+                document.getElementById('toastError').style.display = 'block';
+                toastError.show();
+            }
+
+            if (successMessage) {
+                var toastSuccess = new bootstrap.Toast(document.getElementById('toastSuccess'));
+                document.getElementById('toastSuccess').style.display = 'block';
+                toastSuccess.show();
+            }
+        });
+    </script>
+
+
+
+
+
+
+    <script src="~/lib/jquery/dist/jquery.min.js"></script>
+    <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="~/js/site.js" asp-append-version="true"></script>
+
+
+</body>
+</html>

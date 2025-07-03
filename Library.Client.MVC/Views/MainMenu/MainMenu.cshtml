@@ -1,0 +1,116 @@
+﻿@* <!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="path/to/your/styles.css">
+    <title>Main Menu</title>
+</head>
+<body>
+    <div class="container-fluid">
+        <nav class="navbar navbar-toggleable-sm navbar-light bg-faded fixed-top">
+            <button class="navbar-toggler navbar-toggler-right hidden-lg-up" type="button" data-toggle="collapse" data-target="#navbarsExampleDefault" aria-controls="navbarsExampleDefault" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <a class="navbar-brand" style="color: blue;" href="javascript:;">
+                Biblioteca ESFE
+            </a>
+        </nav>
+        <nav class="sidebar" data-toggle="pill">
+            <ul class="nav">
+                <li class="nav-profile">
+                    <div class="image">
+                        <a href="javascript:;"><img src="/img/esfe.png" width="60" height="60" class="align-top" alt=""></a>
+                    </div>
+                    <div class="info" style="margin-top: 20px;">
+                        Administrador
+                    </div>
+                </li>
+            </ul>
+            <ul class="nav flex-column">
+                <li class="nav-item">
+                    <a class="nav-link" href="#" id="redireccionListaBook"><i class="fa fa-list"></i>Lista Libros</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="#" id="redireccionBooks"><i class="fa fa-book"></i>Libros</a>
+                </li>
+                <li class="nav-item has-sub">
+                    <a class="nav-link" data-toggle="collapse" href="#sub4" aria-expanded="false" aria-controls="sub1">
+                        <i class="fa fa-book"></i>
+                        Gestión de Libro
+                    </a>
+                    <ul class="sub collapse" id="sub4">
+                        <li class="nav-item">
+                            <a class="nav-link" href="#" id="redireccionCiudad">Ciudades</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="#" id="redireccionAutor">Autores</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="#" id="redireccionEditorial">Editoriales</a>
+                        </li>
+                        <li class="nav-item has-sub">
+                            <a class="nav-link" data-toggle="collapse" href="#sub5" aria-expanded="false" aria-controls="sub2">
+                                Más
+                            </a>
+                            <ul class="sub collapse" id="sub5">
+                                <li class="nav-item">
+                                    <a class="nav-link" href="#" id="redireccionEdicion">Ediciones</a>
+                                </li>
+                                <li class="nav-item">
+                                    <a class="nav-link" href="#" id="redirecionCatalogo">Catálogo</a>
+                                </li>
+                                <li class="nav-item">
+                                    <a class="nav-link" href="#" id="redirecionCategoria">Categoría</a>
+                                </li>
+                                <li class="nav-item">
+                                    <a class="nav-link" href="#" id="redirecionTipoAd">Tipo de adquisición</a>
+                                </li>
+                            </ul>
+                        </li>
+                    </ul>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="#" id="redireccionListaLoans"><i class="fa fa-american-sign-language-interpreting"></i>Préstamo</a>
+                </li>
+                <li class="nav-item has-sub">
+                    <a class="nav-link" data-toggle="collapse" href="#sub1" aria-expanded="false" aria-controls="sub1">
+                        <i class="fa fa-american-sign-language-interpreting"></i>
+                        Gestión de Préstamo
+                    </a>
+                    <ul class="sub collapse" id="sub1">
+                        <li class="nav-item">
+                            <a class="nav-link" href="#" id="redireccionTipoLoan">Tipo de Préstamo</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="#" id="redireccionEsLoan">Estado del Préstamo</a>
+                        </li>
+                    </ul>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="#" id="redireccionBlog"><i class="fa fa-newspaper-o"></i>Blog</a>
+                </li>
+                <li class="nav-item has-sub">
+                    <a class="nav-link" data-toggle="collapse" href="#sub7" aria-expanded="false" aria-controls="sub1">
+                        <i class="fa fa-newspaper-o"></i>
+                        Gestión de Blog
+                    </a>
+                    <ul class="sub collapse" id="sub7">
+                        <li class="nav-item">
+                            <a class="nav-link" href="#" id="redireccionBlogCategories">Categorías</a>
+                        </li>
+                    </ul>
+                </li>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="#" id="redireccionUser" style="color: white;"><i class="fa fa-user"></i>Usuarios</a>
+                </li>
+            </ul>
+        </nav>
+    </div>
+    <div class="centered-image">
+        <img src="/img/esfelogo.png" alt="Descripción de la imagen" width="300" height="300">
+    </div>
+</body>
+</html>
+ *@

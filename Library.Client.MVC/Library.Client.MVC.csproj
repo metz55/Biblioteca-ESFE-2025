@@ -1,0 +1,37 @@
+<Project Sdk="Microsoft.NET.Sdk.Web">
+  <PropertyGroup>
+    <TargetFramework>net8.0</TargetFramework>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+  </PropertyGroup>
+  <ItemGroup>
+    <Compile Remove="Views\Books\Catalogs\**" />
+    <Compile Remove="Views\NewFolder1\**" />
+    <Content Remove="Views\Books\Catalogs\**" />
+    <Content Remove="Views\NewFolder1\**" />
+    <EmbeddedResource Remove="Views\Books\Catalogs\**" />
+    <EmbeddedResource Remove="Views\NewFolder1\**" />
+    <None Remove="Views\Books\Catalogs\**" />
+    <None Remove="Views\NewFolder1\**" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="wwwroot\img\Imagen1.jpg" />
+    <None Include="wwwroot\img\Imagen2.jpg" />
+    <None Include="wwwroot\img\Imagen3.jpg" />
+    <None Include="wwwroot\img\Imagen4.jpg" />
+  </ItemGroup>
+  <ItemGroup>
+    <PackageReference Include="Mailkit" Version="4.8.0" />
+    <PackageReference Include="Markdig" Version="0.38.0" />
+    <PackageReference Include="Microsoft.AspNetCore.Authentication.Google" Version="8.0.10" />
+    <PackageReference Include="Microsoft.Owin.Host.SystemWeb" Version="4.2.2" />
+    <PackageReference Include="Microsoft.Owin.Security.Cookies" Version="4.2.2" />
+    <PackageReference Include="Microsoft.Owin.Security.Google" Version="4.2.2" />
+    <PackageReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Design" Version="8.0.6" />
+    <PackageReference Include="Swashbuckle.AspNetCore" Version="6.9.0" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Library.BusinessRules\Library.BusinessRules.csproj" />
+    <ProjectReference Include="..\Library.DataAccess\Library.DataAccess.csproj" />
+  </ItemGroup>
+</Project>

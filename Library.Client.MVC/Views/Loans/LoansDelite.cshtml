@@ -1,0 +1,231 @@
+﻿@model IEnumerable<Library.DataAccess.Domain.Loans>
+
+@{
+    ViewData["Title"] = "LoansDelite";
+    int numPage = 1;
+    int numRegistros = 0;
+    int numRegistrosPorPage = 10;
+    int[] tops = { 10, 20, 50, 100, 500, 1000, 10000, -1 };
+    int topActual = Convert.ToInt32(ViewBag.Top);
+    var loanIds = new List<long>(); 
+    List<Library.DataAccess.Domain.LoanTypes> loanTypes = ViewBag.LoansTypes as List<Library.DataAccess.Domain.LoanTypes>;
+    List<Library.DataAccess.Domain.ReservationStatus> reservations = ViewBag.ReservationStatus as List<Library.DataAccess.Domain.ReservationStatus>;
+}
+<style>
+    .spacer {
+        margin-right: 20px; /* Ajusta el valor según tus preferencias para el espacio horizontal */
+    }
+</style>
+<div class="card">
+    <div class="card-body">
+<h1>LISTA DE PRESTAMOS ELIMINADOS</h1>
+<div class="d-flex justify-content-between align-items-center">
+    <form asp-action="LoansDelite" class="d-flex">
+        <div class="spacer">
+            <input type="text" placeholder="Codigo de Estudiante" class="form-control" name="ID_LENDER" />
+        </div>
+        <div class="spacer">
+            <select name="ID_TYPE" id="reservationSelect" class="form-control">
+                <option selected value="0">Tipo de Prestamo</option>
+                @foreach (var item in loanTypes)
+                {
+                    <option value="@item.TYPES_ID">@item.TYPES_NAME</option>
+                }
+            </select>
+        </div>
+        <div class="spacer" style="display: flex; align-items: center;">
+            <select id="selectRedireccion" class="form-control">
+                <option selected value="">Prestamos</option>
+                <option value="opcion0">Activos</option>
+                <option value="opcion1">Finalizados</option>
+                <option value="opcion2">Eliminados</option>
+                <!-- Agrega más opciones según sea necesario -->
+            </select>
+        </div>
+        <div class="spacer" style="display: flex; align-items: center;">
+            <label class="control-label" style="margin-right: 10px;">Top</label>
+            <select name="top_aux" class="form-control">
+                @foreach (var item in tops)
+                {
+                    string strItem = item != -1 ? item.ToString() : "Todos";
+                    if (item != topActual)
+                    {
+                        <option value="@item">@strItem</option>
+                    }
+                    else
+                    {
+                        <option selected value="@item">@strItem</option>
+                    }
+                }
+            </select>
+        </div>
+        <div class="spacer">
+            <button id="search-button" type="submit" class="btn btn-info">Buscar</button>
+        </div>
+    </form>
+</div>
+
+<hr />
+<table id="customers" class="table">
+    <thead>
+        <tr>
+            <th class="borIz">
+                @Html.DisplayNameFor(model => model.LOAN_ID)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.ID_TYPE)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.ID_RESERVATION)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.ID_LENDER)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.ID_BOOK)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.STATUS)
+            </th>
+            <th class="borDer">Acciones</th>
+        </tr>
+
+    </thead>
+    <tbody>
+        @foreach (var item in Model)
+        {
+            if (item.STATUS == false)
+            {
+                loanIds.Add(item.ID_LENDER);
+                <tr>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.LOAN_ID)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.LoanTypes.TYPES_NAME)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.ReservationStatus.STATUS_NAME)
+                    </td>
+                    <td Class="tdStudentCode_@item.ID_LENDER">
+                    <td>
+                        @Html.DisplayFor(modelItem => item.Books.TITLE)
+                    </td>
+                    <td>
+                        @if (item.STATUS == true)
+                        {
+                            <span>ACTIVO</span>
+                        }
+                        else if (item.STATUS == false)
+                        {
+                            <span>ELIMINADO</span>
+                        }
+                    </td>
+                    <td>
+                        <a href="@Url.Action("Details", new { id = item.LOAN_ID })" class="btn btn-info">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-eye" viewBox="0 0 16 16">
+                                <path d="M16 8s-3-5.5-8-5.5S0 8 0 8s3 5.5 8 5.5S16 8 16 8M1.173 8a13 13 0 0 1 1.66-2.043C4.12 4.668 5.88 3.5 8 3.5s3.879 1.168 5.168 2.457A13 13 0 0 1 14.828 8q-.086.13-.195.288c-.335.48-.83 1.12-1.465 1.755C11.879 11.332 10.119 12.5 8 12.5s-3.879-1.168-5.168-2.457A13 13 0 0 1 1.172 8z" />
+                                <path d="M8 5.5a2.5 2.5 0 1 0 0 5 2.5 2.5 0 0 0 0-5M4.5 8a3.5 3.5 0 1 1 7 0 3.5 3.5 0 0 1-7 0" />
+                            </svg>
+                            Detalles
+                        </a>
+                    </td>
+                </tr>
+            }
+            numRegistros++;
+            if (numRegistros == numRegistrosPorPage)
+            {
+                numPage++;
+                numRegistros = 0;
+            }
+        }
+        @{
+            if (numRegistros == 0)
+            {
+                numPage--;
+            }
+        }
+    </tbody>
+</table>
+@if (numPage > 1)
+{
+    <div class="row" style="overflow:auto">
+        <div class="col-md-12">
+            <ul class="pagination paginationjs" data-numpage="@numPage" data-pageactive="1">
+                <li class="page-item" data-typepage="Previous"><a class="page-link" href="#">Previous</a></li>
+                @for (var i = 1; i <= numPage; i++)
+                {
+                    <li class="page-item" data-page="@i" data-typepage="Item"><a class="page-link" href="#">@i</a></li>
+                }
+                <li class="page-item" data-typepage="Next"><a class="page-link" href="#">Next</a></li>
+            </ul>
+        </div>
+    </div>
+    }
+    </div>
+    </div>
+
+<script>
+
+    document.addEventListener('DOMContentLoaded', function() {
+        var loanIds = @Html.Raw(Json.Serialize(loanIds)); // Serializa la lista de IDs a JavaScript
+        loanIds.forEach(function(id) {
+            fnBuscarEstudiante(id); // Llama a la función para cada ID
+        });
+    });
+
+    function fnBuscarEstudiante(id) {
+        // AJAX
+        $.ajax({
+            method: 'POST',
+            url: '@Url.Action("BuscarEstudianteId", "Loans")',
+            data: { id: id },
+            datatype: 'json',
+            success: function (lista) {
+                var studentCode = lista.studentCode;
+
+                if(studentCode === ""){
+                    $('.tdStudentCode_' + id).text("No disponible");
+                }
+                else{
+                    $('.tdStudentCode_' + id).text(studentCode);
+                }
+
+                
+            },
+            error: function (error) {
+                alert("Error: " + error.statusText);
+            }
+        });
+    }
+
+
+    // Función para redirigir y restablecer el valor seleccionado inicial
+        function redirigirYRestablecer() {
+            var select = document.getElementById('selectRedireccion');
+            var selectedOption = select.value; // Obtiene el valor de la opción seleccionada
+            // Define la URL de redirección según la opción seleccionada
+            var redirectUrl = '';
+            switch (selectedOption) {
+                case 'opcion0':
+                       redirectUrl = '/Loans';
+                       break;
+                case 'opcion1':
+                    redirectUrl = '/Loans/Status2Loans';
+                    break;
+                case 'opcion2':
+                    redirectUrl = '/Loans/LoansDelite';
+                    break;
+                // Agrega más casos según sea necesario
+            }
+            if (redirectUrl !== '') {
+                // Redirige al usuario a la URL correspondiente
+                window.location.href = redirectUrl;
+            }
+            // Restablece el valor seleccionado inicial
+            select.selectedIndex = 0; // 0 representa el índice de la opción inicial
+        }
+        // Agrega un evento 'change' al select para redirigir y restablecer
+        document.getElementById('selectRedireccion').addEventListener('change', redirigirYRestablecer);
+</script>
+

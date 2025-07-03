@@ -1,0 +1,69 @@
+@model Library.DataAccess.Domain.Users
+
+@{
+    ViewData["Title"] = "Admin Login";
+    ViewBag.IsLogin = true;
+
+
+}
+
+<div class="d-flex justify-content-center align-items-center" style="min-height: 100vh; background-color: #ffffffee;">
+    <div class="card shadow-lg p-4 rounded-4" style="max-width: 450px; width: 100%; background-color: #ffffffee;">
+        <div class="text-center mb-4">
+            <img src="~/img/esfe.png" alt="Logo" style="max-height: 80px;">
+        </div>
+        <h2 class="text-center mb-4">Iniciar Sesión</h2>
+        <form asp-action="LoginAdmin" method="post">
+            <div asp-validation-summary="ModelOnly" class="alert alert-danger d-none" role="alert"></div>
+
+            <div class="mb-3">
+                <label asp-for="USER_NAME" class="form-label">
+                    <i class="bi bi-person-fill me-2"></i>Nombre de Usuario:
+                </label>
+                <input asp-for="USER_NAME" class="form-control rounded-pill" placeholder="Ingrese su nombre de usuario" />
+                <span asp-validation-for="USER_NAME" class="text-danger"></span>
+            </div>
+
+            <div class="mb-3">
+                <label asp-for="PASSWORD_HASH" class="form-label">
+                    <i class="bi bi-lock-fill me-2"></i>Contraseña:
+                </label>
+                <div class="input-group">
+                    <input type="password" asp-for="PASSWORD_HASH" class="form-control rounded-pill" placeholder="Ingrese su contraseña" id="PASSWORD_HASH" />
+                    <button class="btn btn-outline-secondary" type="button" id="togglePassword">
+                        <i class="fa fa-eye"></i>
+                    </button>
+                </div>
+                <span asp-validation-for="PASSWORD_HASH" class="text-danger"></span>
+            </div>
+
+            <div class="d-grid">
+                <button type="submit" class="btn btn-primary rounded-pill fw-bold">Iniciar Sesión</button>
+            </div>
+
+            <span class="text-danger mt-3 d-block text-center">@ViewBag.Error</span>
+        </form>
+    </div>
+</div>
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+    <script>
+        document.getElementById('togglePassword').addEventListener('click', function () {
+            const passwordInput = document.getElementById('PASSWORD_HASH');
+            const icon = this.querySelector('i');
+
+            if (passwordInput.type === 'password') {
+                passwordInput.type = 'text';
+                icon.classList.remove('fa-eye');
+                icon.classList.add('fa-eye-slash');
+            } else {
+                passwordInput.type = 'password';
+                icon.classList.remove('fa-eye-slash');
+                icon.classList.add('fa-eye');
+            }
+        });
+    </script>
+}

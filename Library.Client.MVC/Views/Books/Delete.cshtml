@@ -1,0 +1,123 @@
+﻿@model Library.DataAccess.Domain.Books
+
+@{
+    ViewData["Title"] = "Eliminar libro";
+}
+
+<style>
+    body {
+        overflow-x: hidden;
+        background-color: #f8f9fa;
+    }
+
+    .delete-card {
+        background: white;
+        border-radius: 15px;
+        box-shadow: 0 0 10px rgba(0,0,0,0.1);
+        padding: 30px;
+        margin-top: 40px;
+    }
+
+    dt {
+        color: #6c757d;
+    }
+
+    dd {
+        margin-bottom: 10px;
+    }
+
+    .detail-img {
+        width: 180px;
+        height: 250px;
+        object-fit: cover;
+        border-radius: 10px;
+        border: 1px solid #ccc;
+    }
+
+    .btn-group-custom {
+        display: flex;
+        justify-content: center;
+        gap: 15px;
+        margin-top: 30px;
+    }
+</style>
+
+<div class="container">
+    <div class="delete-card mx-auto col-md-10">
+        <h3 class="text-center text-danger">🗑️ Eliminar Libro</h3>
+        <p class="text-center fs-5 mb-4">¿Está seguro que desea eliminar el siguiente registro?</p>
+
+        <div class="row">
+            <div class="col-md-4 text-center">
+                @if (!string.IsNullOrEmpty(Model.COVER) && Model.COVER != "SinPortada")
+                {
+                    <img src="@Url.Content(Model.COVER)" alt="Portada" class="detail-img" />
+                }
+                else
+                {
+                    <p class="text-muted">Sin portada disponible</p>
+                }
+            </div>
+
+            <div class="col-md-8">
+                <dl class="row">
+                    <dt class="col-sm-4">ID:</dt>
+                    <dd class="col-sm-8">@Model.BOOK_ID</dd>
+
+                    <dt class="col-sm-4">Título:</dt>
+                    <dd class="col-sm-8">@Model.TITLE</dd>
+
+                    <dt class="col-sm-4">Autor:</dt>
+                    <dd class="col-sm-8">@Model.Authors?.AUTHOR_NAME</dd>
+
+                    <dt class="col-sm-4">Editorial:</dt>
+                    <dd class="col-sm-8">@Model.Editorials?.EDITORIAL_NAME</dd>
+
+                    <dt class="col-sm-4">Edición:</dt>
+                    <dd class="col-sm-8">@Model.Editions?.EDITION_NUMBER</dd>
+
+                    <dt class="col-sm-4">Año:</dt>
+                    <dd class="col-sm-8">@Model.YEAR</dd>
+
+                    <dt class="col-sm-4">Categoría:</dt>
+                    <dd class="col-sm-8">@Model.Categories?.CATEGORY_NAME</dd>
+
+                    <dt class="col-sm-4">Tipo Adquisición:</dt>
+                    <dd class="col-sm-8">@Model.AcquisitionTypes?.ACQUISITION_TYPE</dd>
+
+                    <dt class="col-sm-4">País:</dt>
+                    <dd class="col-sm-8">@Model.Countries?.COUNTRY_NAME</dd>
+
+                    <dt class="col-sm-4">Catálogo:</dt>
+                    <dd class="col-sm-8">@Model.Catalogs?.CATALOG_NAME</dd>
+
+                    <dt class="col-sm-4">Dewey:</dt>
+                    <dd class="col-sm-8">@Model.DEWEY</dd>
+
+                    <dt class="col-sm-4">Cuter:</dt>
+                    <dd class="col-sm-8">@Model.CUTER</dd>
+
+                    <dt class="col-sm-4">Existencias:</dt>
+                    <dd class="col-sm-8">@Model.EXISTENCES</dd>
+                </dl>
+            </div>
+        </div>
+
+        <form asp-action="Delete" class="btn-group-custom">
+            <input type="hidden" asp-for="BOOK_ID" />
+            <button type="submit" class="btn btn-danger">
+                <i class="bi bi-trash3 me-1"></i> Eliminar
+            </button>
+            <a asp-action="Index" class="btn btn-secondary">
+                <i class="bi bi-reply-fill me-1"></i> Cancelar
+            </a>
+        </form>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        document.querySelector('.main-content')?.classList.remove('with-menu');
+        document.querySelector('.main-content')?.classList.add('full-width');
+    </script>
+}

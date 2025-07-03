@@ -1,0 +1,131 @@
+﻿@model Library.DataAccess.Domain.Books
+
+@{
+    ViewData["Title"] = "Detalles del Libro";
+    Layout = "_LayoutP";
+}
+
+<style>
+    /* Imagen de portada más grande y responsiva */
+    .img-portada {
+        width: 100%;
+        max-width: 300px;
+        height: auto;
+        object-fit: cover;
+        border-radius: 10px;
+        border: 1px solid #ddd;
+    }
+
+    @@media (max-width: 768px) {
+        .img-portada
+
+    {
+        max-width: 100%;
+    }
+
+    .table th,
+    .table td {
+        font-size: 0.9rem;
+    }
+
+    .card-body {
+        padding: 1rem;
+    }
+
+    }
+</style>
+
+<div class="row">
+    <div class="col-md-12 grid-margin stretch-card">
+        <div class="card">
+            <div class="card-body">
+                <h4 class="card-title text-center mb-4">📘 Detalles del Libro</h4>
+
+                <div class="table-responsive">
+                    <table class="table table-bordered table-striped">
+                        <tbody>
+                            <tr>
+                                <th style="width: 30%;">ID</th>
+                                <td>@Model.BOOK_ID</td>
+                            </tr>
+                            <tr>
+                                <th>Título</th>
+                                <td>@Model.TITLE</td>
+                            </tr>
+                            <tr>
+                                <th>Autor</th>
+                                <td>@Model.Authors?.AUTHOR_NAME</td>
+                            </tr>
+                            <tr>
+                                <th>Editorial</th>
+                                <td>@Model.Editorials?.EDITORIAL_NAME</td>
+                            </tr>
+                            <tr>
+                                <th>Edición</th>
+                                <td>@Model.Editions?.EDITION_NUMBER</td>
+                            </tr>
+                            <tr>
+                                <th>Año</th>
+                                <td>@Model.YEAR</td>
+                            </tr>
+                            <tr>
+                                <th>Categoría</th>
+                                <td>@Model.Categories?.CATEGORY_NAME</td>
+                            </tr>
+                            <tr>
+                                <th>Tipo de adquisición</th>
+                                <td>@Model.AcquisitionTypes?.ACQUISITION_TYPE</td>
+                            </tr>
+                            <tr>
+                                <th>País</th>
+                                <td>@Model.Countries?.COUNTRY_NAME</td>
+                            </tr>
+                            <tr>
+                                <th>Catálogo</th>
+                                <td>@Model.Catalogs?.CATALOG_NAME</td>
+                            </tr>
+                            <tr>
+                                <th>Dewey</th>
+                                <td>@Model.DEWEY</td>
+                            </tr>
+                            <tr>
+                                <th>Cuter</th>
+                                <td>@Model.CUTER</td>
+                            </tr>
+                            <tr>
+                                <th>Ejemplares</th>
+                                <td>@Model.EJEMPLARS</td>
+                            </tr>
+                            <tr>
+                                <th>Existencias</th>
+                                <td>@Model.EXISTENCES</td>
+                            </tr>
+                            <tr>
+                                <th>Portada</th>
+                                <td class="text-center">
+                                    @if (!string.IsNullOrEmpty(Model.COVER) && Model.COVER != "SinPortada")
+                                    {
+                                        <img src="@Url.Content(Model.COVER)" alt="Portada" class="img-portada" />
+                                    }
+                                    else
+                                    {
+                                        <span class="text-muted">Sin portada disponible</span>
+                                    }
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <div class="text-center mt-4">
+                    <a href="@Url.Action("Edit", new { id = Model.BOOK_ID })" class="btn btn-warning mr-2">
+                        <i class="mdi mdi-pencil"></i> Editar
+                    </a>
+                    <a href="@Url.Action("Index")" class="btn btn-secondary">
+                        <i class="mdi mdi-arrow-left"></i> Regresar
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

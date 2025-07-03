@@ -1,0 +1,176 @@
+﻿@*
+    For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
+*@
+@{
+      ViewBag.ShowNavbar = false;
+}
+<html>
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="/Biblioteca/Content/PagedList.css" rel="stylesheet" />
+    <META HTTP-EQUIV="CACHE-CONTROL" CONTENT="NO-CACHE">
+    <!-- Recarga la pagina si se preciona el boton atras-->
+
+</head>
+<body>
+@*    <nav class="navbar navbar-expand-lg navbar-light" style="background-color: #172A51;">
+        <a class="navbar-brand text-white" href="#">Biblioteca ESFE/AGAPE.  &nbsp; &nbsp; </a>
+        <button class="navbar-toggler bg-primary" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon "></span>
+        </button>
+
+        <div class="collapse navbar-collapse" id="navbarSupportedContent">
+            <ul class="navbar-nav mr-auto">
+                <li class="nav-item active">
+                    <button class="btn btn-outline-light mb-2" data-toggle="button" aria-pressed="false" autocomplete="off" type="button" onclick="location.href='/Library/Libros'">
+                        Inicio
+                    </button>
+                </li>
+                <li class="nav-item">
+                    <a href='@Url.Action("Contacto","Home")' class="btn btn-outline-light mb-2" data-toggle="button" aria-pressed="false" autocomplete="off" type="button">
+                        Contacto
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href='@Url.Action("Reglamento","Home")' class="btn btn-outline-light mb-2" data-toggle="button" aria-pressed="false" autocomplete="off" type="button">
+                        Reglamento
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href='@Url.Action("Identificarse","Home")' class="btn btn-outline-light mb-2" data-toggle="button" aria-pressed="false" autocomplete="off" type="button">
+                        Identificarse
+                    </a>
+                </li>
+            </ul>
+        </div>
+    </nav>*@
+    <div class="container body-content">
+
+
+        <br />
+
+        <form action="/Library/?class=form-signin" method="post">
+            <table class="table">
+                <tbody>
+                    <tr>
+                        <th scope="row"></th>
+                        <td colspan="3" class="text-lg-center">
+                            <img src="~/img/imagen3.jpg" />
+                        </td>
+                    </tr>
+                    <tr>
+                        <th scope="row"></th>
+                        <td colspan="2">
+                            <div class="form-label-group">
+                                <label for="exampleInputEmail1">Dirección de correo electrónico.</label>
+                                <input type="text" name="us" class="form-control" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="Ingresa tu correo institucional.">
+                                <small id="emailHelp" class="form-text text-muted">
+                                    Ingresa tu correo institucional - Nunca compartiremos su correo electrónico con nadie más.
+                                </small>
+                            </div>
+                        </td>
+                        <td></td>
+                    </tr>
+                    <tr>
+                        <th scope="row"></th>
+                        <td colspan="2">
+                            <div class="form-label-group">
+                                <label for="exampleInputPassword1">Contraseña.</label>
+                                <input type="password" name="pw" class="form-control" id="exampleInputPassword1" placeholder="Ingresa tu contraseña">
+                            </div>
+                        </td>
+                        <td></td>
+                    </tr>
+                    <tr>
+                        <th scope="row"></th>
+                        <td colspan="3">
+                            <button type="submit" class="btn btn-primary">Acceder</button>
+                        </td>
+                    </tr>
+                    <tr>
+                        <th scope="row"></th>
+                        <td colspan="3" class="text-lg-center">
+                            <img src="~/img/imagen4.jpg" />
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </form>
+
+        <style>
+            .titulo {
+                font-family: Cambria;
+                color: lightslategray;
+            }
+        </style>
+        <div class="row">
+            <div class="col-md-4">
+                <h2 class="titulo">Escuela Superior Franciscana Especializada/AGAPE</h2>
+                <p style="font-size: 20px; font-family: Calibri, sans-serif;">
+                    La Escuela Superior Franciscana Especializada/Agape (ESFE/AGAPE),
+                    es una Institución de Educación Superior dedicada a la formación
+                    de Profesionales Técnicos en las áreas de Ingeniería Eléctrica,
+                    Ingeniería de Desarrollo de Software y Gestión y Desarrollo Turístico,
+                    brindamos servicios de capacitación, cursos y diplomados, dirigidos a
+                    trabajadores de empresas y público en general, además nuestra Escuela
+                    de Idiomas ofrece servicios educativos en los niveles básico, intermedio
+                    y avanzado del idioma inglés para niños, jóvenes y adultos.
+                </p>
+                <p><a class="btn btn-default" href="https://www.esfe.agape.edu.sv/">Ir al sitio &raquo;</a></p>
+            </div>
+            <div class="col-md-4">
+                <h2 class="titulo">Ubicacion</h2>
+                <p style="font-size: 20px; font-family: Calibri, sans-serif;">Km. 63 Carretera San Salvador - Sonsonate El Salvador, CentroAmérica</p>
+                <p><a class="btn btn-default" href="biblioteca.esfe@agape.edu.sv ">Correo de biblioteca &raquo;</a></p>
+            </div>
+            <div class="col-md-4">
+                <h2 class="titulo">Misión</h2>
+                <p style="font-size: 20px; font-family: Calibri, sans-serif;">
+
+                    Formar profesionales con responsabilidad ciudadana,
+                    con pensamiento crítico, con sensibilidad a la investigación y
+                    al desarrollo tecnológico, a través de un proceso educativo
+                    planificado en un enfoque por competencias que integra aspectos
+                    académicos, procedimentales, y actitudinales, fortalecidos con
+                    un sistema de gestión de calidad con el apoyo del estado, haciendo
+                    uso de recursos educacionales y tecnológicos para promover el desarrollo socio económico del país.
+                </p>
+                <h2 class="titulo">Visión</h2>
+                <p style="font-size: 20px; font-family: Calibri, sans-serif;">
+                    Ser una institución educativa referente en la formación de profesionales
+                    en áreas tecnológicas con competencias para la vida y el trabajo,
+                    con sensibilidad humana; que se incorporen responsablemente al
+                    desarrollo social y productivo del país.
+                </p>
+
+            </div>
+        </div>
+
+
+        <hr />
+        <footer>
+            <p>&copy; 2023 - ESFE/AGAPE Derechos reservados</p>
+        </footer>
+    </div>
+
+    <script src="/Biblioteca/bundles/jquery?v=0PSxSATRfwmC3UKqb4XzgT664Vc1CmfXKc6x8JRqw0o1"></script>
+
+    <script src="/Biblioteca/bundles/bootstrap?v=3d0fNIYkZyZhjPnAaV6BNdFh0X38QAAD0VUcy8ywn5E1"></script>
+
+    <div class="modal fade bd-example-modal-sm" id="myModalC" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-sm" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body" id="myModal">
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

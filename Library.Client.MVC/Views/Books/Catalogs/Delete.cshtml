@@ -1,0 +1,29 @@
+﻿@model Library.DataAccess.Domain.Catalogs
+
+@{
+    ViewData["Title"] = "Delete";
+}
+
+<h1>ELIMINAR</h1>
+
+<h3>Esta seguro que desea eliminar el registro?</h3>
+<div>
+    <h4>Catalogs</h4>
+    <hr />
+    <dl class="row">
+        <dt class = "col-sm-2">
+            @Html.DisplayNameFor(model => model.CATALOG_ID)
+        </dt>
+        <dd class = "col-sm-10">
+            @Html.DisplayFor(model => model.CATALOG_ID)
+        </dd>
+        <dt class = "col-sm-2">
+            @Html.DisplayNameFor(model => model.CATALOG_NAME)
+        </dt>
+    </dl>
+    
+    <form asp-action="Delete">  
+        <input type="submit" value="Eliminar" class="btn btn-danger" /> |
+        <a asp-action="Index" class="btn btn-secondary">Regresar</a>
+    </form>
+</div>

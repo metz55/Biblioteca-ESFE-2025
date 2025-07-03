@@ -1,0 +1,74 @@
+﻿@model Library.DataAccess.Domain.Countries
+
+@{
+    ViewData["Title"] = "Editar País";
+}
+
+<style>
+    .edit-card {
+        max-width: 600px;
+        margin: 50px auto;
+        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+        border-radius: 20px;
+        overflow: hidden;
+        background: #ffffff;
+    }
+
+    .edit-header {
+        background: linear-gradient(135deg, #3b82f6, #06b6d4);
+        padding: 20px;
+        color: white;
+        text-align: center;
+    }
+
+        .edit-header h2 {
+            margin: 0;
+            font-weight: bold;
+            font-size: 1.8rem;
+        }
+
+    .edit-body {
+        padding: 30px;
+    }
+
+    .btn i {
+        font-size: 1.2rem;
+    }
+</style>
+
+<div class="edit-card">
+    <div class="edit-header">
+        <h2>✏️ Editar País</h2>
+    </div>
+    <div class="edit-body">
+        <form asp-action="Edit">
+            <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
+            <input asp-for="COUNTRY_ID" type="hidden" />
+
+            <div class="form-group mb-4">
+                <label asp-for="COUNTRY_NAME" class="form-label fw-semibold">Nombre del País</label>
+                <input asp-for="COUNTRY_NAME" class="form-control" placeholder="Ej. El Salvador" />
+                <span asp-validation-for="COUNTRY_NAME" class="text-danger"></span>
+            </div>
+
+            <div class="d-flex justify-content-center gap-4">
+                <button type="submit" class="btn btn-success px-4 d-flex align-items-center">
+                    <i class="bi bi-floppy me-2"></i> Guardar
+                </button>
+                <a asp-action="Index" class="btn btn-secondary px-4 d-flex align-items-center">
+                    <i class="bi bi-reply-fill me-2"></i> Regresar
+                </a>
+            </div>
+        </form>
+    </div>
+</div>
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+    <script>
+        document.querySelector('.main-content')?.classList.remove('with-menu');
+        document.querySelector('.main-content')?.classList.add('full-width');
+    </script>
+}
