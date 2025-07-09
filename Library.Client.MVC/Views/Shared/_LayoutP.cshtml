@@ -123,22 +123,62 @@
 </head>
 
 @{
-        var isLogin = ViewBag.IsLogin as bool? ?? false;
+            var isLogin = ViewBag.IsLogin as bool? ?? false;
+            var isAdmin = User.Identity.IsAuthenticated && User.IsInRole("Administrador");
 }
 
 <body>
     @if (!isLogin)
     {
+
+        @if (User.Identity.IsAuthenticated)
+        {
+            <nav class="navbar navbar-expand p-0" style="height: 60px; z-index: 1040;">
+                <!-- Barra azul a la izquierda -->
+                <div style="background-color: #264DFF; width: 270px; height: 60px;" class="d-flex align-items-center justify-content-center">
+                    <a class="navbar-brand d-flex align-items-center text-white" href="#" style="font-weight: bold;">
+                        <img src="~/assets/images/logo.svg" alt="Logo" style="height: 32px; margin-right: 10px;">
+                    </a>
+                </div>
+                <!-- Barra blanca al resto -->
+                <div class="flex-grow-1 d-flex align-items-center justify-content-between px-4" style="background: #fff; height: 60px;">
+                    <!-- Teléfono alineado a la izquierda -->
+                    <div class="d-flex align-items-center">
+                        <i class="mdi mdi-phone text-primary me-2"></i>
+                        <span class="fw-bold text-dark">Help: +650 2992 709</span>
+                    </div>
+                    <!-- Buscador centrado -->
+                    <form id="navbarSearch" class="mx-4 flex-grow-1" style="max-width: 400px;" onsubmit="return goToView(event)">
+                        <div class="input-group input-group-sm">
+                            <input type="text" class="form-control" id="searchView" placeholder="Buscar vista..." aria-label="Buscar vista">
+                            <button class="btn btn-outline-primary" type="submit">
+                                <i class="mdi mdi-magnify"></i>
+                            </button>
+                        </div>
+                    </form>
+                    <!-- Usuario y logout alineados a la derecha -->
+                    <div class="d-flex align-items-center">
+                        <img src="~/assets/images/faces/face1.jpg" alt="User" class="rounded-circle" style="height:32px; width:32px; object-fit:cover; margin-right:10px;">
+                        <span class="text-dark me-4">@User.Identity.Name</span>
+                        <form id="logoutForm" asp-controller="Auth" asp-action="Logout" method="post" class="m-0">
+                            <button type="submit" class="btn btn-outline-primary btn-sm" style="margin-left: 20px;">
+                                Cerrar sesión
+                            </button>
+                        </form>
+                    </div>
+                </div>
+            </nav>
+        }
+
         <div class="container-scroller">
             <!-- Contenedor general -->
             <div class="container-fluid page-body-wrapper">
-                <!-- Menú lateral solo si es administrador -->
-                @if (User.Identity.IsAuthenticated)
+                <!-- Menú lateral SIEMPRE para Administrador -->
+                @if (isAdmin)
                 {
-                    if (User.IsInRole("Administrador") && (ViewBag.ShowMenu == true || ViewBag.ShowMenu == null))
-                    {
+                    <nav class="sidebar">
                         @Html.Partial("_Menu")
-                    }
+                    </nav>
                 }
 
                 <!-- Contenido principal -->
@@ -176,6 +216,29 @@
     <!-- Validación -->
     <script src="https://cdn.jsdelivr.net/npm/jquery-validation@1.19.5/dist/jquery.validate.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/jquery-validation-unobtrusive@3.2.13/dist/jquery.validate.unobtrusive.min.js"></script>
+    <script>
+        function goToView(event) {
+            event.preventDefault();
+            var view = document.getElementById('searchView').value.trim().toLowerCase();
+
+            var views = {
+                      "ediciones": "/Editions/Index",
+                      "editoriales": "/Editorials/Index",
+                      "libros": "/Books/Index",
+                      "categorias de blog": "/Postscategories/Index",
+                      "prestamos": "/Loans/Index",
+                      "tipos de prestamos": "/LoanTypes/Index"
+            };
+
+            if (views[view]) {
+                window.location.href = views[view];
+            } else {
+                alert("Vista no encontrada. Intenta con otro nombre.");
+            }
+            return false;
+        }
+    </script>
+
 
     <!-- Otros plugins que usamos -->
     <script src="https://unpkg.com/easymde/dist/easymde.min.js"></script>
