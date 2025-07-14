@@ -133,5 +133,18 @@ namespace Library.Client.MVC.Controllers
                 return View(pEditions);
             }
         }
+
+        [HttpGet]
+        public async Task<IActionResult> Search(string nombre)
+        {
+            var lista = await editionsBL.GetEditionsAsync(new Editions { EDITION_NUMBER = nombre });
+            var resultado = lista.Select(e => new
+            {
+                editionId = e.EDITION_ID,
+                editionNumber = e.EDITION_NUMBER
+            });
+            return Json(resultado);
+        }
+
     }
 }

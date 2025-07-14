@@ -207,6 +207,11 @@
                              Estado del Préstamo
                         </a>
                     </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#" id="redireccionStatusLoan">
+                            Prestamos Finalizados
+                        </a>
+                    </li>
                 </ul>
             </div>
         </li>
@@ -254,9 +259,10 @@
 
 
 
-    <script>
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
         const redirectionMap = {
-        redireccionHome: '/Admin/Index',
+            redireccionHome: '/Admin/Index',
             redireccionBooks: '/Books/Index',
             redireccionBlog: '/Posts/Manage',
             redireccionBlogCategories: '/PostsCategories/Index',
@@ -271,18 +277,23 @@
             redireccionListaLoans: '/Loans/Index',
             redireccionEsLoan: '/ReservationStatus/Index',
             redireccionTipoLoan: '/LoanTypes/Index',
+            redireccionStatusLoan: '/Loans/Status2Loans',
+            redirectionStudent: '/Auth/Student',
             redireccionUser: '/User/Index'
         };
 
         Object.keys(redirectionMap).forEach(id => {
             const element = document.getElementById(id);
             if (element) {
-                element.addEventListener('click', () => {
+                element.addEventListener('click', function (e) {
+                    e.preventDefault();
                     window.location.href = redirectionMap[id];
                 });
             }
         });
-    </script>
+    });
+</script>
+
 
     <script src="https://code.jquery.com/jquery-3.1.1.slim.min.js" integrity="sha384-A7FZj7v+d/sdmMqp/nOQwliLvUsJfDHW+k9Omg/a/EheAdgtzNs3hpfag6Ed950n" crossorigin="anonymous"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/tether/1.4.0/js/tether.min.js" integrity="sha384-DztdAPBWPRXSA/3eYEEUWrWCy7G5KFbe8fFjk5JAIxUYHKkDx6Qin1DkWx51bBrb" crossorigin="anonymous"></script>

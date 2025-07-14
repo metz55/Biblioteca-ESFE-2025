@@ -3,9 +3,15 @@
     ViewData["Title"] = "Create";
     List<Library.DataAccess.Domain.Users_Roles> roles = ViewBag.Users_Roles as List<Library.DataAccess.Domain.Users_Roles>;
 }
-<div class="card">
+<style>
+    #contenedor-principal {
+        border-radius: 1rem;
+    }
+
+</style>
+<div class="card" id="contenedor-principal">
     <div class="card-body">
-<h1 class="text-center">CREAR NUEVO USUARIO</h1>
+        <h1 class="text-center" style="padding:15px; font-family: 'Poppins', sans-serif; font-weight: 600;">Crear nuevo Usuario</h1>
 <hr />
 <form asp-action="Create" class="container">
     <div asp-validation-summary="ModelOnly" class="text-danger"></div>

@@ -133,5 +133,26 @@ namespace Library.Client.MVC.Controllers
                 return View(pCountries);
             }
         }
+
+        [HttpGet]
+        public async Task<IActionResult> Search(string nombre)
+        {
+            var filtro = new Countries
+            {
+                COUNTRY_NAME = nombre,
+                Top_Aux = 20 // o el número que prefieras
+            };
+
+            var lista = await countriesBL.GetCountriesAsync(filtro);
+
+            var resultados = lista.Select(p => new
+            {
+                id = p.COUNTRY_ID,
+                nombre = p.COUNTRY_NAME
+            });
+
+            return Json(resultados);
+        }
+
     }
 }
