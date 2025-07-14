@@ -1,8 +1,9 @@
-﻿using Microsoft.AspNetCore.Mvc;
-using System.Drawing.Drawing2D;
+﻿using Library.BusinessRules;
 using Library.DataAccess.Domain;
-using Library.BusinessRules;
+using Library.DataAccess.Repositories;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
+using System.Drawing.Drawing2D;
 
 
 
@@ -261,5 +262,24 @@ namespace Library.Client.MVC.Controllers
 
             return Json(lista);
         }
+
+        [HttpGet]
+        public async Task<JsonResult> BuscarLibro(string titulo)
+        {
+            var libros = await DALBooks.GetBooksByTitleAsync(titulo);
+
+            // Proyección para evitar problemas de serialización y enviar solo datos necesarios
+            var resultado = libros.Select(b => new
+            {
+                booK_ID = b.BOOK_ID,
+                title = b.TITLE,
+                authorName = b.Authors != null ? b.Authors.AUTHOR_NAME : "N/A",
+                editorialName = b.Editorials != null ? b.Editorials.EDITORIAL_NAME : "N/A"
+            }).ToList();
+
+            return Json(resultado);
+        }
+
+
     }
 }

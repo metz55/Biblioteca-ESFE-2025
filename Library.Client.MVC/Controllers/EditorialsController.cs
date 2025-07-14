@@ -138,5 +138,25 @@ namespace Library.Client.MVC.Controllers
                 return View(pEditorials);
             }
         }
+
+        [HttpGet]
+        public async Task<IActionResult> Search(string nombre)
+        {
+            var editorial = new Editorials
+            {
+                EDITORIAL_NAME = nombre,
+                Top_Aux = 10
+            };
+
+            var lista = await editorialsBL.GetEditorialsAsync(editorial);
+
+            var resultado = lista.Select(x => new {
+                editorialId = x.EDITORIAL_ID,
+                editorialName = x.EDITORIAL_NAME
+            });
+
+            return Json(resultado);
+        }
+
     }
 }

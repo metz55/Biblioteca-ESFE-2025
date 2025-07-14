@@ -28,12 +28,14 @@
     <link rel="stylesheet" href="~/Library.Client.MVC.styles.css" asp-append-version="true" />
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
     <link rel="stylesheet" href="https://unpkg.com/easymde/dist/easymde.min.css">
+    <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
 
-    <style>
+
+   <style>
         html, body {
             height: 100%;
             margin: 0;
-            overflow-x: hidden; /* Evita desbordamiento horizontal */
+            overflow-x: hidden;
             font-family: 'Segoe UI', sans-serif;
             background-color: #f5f7fa;
         }
@@ -41,25 +43,44 @@
         .container-scroller,
         .container-fluid,
         .page-body-wrapper,
-        .main-panel,
         .content-wrapper {
             max-width: 100%;
             overflow-x: hidden;
             box-sizing: border-box;
         }
 
+        .item-purchase-banner {
+            display: none !important;
+        }
+
         .sidebar {
+            position: fixed;
+            top: 20px;
+            left: 0;
+            width: 270px;
+            height: 100vh;
             background-color: #003366;
-            min-height: 100vh;
             color: white;
             padding: 20px 0;
+            box-sizing: border-box;
+            overflow-y: auto;
+            transition: transform 0.4s ease, opacity 0.4s ease;
+            transform: translateX(0);
+            opacity: 1;
+            z-index: 1030;
+            scrollbar-width: none;
+            -ms-overflow-style: none;
         }
+
+            .sidebar::-webkit-scrollbar {
+                display: none;
+            }
 
             .sidebar .nav-link {
                 color: #ffffff;
                 font-size: 16px;
                 padding: 12px 25px;
-                transition: 0.3s;
+                transition: background-color 0.3s, padding-left 0.3s;
             }
 
                 .sidebar .nav-link:hover {
@@ -110,16 +131,69 @@
                 flex-wrap: wrap;
             }
 
-        .sidebar .nav .nav-item .nav-link {
-            font-size: 1rem; /* Tamaño base como el principal */
-            font-weight: 600;
-        }
-
+        .sidebar .nav .nav-item .nav-link,
         .sidebar .sub-menu .nav-link {
-            font-size: 1rem !important; /* Igual que el principal */
+            font-size: 1rem;
             font-weight: 600 !important;
         }
-    </style>
+
+        .sidebar-hidden .sidebar {
+            transform: translateX(-100%);
+            opacity: 0;
+            pointer-events: none;
+        }
+
+        .main-panel {
+            margin-top: 60px;
+            margin-left: 270px;
+            transition: margin-left 0.4s ease, width 0.4s ease;
+            box-sizing: border-box;
+        }
+
+        .sidebar-hidden .main-panel {
+            margin-left: 0;
+            width: 100%;
+        }
+
+        .btn-white {
+            background-color: white;
+            color: #264DFF;
+            border: none;
+            box-shadow: none;
+        }
+
+            .btn-white:hover, .btn-white:focus {
+                background-color: #e6e6e6;
+                color: #264DFF;
+            }
+
+        #proBanner {
+            display: none !important;
+        }
+
+        @@media (max-width: 768px) {
+            .navbar .d-md-none
+
+        {
+            margin-left: auto;
+        }
+
+        #mobileToggleBtn {
+            margin-left: auto;
+        }
+
+        #mobileNav {
+            text-align: right;
+        }
+
+            #mobileNav .d-flex {
+                justify-content: end !important;
+            }
+
+        }
+</style>
+
+
 </head>
 
 @{
@@ -127,47 +201,84 @@
             var isAdmin = User.Identity.IsAuthenticated && User.IsInRole("Administrador");
 }
 
-<body>
+<body class="sidebar-hidden">
     @if (!isLogin)
     {
 
         @if (User.Identity.IsAuthenticated)
         {
-            <nav class="navbar navbar-expand p-0" style="height: 60px; z-index: 1040;">
+            <!-- NAVBAR -->
+            <nav class="navbar navbar-expand p-0" style="position: fixed; top: 0; width: 100%; height: 60px; z-index: 1040;">
                 <!-- Barra azul a la izquierda -->
                 <div style="background-color: #264DFF; width: 270px; height: 60px;" class="d-flex align-items-center justify-content-center">
-                    <a class="navbar-brand d-flex align-items-center text-white" href="#" style="font-weight: bold;">
+                    <!-- Botón para toggle menú lateral -->
+                    <button id="toggleSidebarBtn" class="btn btn-white btn-sm me-2" type="button" style="border: none; box-shadow: none;">
+                        <i class="mdi mdi-menu" style="color: #264DFF; font-size: 20px;"></i>
+                    </button>
+
+                    <a class="navbar-brand d-flex align-items-center text-white" href="#" style="font-weight: bold; margin-left: 25px;">
                         <img src="~/assets/images/logo.svg" alt="Logo" style="height: 32px; margin-right: 10px;">
                     </a>
                 </div>
+
                 <!-- Barra blanca al resto -->
                 <div class="flex-grow-1 d-flex align-items-center justify-content-between px-4" style="background: #fff; height: 60px;">
-                    <!-- Teléfono alineado a la izquierda -->
-                    <div class="d-flex align-items-center">
-                        <i class="mdi mdi-phone text-primary me-2"></i>
-                        <span class="fw-bold text-dark">Help: +650 2992 709</span>
-                    </div>
-                    <!-- Buscador centrado -->
-                    <form id="navbarSearch" class="mx-4 flex-grow-1" style="max-width: 400px;" onsubmit="return goToView(event)">
-                        <div class="input-group input-group-sm">
-                            <input type="text" class="form-control" id="searchView" placeholder="Buscar vista..." aria-label="Buscar vista">
-                            <button class="btn btn-outline-primary" type="submit">
-                                <i class="mdi mdi-magnify"></i>
-                            </button>
-                        </div>
-                    </form>
-                    <!-- Usuario y logout alineados a la derecha -->
-                    <div class="d-flex align-items-center">
-                        <img src="~/assets/images/faces/face1.jpg" alt="User" class="rounded-circle" style="height:32px; width:32px; object-fit:cover; margin-right:10px;">
-                        <span class="text-dark me-4">@User.Identity.Name</span>
-                        <form id="logoutForm" asp-controller="Auth" asp-action="Logout" method="post" class="m-0">
-                            <button type="submit" class="btn btn-outline-primary btn-sm" style="margin-left: 20px;">
-                                Cerrar sesión
-                            </button>
+                    <!-- CONTENIDO EN ESCRITORIO -->
+                    <div class="d-none d-md-flex align-items-center w-100 justify-content-between">
+                        <!-- Buscador -->
+                        <form id="navbarSearch" class="mx-4 flex-grow-1" style="max-width: 400px;" onsubmit="return goToView(event)">
+                            <div class="input-group input-group-sm">
+                                <input type="text" class="form-control" id="searchView" placeholder="Buscar vista..." aria-label="Buscar vista">
+                                <button class="btn btn-outline-primary" type="submit">
+                                    <i class="mdi mdi-magnify"></i>
+                                </button>
+                            </div>
                         </form>
+
+                        <!-- Usuario y logout -->
+                        <div class="d-flex align-items-center">
+                            <img src="~/assets/images/faces/face1.jpg" alt="User" class="rounded-circle" style="height:32px; width:32px; object-fit:cover; margin-right:10px;">
+                            <span class="text-dark me-4">@User.Identity.Name</span>
+                            <form id="logoutForm" asp-controller="Auth" asp-action="Logout" method="post" class="m-0">
+                                <button type="submit" class="btn btn-outline-primary btn-sm" style="margin-left: 20px;">
+                                    Cerrar sesión
+                                </button>
+                            </form>
+                        </div>
+                    </div>
+
+                    <!-- BOTÓN PARA MÓVIL -->
+                    <div class="d-flex d-md-none align-items-center">
+                        <button class="btn btn-outline-primary btn-sm" type="button" id="mobileToggleBtn" aria-expanded="false">
+                            <i class="mdi mdi-menu-down"></i>
+                        </button>
                     </div>
                 </div>
             </nav>
+
+            <!-- CONTENIDO RESPONSIVO SOLO MÓVIL -->
+            <div class="collapse d-md-none px-3 py-2" id="mobileNav" style="background: #ffffff; margin-top: 60px;">
+                <!-- Buscador móvil -->
+                <form id="navbarSearchMobile" class="mb-2" onsubmit="return goToView(event)">
+                    <div class="input-group input-group-sm">
+                        <input type="text" class="form-control" id="searchViewMobile" placeholder="Buscar vista..." aria-label="Buscar vista">
+                        <button class="btn btn-outline-primary" type="submit">
+                            <i class="mdi mdi-magnify"></i>
+                        </button>
+                    </div>
+                </form>
+
+                <!-- Usuario y logout móvil -->
+                <div class="d-flex align-items-center">
+                    <img src="~/assets/images/faces/face1.jpg" alt="User" class="rounded-circle" style="height:32px; width:32px; object-fit:cover; margin-right:10px;">
+                    <span class="text-dark me-3">@User.Identity.Name</span>
+                    <form id="logoutFormMobile" asp-controller="Auth" asp-action="Logout" method="post" class="m-0">
+                        <button type="submit" class="btn btn-outline-primary btn-sm">
+                            Cerrar sesión
+                        </button>
+                    </form>
+                </div>
+            </div>
         }
 
         <div class="container-scroller">
@@ -238,6 +349,45 @@
             return false;
         }
     </script>
+  
+    <!-- Script para hacer colapsar el menú móvil -->
+    <script>
+        const mobileToggleBtn = document.getElementById('mobileToggleBtn');
+        const mobileNav = document.getElementById('mobileNav');
+
+        // Al cargar: verificar si estaba abierto
+        if (localStorage.getItem('mobileMenuState') === 'open') {
+            mobileNav.classList.add('show');
+            mobileToggleBtn.setAttribute('aria-expanded', 'true');
+        } else {
+            mobileNav.classList.remove('show');
+            mobileToggleBtn.setAttribute('aria-expanded', 'false');
+        }
+
+        // Al hacer clic: alternar y guardar estado
+        mobileToggleBtn.addEventListener('click', () => {
+            const isExpanded = mobileNav.classList.toggle('show');
+            mobileToggleBtn.setAttribute('aria-expanded', isExpanded);
+            localStorage.setItem('mobileMenuState', isExpanded ? 'open' : 'closed');
+        });
+    </script>
+
+    <script>
+        // Al cargar la página: revisar si el usuario ya lo había abierto
+        if (localStorage.getItem('sidebarState') === 'open') {
+            document.body.classList.remove('sidebar-hidden');
+        } else {
+            document.body.classList.add('sidebar-hidden');
+        }
+
+        // Al hacer clic en el botón: alternar visibilidad y guardar estado
+        document.getElementById('toggleSidebarBtn').addEventListener('click', function () {
+            document.body.classList.toggle('sidebar-hidden');
+            const isHidden = document.body.classList.contains('sidebar-hidden');
+            localStorage.setItem('sidebarState', isHidden ? 'closed' : 'open');
+        });
+    </script>
+
 
 
     <!-- Otros plugins que usamos -->

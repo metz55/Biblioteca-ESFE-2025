@@ -16,70 +16,115 @@
     .spacer {
         margin-right: 20px;
     }
+
+    #contenedor-principal {
+        border-radius: 1rem;
+    }
+
+    #btn-create {
+        transition: all 0.3s ease;
+    }
+
+        #btn-create:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 6px 15px rgba(0, 0, 0, 0.2);
+        }
+
+    @@media (max-width: 768px) {
+        .spacer {
+            margin-right: 0 !important;
+            margin-bottom: 10px;
+        }
+
+        #contenedor-principal {
+            padding: 10px;
+        }
+
+        #btn-create {
+            width: 100%;
+            margin-bottom: 15px;
+        }
+
+        .form-responsive {
+            flex-direction: column;
+            align-items: stretch;
+        }
+
+        table.table td, table.table th {
+            font-size: 14px;
+            white-space: nowrap;
+        }
+    }
 </style>
 
-<div class="card">
+<div class="card" id="contenedor-principal">
     <div class="card-body">
-        <h1>USUARIOS</h1>
+        <h1 style="padding:15px; font-family: 'Poppins', sans-serif; font-weight: 600; margin-left: -15px;">Usuarios</h1>
 
-        <div class="d-flex justify-content-between align-items-center">
-            <a asp-action="Create" class="btn btn-success">
-                <i class="bi bi-plus-square"></i> Crear Nuevo
-            </a>
+        <div class="row g-2 mb-3 align-items-center">
+            <div class="col-12 col-md-auto">
+                <a asp-action="Create" class="btn btn-success w-100" id="btn-create">
+                    <i class="bi bi-plus-square"></i> Crear Nuevo
+                </a>
+            </div>
 
-            <form asp-action="Index" class="d-flex">
-                <div class="spacer">
-                    <input type="text" placeholder="Nombre de usuario" class="form-control" name="USER_NAME" />
-                </div>
-                <div class="spacer d-flex align-items-center">
-                    <label class="control-label me-2">Top</label>
-                    <select name="top_aux" class="form-control">
-                        @foreach (var item in tops)
-                        {
-                            string strItem = item != -1 ? item.ToString() : "Todos";
-                            string selected = item == topActual ? "selected" : "";
-                            <option value="@item" selected="@selected">@strItem</option>
-                        }
-                    </select>
-                </div>
-                <div class="spacer">
-                    <button id="search-button" type="submit" class="btn btn-info">Buscar</button>
-                </div>
-            </form>
+            <div class="col">
+                <form asp-action="Index" class="row g-2 align-items-center form-responsive">
+                    <div class="col-12 col-md-auto">
+                        <input type="text" placeholder="Nombre de usuario" class="form-control" name="USER_NAME" />
+                    </div>
+                    <div class="col-12 col-md-auto d-flex align-items-center">
+                        <label class="control-label me-2 mb-0">Top</label>
+                        <select name="top_aux" class="form-control">
+                            @foreach (var item in tops)
+                            {
+                                string strItem = item != -1 ? item.ToString() : "Todos";
+                                string selected = item == topActual ? "selected" : "";
+                                <option value="@item" selected="@selected">@strItem</option>
+                            }
+                        </select>
+                    </div>
+                    <div class="col-12 col-md-auto">
+                        <button id="search-button" type="submit" class="btn btn-info w-100">Buscar</button>
+                    </div>
+                </form>
+            </div>
         </div>
 
         <hr />
 
-        <table class="table" id="customers">
-            <thead>
-                <tr>
-                    <th>@Html.DisplayNameFor(model => model.USER_NAME)</th>
-                    <th>@Html.DisplayNameFor(model => model.ROlE_ID)</th>
-                    <th>@Html.DisplayNameFor(model => model.CREATED_AT)</th>
-                    <th>Acciones</th>
-                </tr>
-            </thead>
-            <tbody>
-                @foreach (var item in Model)
-                {
+        <div class="table-responsive">
+            <table class="table" id="customers">
+                <thead>
                     <tr>
-                        <td>@item.USER_NAME</td>
-                        <td>@item.Users_Roles?.ROLE</td>
-                        <td>@item.CREATED_AT.ToString("yyyy-MM-dd")</td>
-                        <td>
-                            <a href="@Url.Action("Edit", new { id = item.USER_ID })" class="btn btn-warning">
-                                <i class="bi bi-pencil-square"></i> Editar
-                            </a>
-                            <a href="@Url.Action("Details", new { id = item.USER_ID })" class="btn btn-info">
-                                <i class="bi bi-eye"></i> Detalles
-                            </a>
-                            <a href="@Url.Action("Delete", new { id = item.USER_ID })" class="btn btn-danger">
-                                <i class="bi bi-trash3"></i> Eliminar
-                            </a>
-                        </td>
+                        <th class="borIz">@Html.DisplayNameFor(model => model.USER_NAME)</th>
+                        <th>@Html.DisplayNameFor(model => model.ROlE_ID)</th>
+                        <th>@Html.DisplayNameFor(model => model.CREATED_AT)</th>
+                        <th class="borDer">Acciones</th>
                     </tr>
-                }
-            </tbody>
-        </table>
+                </thead>
+                <tbody>
+                    @foreach (var item in Model)
+                    {
+                        <tr>
+                            <td>@item.USER_NAME</td>
+                            <td>@item.Users_Roles?.ROLE</td>
+                            <td>@item.CREATED_AT.ToString("yyyy-MM-dd")</td>
+                            <td>
+                                <a href="@Url.Action("Edit", new { id = item.USER_ID })" class="btn btn-warning">
+                                    <i class="bi bi-pencil-square"></i> Editar
+                                </a>
+                                <a href="@Url.Action("Details", new { id = item.USER_ID })" class="btn btn-info">
+                                    <i class="bi bi-eye"></i> Detalles
+                                </a>
+                                <a href="@Url.Action("Delete", new { id = item.USER_ID })" class="btn btn-danger">
+                                    <i class="bi bi-trash3"></i> Eliminar
+                                </a>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
     </div>
 </div>

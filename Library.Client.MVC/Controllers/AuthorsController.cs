@@ -138,5 +138,26 @@ namespace Library.Client.MVC.Controllers
                 return View(pAuthors);
             }
         }
+
+        [HttpGet]
+        public async Task<IActionResult> Search(string nombre)
+        {
+            var filtro = new Authors
+            {
+                AUTHOR_NAME = nombre,
+                Top_Aux = 20 // Puedes ajustar el límite de resultados si deseas
+            };
+
+            var lista = await authorsBL.GetAuthorsAsync(filtro);
+
+            var resultados = lista.Select(a => new
+            {
+                id = a.AUTHOR_ID,
+                nombre = a.AUTHOR_NAME
+            });
+
+            return Json(resultados);
+        }
+
     }
 }

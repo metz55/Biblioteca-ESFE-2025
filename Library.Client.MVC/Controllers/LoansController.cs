@@ -287,6 +287,7 @@ namespace Library.Client.MVC.Controllers
         }
 
 
+        [HttpGet]
         public async Task<JsonResult> BuscarEstudiante(string codigo)
         {
             List<Student> StudentList = new List<Student>();
@@ -298,19 +299,22 @@ namespace Library.Client.MVC.Controllers
                     using (var response = await httpClient.GetAsync($"http://190.242.151.49/esfeapi/ra/student/code/{codigo}"))
                     {
                         string apiResponse = await response.Content.ReadAsStringAsync();
-                        var student = JsonSerializer.Deserialize<Student>(apiResponse, new JsonSerializerOptions { PropertyNameCaseInsensitive = true});
-                        StudentList.Add(student);
+                        var student = JsonSerializer.Deserialize<Student>(apiResponse, new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
+                        if (student != null)
+                        {
+                            StudentList.Add(student);
+                        }
                     }
                 }
                 catch
                 {
-                    Console.WriteLine("Error trying to connect API");
+                    // Manejo de error
                 }
-                
             }
 
             return Json(StudentList);
         }
+
 
 
         public async Task<JsonResult> BuscarEstudianteId(long id)

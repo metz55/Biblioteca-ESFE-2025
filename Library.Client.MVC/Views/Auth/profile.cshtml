@@ -2,7 +2,7 @@
 @using System.Security.Claims
 
 @{
-    ViewData["Title"] = User.Identity.Name ?? "Perfil de Estudiante";
+    ViewData["Title"] = User.Identity.Name ?? "Student";
 
     // Obtener los datos del usuario a partir de las claims
     var userClaims = User.Identity as ClaimsIdentity;

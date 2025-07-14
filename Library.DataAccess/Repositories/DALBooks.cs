@@ -18,7 +18,7 @@ namespace Library.DataAccess.Repositories
             using (var dbContext = new DBContext())
             {
                 // Mapear CoverImagePath a la columna COVER en la base de datos
-                
+
                 pBooks.COVER = pBooks.CoverImagePath;
 
                 dbContext.Add(pBooks);
@@ -49,7 +49,7 @@ namespace Library.DataAccess.Repositories
                 books.TITLE = pBooks.TITLE;
                 books.YEAR = pBooks.YEAR;
                 books.EXISTENCES = pBooks.EXISTENCES;
-                if(pBooks.COVER != null)
+                if (pBooks.COVER != null)
                     books.COVER = pBooks.COVER;
                 dbContext.Update(books);
                 result = await dbContext.SaveChangesAsync();
@@ -139,7 +139,7 @@ namespace Library.DataAccess.Repositories
             using (var dbContext = new DBContext())
             {
                 var select = dbContext.Books.AsQueryable();
-                select = QuerySelect(select, pBooks).Include(e=>e.Categories).AsQueryable();
+                select = QuerySelect(select, pBooks).Include(e => e.Categories).AsQueryable();
                 books = await select.ToListAsync();
             }
             return books;
@@ -166,5 +166,20 @@ namespace Library.DataAccess.Repositories
 
         }
         #endregion
+
+        public static async Task<List<Books>> GetBooksByTitleAsync(string titulo)
+        {
+            using (var dbContext = new DBContext())
+            {
+                var libros = await dbContext.Books
+                    .Include(b => b.Authors)
+                    .Include(b => b.Editorials)
+                    .Where(b => !string.IsNullOrEmpty(b.TITLE) && b.TITLE.Contains(titulo))
+                    .ToListAsync();
+
+                return libros;
+            }
+        }
+
     }
 }

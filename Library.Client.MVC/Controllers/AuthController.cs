@@ -214,4 +214,29 @@ public class AuthController : Controller
         return View(loans);
     }
 
+    [HttpGet]
+    public async Task<IActionResult> Student()
+    {
+        var isAuthenticated = HttpContext.User.Identity.AuthenticationType == "UserScheme";
+
+        if (!isAuthenticated)
+        {
+            return RedirectToAction("Login", "Auth");
+        }
+
+        var userClaims = User.Identity as ClaimsIdentity;
+        string code = userClaims?.FindFirst("CodigoEstudiante")?.Value ?? string.Empty;
+
+        if (string.IsNullOrEmpty(code))
+        {
+            return RedirectToAction("Login", "Auth");
+        }
+
+        var (loans, loansDates) = await _loanService.GetStudentLoans(code);
+        ViewBag.LoanDates = loansDates;
+
+        return View("Profile", loans); // usa la vista Profile.cshtml
+    }
+
+
 }
