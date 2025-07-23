@@ -327,12 +327,22 @@ namespace Library.Client.MVC.Controllers
                 {
                     string apiResponse = await response.Content.ReadAsStringAsync();
                     student = JsonSerializer.Deserialize<Student>(apiResponse, new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
-                    //StudentList.Add(student);
                 }
             }
-            //List<Books> lista = await booksBL.GetBooksAsync(pBooks);
-            return Json(student);
+
+            if (student != null)
+            {
+                return Json(new
+                {
+                    studentCode = student.StudentCode,
+                    fullName = $"{student.StudentName} {student.StudentLastName}",
+                    career = student.Career?.CareerName ?? "Desconocido"
+                });
+            }
+
+            return Json(new { studentCode = "No disponible", fullName = "", career = "" });
         }
+
 
         // GET: BooksController/Edit/5
         public async Task<IActionResult> Delite(long id)
@@ -364,6 +374,41 @@ namespace Library.Client.MVC.Controllers
                 ViewBag.Error = ex.Message;
                 return View(pLoans);
             }
+        }
+
+        [HttpGet]
+        public async Task<JsonResult> PrestamosPorTipo()
+        {
+            var prestamos = await loansBL.GetAllLoansAsync();
+            var tipos = await loansTypesBL.GetAllLoanTypesAsync();
+
+            var resultado = prestamos
+                .GroupBy(p => p.ID_TYPE)
+                .Select(g => new
+                {
+                    Tipo = tipos.FirstOrDefault(t => t.TYPES_ID == g.Key)?.TYPES_NAME ?? "Desconocido",
+                    Cantidad = g.Count()
+                }).ToList();
+
+            return Json(resultado);
+        }
+
+        [HttpGet]
+        public async Task<JsonResult> PrestamosPorSemestre()
+        {
+            var prestamos = await loansBL.GetAllLoansAsync();
+            var currentYear = DateTime.Now.Year;
+
+            int ciclo1 = prestamos.Count(p => p.REGISTRATION_DATE.Year == currentYear && p.REGISTRATION_DATE.Month >= 1 && p.REGISTRATION_DATE.Month <= 6);
+            int ciclo2 = prestamos.Count(p => p.REGISTRATION_DATE.Year == currentYear && p.REGISTRATION_DATE.Month >= 7 && p.REGISTRATION_DATE.Month <= 12);
+
+            var resultado = new[]
+            {
+              new { ciclo = "Ciclo 1", cantidad = ciclo1 },
+              new { ciclo = "Ciclo 2", cantidad = ciclo2 }
+            };
+
+            return Json(resultado);
         }
 
 

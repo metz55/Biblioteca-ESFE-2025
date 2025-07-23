@@ -105,6 +105,8 @@
 
   *@
 
+<link rel="stylesheet" href="~/css/SideBar.css" />
+
 <!-- partial:../../partials/_sidebar.html -->
 <nav class="sidebar" id="sidebar">
     <ul class="nav">
@@ -186,7 +188,7 @@
         </li>
         <li class="nav-item">
             <a class="nav-link" href="#" id="redireccionListaLoans">
-               <span class="menu-title">Préstamo</span>
+               <span class="menu-title">Préstamos</span>
             </a>
         </li>
 
@@ -210,6 +212,11 @@
                     <li class="nav-item">
                         <a class="nav-link" href="#" id="redireccionStatusLoan">
                             Prestamos Finalizados
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#" id="redireccionLDelite">
+                            Prestamos Eliminados
                         </a>
                     </li>
                 </ul>
@@ -246,13 +253,13 @@
             </a>
         </li>
 
-        <div class="mt-auto p-3">
+        @*<div class="mt-auto p-3">
             <form asp-controller="Auth" asp-action="LogoutAdmin" method="post" class="w-100">
                 <button type="submit" class="btn btn-outline-danger btn-block d-flex align-items-center justify-content-center gap-2" style="font-weight: 600; border-width: 2px;">
                     <span>Salir del Sistema</span>
                 </button>
             </form>
-        </div>
+        </div>*@
     </ul>
 </nav>
 
@@ -279,7 +286,8 @@
             redireccionTipoLoan: '/LoanTypes/Index',
             redireccionStatusLoan: '/Loans/Status2Loans',
             redirectionStudent: '/Auth/Student',
-            redireccionUser: '/User/Index'
+            redireccionUser: '/User/Index',
+            redireccionLDelite: '/Loans/LoansDelite'
         };
 
         Object.keys(redirectionMap).forEach(id => {

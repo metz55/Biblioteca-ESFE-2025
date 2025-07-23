@@ -97,7 +97,7 @@ public class LoanService
             var date = await _loansDatesBL.GetExpiredDatesByIdLoanAsync(new Loans(){LOAN_ID = loan.LOAN_ID});
             Categories categories = await _categoriesBL.GetCategoriesByIdAsync(new Categories { CATEGORY_ID = loan.Books.ID_CATEGORY });
             ExpiredLoansDates.AddRange(date);
-            // ExpiredLoans[ExpiredLoans.IndexOf(loan)].Books.Categories = categories;
+            ExpiredLoans[ExpiredLoans.IndexOf(loan)].Books.Categories = categories;
             
         }
     
@@ -145,7 +145,7 @@ public class LoanService
                         emailMessage = $"{student.StudentName}, el plazo de devolución de su libro \"{loan.Books.TITLE}\" venció {d} La mora ha aumentado $0.50 centavos. Mora a pagar: ${mora}";
                     }
                 }
-                // Console.WriteLine(emailMessage);
+                 Console.WriteLine(emailMessage);
                 EmailDTO emailDto = new EmailDTO
                 {
                     Message = emailMessage,
@@ -196,7 +196,7 @@ public class LoanService
                 {
                     emailMessage = $"{student.StudentName}, la devolución de tu libro prestado, \"{loan.Books.TITLE}\" debes realizarla dentro de {dias + 1} días.";
                 }
-                // Console.WriteLine(emailMessage);
+                Console.WriteLine(emailMessage);
                 EmailDTO emailDto = new EmailDTO
                 {
                     Message = emailMessage,

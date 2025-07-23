@@ -3,12 +3,30 @@
 @{
     ViewData["Title"] = "Admin Login";
     ViewBag.IsLogin = true;
-
-
 }
 
-<div class="d-flex justify-content-center align-items-center" style="min-height: 100vh; background-image: url('@Url.Content("~/images/blog/Libreria7.jpg")'); background-size: cover; background-position: center; background-repeat: no-repeat;">
-    <div class="card shadow-lg p-4 rounded-4" style="max-width: 450px; width: 100%; background-color: #dcdcdcee; border-radius: 1rem;">
+<style>
+    @@keyframes fadeInUp {
+        0%
+
+    {
+        opacity: 0;
+        transform: translateY(30px);
+    }
+
+    100% {
+        opacity: 1;
+        transform: translateY(0);
+    }
+    }
+
+    .animate-login {
+        animation: fadeInUp 0.8s ease-out both;
+    }
+</style>
+
+<div class="d-flex justify-content-center align-items-center" style="min-height: 100vh; background-color: #E0E0E0; background-size: cover; background-position: center; background-repeat: no-repeat;">
+    <div class="card shadow-lg p-4 rounded-4 animate-login" style="max-width: 450px; width: 100%; background-color: #dcdcdcee; border-radius: 1rem;">
         <div class="text-center mb-4">
             <img src="~/img/ESFE Logo-02.png" alt="Logo" style="max-height: 100px;">
         </div>
@@ -30,7 +48,7 @@
                 </label>
                 <div class="input-group">
                     <input type="password" asp-for="PASSWORD_HASH" class="form-control rounded-pill" placeholder="Ingrese su contraseña" id="PASSWORD_HASH" />
-                    <button class="btn btn-outline-secondary" type="button" id="togglePassword">
+                    <button type="button" id="togglePassword" style="border: none; background: transparent; box-shadow: none;">
                         <i class="fa fa-eye"></i>
                     </button>
                 </div>
@@ -47,9 +65,8 @@
 </div>
 
 @section Scripts {
-    @{
-        await Html.RenderPartialAsync("_ValidationScriptsPartial");
-    }
+    @await Html.PartialAsync("_ValidationScriptsPartial")
+
     <script>
         document.getElementById('togglePassword').addEventListener('click', function () {
             const passwordInput = document.getElementById('PASSWORD_HASH');
@@ -67,5 +84,6 @@
         });
     </script>
 }
+
 
             

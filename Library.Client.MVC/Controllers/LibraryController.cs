@@ -100,13 +100,14 @@ namespace Library.Client.MVC.Controllers
                 if (telefono != null && tipoPrestamo > 0)
                 {
                     var cantidadPrestamosPorEst = reservations
-                   .Select(async reservation => await loansBL.GetLoansAsync(new Loans { ID_LENDER = idLender, ID_RESERVATION = reservation, STATUS = true }))
-                   .Select(task => task.Result.Count)
-                   .Sum();
+                       .Select(async reservation => await loansBL.GetLoansAsync(new Loans { ID_LENDER = idLender, ID_RESERVATION = reservation, STATUS = true }))
+                       .Select(task => task.Result.Count)
+                       .Sum();
 
                     if (cantidadPrestamosPorEst < 1)
                     {
-                        if (cantidadPrestamos < books.EJEMPLARS && books.EXISTENCES > 1)
+                        // Cambié aquí EXISTENCES > 1 a EXISTENCES > 0
+                        if (cantidadPrestamos < books.EJEMPLARS && books.EXISTENCES > 0)
                         {
                             pLoans.LENDER_CONTACT = telefono;
                             pLoans.ID_BOOK = id;
@@ -127,78 +128,20 @@ namespace Library.Client.MVC.Controllers
                         else
                         {
                             ViewBag.Alerta2 = "No hay suficientes ejemplares para realizar el registro";
-                            ViewBag.LoanTypes = await loanTypesBL.GetAllLoanTypesAsync();
-
-                            var editorial = await editorialsBL.GetEditorialsByIdAsync(new Editorials { EDITORIAL_ID = books.ID_EDITORIAL });
-                            var categoria = await categoriesBL.GetCategoriesByIdAsync(new Categories { CATEGORY_ID = books.ID_CATEGORY });
-                            var authors = await authorsBL.GetAuthorsByIdAsync(new Authors { AUTHOR_ID = books.ID_AUTHOR });
-
-                            ViewBag.Editorial = editorial.EDITORIAL_NAME;
-                            ViewBag.Categoria = categoria.CATEGORY_NAME;
-                            ViewBag.Autor = authors.AUTHOR_NAME;
-                            ViewBag.Imagen = books.COVER;
-                            ViewBag.Titulo = books.TITLE;
-                            ViewBag.Year = books.YEAR;
                         }
                     }
                     else
                     {
-                        ViewBag.AlertaPrestamoEx = "No se puede realizar el registro porque ya cuenta con un prestamo o reservación pendiente o activo";
-                        ViewBag.LoanTypes = await loanTypesBL.GetAllLoanTypesAsync();
-
-                        var editorial = await editorialsBL.GetEditorialsByIdAsync(new Editorials { EDITORIAL_ID = books.ID_EDITORIAL });
-                        var categoria = await categoriesBL.GetCategoriesByIdAsync(new Categories { CATEGORY_ID = books.ID_CATEGORY });
-                        var authors = await authorsBL.GetAuthorsByIdAsync(new Authors { AUTHOR_ID = books.ID_AUTHOR });
-
-                        ViewBag.Editorial = editorial.EDITORIAL_NAME;
-                        ViewBag.Categoria = categoria.CATEGORY_NAME;
-                        ViewBag.Autor = authors.AUTHOR_NAME;
-                        ViewBag.Imagen = books.COVER;
-                        ViewBag.Titulo = books.TITLE;
-                        ViewBag.Year = books.YEAR;
+                        ViewBag.AlertaPrestamoEx = "No se puede realizar el registro porque ya cuenta con un préstamo o reservación pendiente o activo";
                     }
-
                 }
                 else
                 {
-                    ViewBag.LoanTypes = await loanTypesBL.GetAllLoanTypesAsync();
-
-                    var editorial = await editorialsBL.GetEditorialsByIdAsync(new Editorials { EDITORIAL_ID = books.ID_EDITORIAL });
-                    var categoria = await categoriesBL.GetCategoriesByIdAsync(new Categories { CATEGORY_ID = books.ID_CATEGORY });
-                    var authors = await authorsBL.GetAuthorsByIdAsync(new Authors { AUTHOR_ID = books.ID_AUTHOR });
-
-                    ViewBag.Editorial = editorial.EDITORIAL_NAME;
-                    ViewBag.Categoria = categoria.CATEGORY_NAME;
-                    ViewBag.Autor = authors.AUTHOR_NAME;
-                    ViewBag.Imagen = books.COVER;
-                    ViewBag.Titulo = books.TITLE;
-                    ViewBag.Year = books.YEAR;
-                    ViewBag.Alerta = "Por favor ingrese los datos del Prestamo";
+                    ViewBag.Alerta = "Por favor ingrese los datos del Préstamo";
                 }
-                if (result > 0 )
-                {
-                    ViewBag.LoanTypes = await loanTypesBL.GetAllLoanTypesAsync();
 
-                    var editorial = await editorialsBL.GetEditorialsByIdAsync(new Editorials { EDITORIAL_ID = books.ID_EDITORIAL });
-                    var categoria = await categoriesBL.GetCategoriesByIdAsync(new Categories { CATEGORY_ID = books.ID_CATEGORY });
-                    var authors = await authorsBL.GetAuthorsByIdAsync(new Authors { AUTHOR_ID = books.ID_AUTHOR });
-
-                    ViewBag.Editorial = editorial.EDITORIAL_NAME;
-                    ViewBag.Categoria = categoria.CATEGORY_NAME;
-                    ViewBag.Autor = authors.AUTHOR_NAME;
-                    ViewBag.Imagen = books.COVER;
-                    ViewBag.Titulo = books.TITLE;
-                    ViewBag.Year = books.YEAR;
-                    TempData["Alerta"] = "La reservación se registro exitosamente!!";
-                }
-                return View();
-            }
-            catch (Exception ex)
-            {
-                var books = await booksBL.GetBooksByIdAsync(new Books { BOOK_ID = id });
-
+                // Cargar datos comunes para vista en cualquier caso
                 ViewBag.LoanTypes = await loanTypesBL.GetAllLoanTypesAsync();
-
                 var editorial = await editorialsBL.GetEditorialsByIdAsync(new Editorials { EDITORIAL_ID = books.ID_EDITORIAL });
                 var categoria = await categoriesBL.GetCategoriesByIdAsync(new Categories { CATEGORY_ID = books.ID_CATEGORY });
                 var authors = await authorsBL.GetAuthorsByIdAsync(new Authors { AUTHOR_ID = books.ID_AUTHOR });
@@ -209,11 +152,35 @@ namespace Library.Client.MVC.Controllers
                 ViewBag.Imagen = books.COVER;
                 ViewBag.Titulo = books.TITLE;
                 ViewBag.Year = books.YEAR;
-                ViewBag.Alerta = "Por favor ingrese los datos del Prestamo";
+
+                if (result > 0)
+                {
+                    TempData["Alerta"] = "La reservación se registró exitosamente!!";
+                }
+
+                return View();
+            }
+            catch (Exception ex)
+            {
+                var books = await booksBL.GetBooksByIdAsync(new Books { BOOK_ID = id });
+                ViewBag.LoanTypes = await loanTypesBL.GetAllLoanTypesAsync();
+                var editorial = await editorialsBL.GetEditorialsByIdAsync(new Editorials { EDITORIAL_ID = books.ID_EDITORIAL });
+                var categoria = await categoriesBL.GetCategoriesByIdAsync(new Categories { CATEGORY_ID = books.ID_CATEGORY });
+                var authors = await authorsBL.GetAuthorsByIdAsync(new Authors { AUTHOR_ID = books.ID_AUTHOR });
+
+                ViewBag.Editorial = editorial.EDITORIAL_NAME;
+                ViewBag.Categoria = categoria.CATEGORY_NAME;
+                ViewBag.Autor = authors.AUTHOR_NAME;
+                ViewBag.Imagen = books.COVER;
+                ViewBag.Titulo = books.TITLE;
+                ViewBag.Year = books.YEAR;
+                ViewBag.Alerta = "Por favor ingrese los datos del Préstamo";
                 ViewBag.Error = ex.Message;
+
                 return View(pBooks);
             }
         }
-        
+
+
     }
 }

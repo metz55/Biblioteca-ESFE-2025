@@ -11,14 +11,100 @@
     List<Library.DataAccess.Domain.Categories> categories = ViewBag.Categories as List<Library.DataAccess.Domain.Categories>;
 }
 
+<style>
+    #contenedor-principal {
+        border-radius: 1rem;
+    }
+
+    .form-label {
+        font-weight: 600;
+    }
+
+    .form-control, select {
+        border-radius: 0.5rem;
+    }
+
+    .btn {
+        border-radius: 0.5rem;
+        transition: all 0.2s ease-in-out;
+    }
+
+        .btn:hover {
+            transform: scale(1.02);
+        }
+
+    .card h2 {
+        font-size: 1.5rem;
+        font-weight: 700;
+        color: #264DFF;
+        border-bottom: 2px solid #ccc;
+        padding-bottom: 0.5rem;
+    }
+
+    @@media (max-width: 576px) {
+        .btn-group-responsive
+
+    {
+        flex-direction: column !important;
+    }
+
+    .btn-group-responsive > * {
+        width: 100% !important;
+        margin-bottom: 0.5rem;
+    }
+
+    }
+
+     @@media (max-width: 576px) {
+        /* Hacer que los inputs no se vean tan juntos */
+        .row.mb-3 > div, .row.mb-4 > div
+
+    {
+        margin-bottom: 1rem;
+    }
+
+    /* Botones uno debajo de otro */
+    .d-flex.flex-wrap.justify-content-between {
+        flex-direction: column;
+        gap: 0.75rem !important;
+    }
+
+    .btn.flex-grow-1 {
+        width: 100%;
+    }
+
+    /* Ajuste de tablas en modales para que no se desborden */
+    .modal-body table {
+        font-size: 0.9rem;
+    }
+
+    }
+
+    @@media (min-width: 577px) and (max-width: 768px) {
+        /* Para pantallas tipo tablet, ajustes suaves */
+        .row.mb-3 > div, .row.mb-4 > div
+
+    {
+        margin-bottom: 0.75rem;
+    }
+
+    .btn.flex-grow-1 {
+        flex: 1 1 48%;
+    }
+
+    }
+
+
+</style>
+
 <div class="container mt-5">
     <div class="row justify-content-center">
         <div class="col-lg-8 col-md-10">
-            <div class="card shadow">
-                <div class="card-body">
+            <div class="card shadow" id="contenedor-principal">
+                <div class="card-body p-4">
                     <h2 class="text-center mb-4">CREAR NUEVO PRÉSTAMO</h2>
 
-                    @* ALERTAS *@
+                    @* ALERTAS*@
                     @if (TempData["Alerta"] != null)
                     {
                         <div class="alert alert-success">@TempData["Alerta"]</div>
@@ -79,7 +165,6 @@
                         </div>
 
                         <div class="row mb-4">
-                            <h5 class="text-center">Seleccionar Fechas de Préstamo</h5>
                             <div class="col-md-6">
                                 <label>Fecha de Inicio</label>
                                 <input type="date" class="form-control" id="fechaInicio" name="fechaInicio" />
@@ -90,17 +175,20 @@
                             </div>
                         </div>
 
-                        <div class="d-flex justify-content-between">
-                            <button type="submit" class="btn btn-success">
+                        <div class="d-flex flex-wrap justify-content-between mt-4" style="gap: 20px;">
+                            <button type="submit" class="btn btn-success flex-grow-1">
                                 Crear Préstamo
                             </button>
-                            <a asp-action="Index" class="btn btn-secondary">
+                            <a asp-action="Index" class="btn btn-secondary flex-grow-1">
                                 Regresar
                             </a>
-                            <button type="button" class="btn btn-info" data-bs-toggle="modal" data-bs-target="#mdlBuscarEstudiantes">
+                            <button type="button" class="btn btn-info flex-grow-1" data-bs-toggle="modal" data-bs-target="#mdlBuscarEstudiantes">
                                 Buscar Estudiante
                             </button>
                         </div>
+
+
+
                     </form>
 
                 </div>

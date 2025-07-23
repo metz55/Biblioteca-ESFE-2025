@@ -3,39 +3,362 @@
     ViewBag.ShowMenu = true;
     Layout = "_LayoutP";
 }
-<div class="card" style="background-color: white;">
-    
+
+<style>
+    .btn-exportar {
+        background-color: #0d6efd;
+        color: #fff;
+        border: none;
+        border-radius: 30px;
+        padding: 6px 18px;
+        font-size: 0.875rem;
+        font-weight: 500;
+        box-shadow: 0 3px 6px rgba(0, 0, 0, 0.15);
+        transition: background-color 0.3s ease, transform 0.2s ease;
+    }
+
+        .btn-exportar:hover {
+            background-color: #0b5ed7;
+            transform: translateY(-1px);
+        }
+
+        .btn-exportar i {
+            margin-right: 6px;
+        }
+</style>
+
+
+<div class="container mt-4">
+    <div class="container mt-4">
+        <div class="row">
+
+            <div class="col-md-6 grid-margin stretch-card">
+                <div class="card shadow-sm">
+                    <div class="card-body">
+                        <h4 class="card-title">Libros por Categoría</h4>
+                        @*<button onclick="exportarLibrosPorCategoria()" class="btn-exportar mb-2">
+                            <i class="bi bi-file-earmark-excel"></i> Exportar a Excel
+                        </button>*@
+                        <canvas id="graficaLibrosPorCategoria" height="200"></canvas>
+                    </div>
+                </div>
+            </div>
+
+
+            <!-- Préstamos por Tipo -->
+            <div class="col-md-6 mb-4">
+                <div class="card shadow-sm">
+                    <div class="card-body">
+                        <h4 class="card-title">Préstamos por Tipo</h4>
+                        @*<button onclick="exportarPrestamosPorTipo()" class="btn-exportar mb-2">
+                            <i class="bi bi-file-earmark-excel"></i> Exportar a Excel
+                        </button>*@
+                        <canvas id="graficaPorTipo" height="200"></canvas>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Préstamos por Semestre -->
+            <div class="col-md-6 mb-4 mt-4">
+                <div class="card shadow-sm">
+                    <div class="card-body">
+                        <h4 class="card-title">Préstamos por Ciclos</h4>
+                        @*<button onclick="exportarPrestamosPorSemestre()" class="btn-exportar mb-2">
+                            <i class="bi bi-file-earmark-excel"></i> Exportar a Excel
+                        </button>*@
+                        <canvas id="graficaPorSemestre" height="200"></canvas>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</div>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/exceljs/4.3.0/exceljs.min.js"></script>
+
 
     <script>
-        const redirectionMap = {
-            redireccionBooks: '/Books/Index',
-            redireccionBlog: '/Posts/Manage',
-            redireccionBlogCategories: '/PostsCategories/Index',
-            redireccionListaBook: '/Library/Index',
-            redireccionAutor: '/Authors/Index',
-            redireccionEditorial: '/Editorials/Index',
-            redireccionCiudad: '/Countries/Index',
-            redireccionEdicion: '/Editions/Index',
-            redirecionCatalogo: '/Catalogs/Index',
-            redirecionCategoria: '/Categories/Index',
-            redirecionTipoAd: '/AcquisitionTypes/Index',
-            redireccionListaLoans: '/Loans/Index',
-            redireccionEsLoan: '/ReservationStatus/Index',
-            redireccionTipoLoan: '/LoanTypes/Index',
-            redireccionUser: '/User/Index'
-        };
+                // ----------- FUNCIONES DE COLORES ----------
+        function generarColores(labels) {
+            const coloresBase = [
+                "rgba(255, 99, 132",   // rojo
+                "rgba(54, 162, 235",   // azul
+                "rgba(255, 206, 86",   // amarillo
+                "rgba(75, 192, 192",   // verde agua
+                "rgba(153, 102, 255",  // violeta
+                "rgba(255, 159, 64",   // naranja
+                "rgba(201, 203, 207"   // gris
+            ];
+            return labels.map((_, i) => {
+                const base = coloresBase[i % coloresBase.length];
+                return {
+                    background: `${base}, 0.6)`,
+                    border: `${base}, 1)`
+                };
+            });
+        }
 
-        Object.keys(redirectionMap).forEach(id => {
-            const element = document.getElementById(id);
-            if (element) {
-                element.addEventListener('click', () => {
-                    window.location.href = redirectionMap[id];
-                });
-            }
+    // ----------- Libros por Categoría -----------
+    fetch("/Books/LibrosPorCategoria")
+        .then(res => res.json())
+        .then(data => {
+            const labels = data.map(x => x.categoria);
+            const cantidades = data.map(x => x.cantidad);
+            const colores = generarColores(labels);
+
+            const ctxLibros = document.getElementById("graficaLibrosPorCategoria").getContext("2d");
+            window.graficaLibrosPorCategoria = new Chart(ctxLibros, {
+                type: "bar",
+                data: {
+                    labels: labels,
+                    datasets: [{
+                        label: "Libros por Categoría",
+                        data: cantidades,
+                        backgroundColor: colores.map(c => c.background),
+                        borderColor: colores.map(c => c.border),
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    indexAxis: 'y',             
+                    scales: {
+                        x: {
+                            beginAtZero: true,
+                            ticks: {
+                                stepSize: 1,
+                                precision: 0
+                            },
+                            title: { display: true, text: 'Cantidad de Libros' }
+                        },
+                        y: {
+                            title: { display: true, text: 'Categorías' }
+                        }
+                    },
+                    plugins: {
+                        legend: { display: false },
+                        tooltip: {
+                            callbacks: {
+                                label: function (context) {
+                                    return `${context.dataset.label}: ${context.parsed.x}`;
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+
+            document.getElementById("graficaLibrosPorCategoria").style.display = "block";
         });
-    </script>
 
-    <script src="https://code.jquery.com/jquery-3.1.1.slim.min.js" integrity="sha384-A7FZj7v+d/sdmMqp/nOQwliLvUsJfDHW+k9Omg/a/EheAdgtzNs3hpfag6Ed950n" crossorigin="anonymous"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/tether/1.4.0/js/tether.min.js" integrity="sha384-DztdAPBWPRXSA/3eYEEUWrWCy7G5KFbe8fFjk5JAIxUYHKkDx6Qin1DkWx51bBrb" crossorigin="anonymous"></script>
-    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-alpha.6/js/bootstrap.min.js" integrity="sha384-vBWWzlZJ8ea9aCX4pEW3rVHjgjt7zpkNpZk+02D9phzyeVkE+jo0ieGizqPLForn" crossorigin="anonymous"></script>
-</div>
+        // ----------- Préstamos por Tipo -----------
+        fetch("/Loans/PrestamosPorTipo")
+            .then(res => res.json())
+            .then(data => {
+                const labels = data.map(x => x.tipo);
+                const valores = data.map(x => x.cantidad);
+                const colores = generarColores(labels);
+
+                const ctxPrestamos = document.getElementById("graficaPorTipo").getContext("2d");
+                window.graficaPrestamosPorTipo = new Chart(ctxPrestamos, {
+                        type: "bar",
+                    data: {
+                        labels: labels,
+                        datasets: [{
+                            label: "Cantidad de Préstamos por Tipo",
+                            data: valores,
+                            backgroundColor: colores.map(c => c.background),
+                            borderColor: colores.map(c => c.border),
+                            borderWidth: 1,
+                            minBarLength: 5
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        scales: {
+                            y: {
+                                beginAtZero: true,
+                                ticks: { stepSize: 2, precision: 1 },
+                                title: { display: true, text: 'Cantidad' }
+                            }
+                        }
+                    }
+                });
+
+                document.getElementById("graficaPorTipo").style.display = "block";
+            });
+
+        // ----------- Préstamos por Semestre -----------
+        fetch("/Loans/PrestamosPorSemestre")
+            .then(res => res.json())
+            .then(data => {
+                const labels = data.map(x => x.ciclo);
+                const valores = data.map(x => x.cantidad);
+                const colores = generarColores(labels);
+
+                const ctxSemestre = document.getElementById("graficaPorSemestre").getContext("2d");
+                window.graficaPrestamosPorSemestre = new Chart(ctxSemestre, {
+                        type: "bar",
+                    data: {
+                        labels: labels,
+                        datasets: [{
+                            label: "Cantidad de Préstamos por Ciclo",
+                            data: valores,
+                            backgroundColor: colores.map(c => c.background),
+                            borderColor: colores.map(c => c.border),
+                            borderWidth: 1,
+                            minBarLength: 5
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        scales: {
+                            y: {
+                                beginAtZero: true,
+                                ticks: { stepSize: 1, precision: 1 },
+                                title: { display: true, text: 'Cantidad de Préstamos' }
+                            }
+                        },
+                        plugins: {
+                            legend: { display: false }
+                        }
+                    }
+                });
+
+                document.getElementById("graficaPorSemestre").style.display = "block";
+            });
+
+                function exportarExcel(nombreArchivo, nombreHoja, columnas, filas) {
+        const ws_data = [columnas, ...filas];
+        const ws = XLSX.utils.aoa_to_sheet(ws_data);
+        const wb = XLSX.utils.book_new();  
+        XLSX.utils.book_append_sheet(wb, ws, nombreHoja);
+        XLSX.writeFile(wb, `${nombreArchivo}.xlsx`);
+    }
+
+     @*
+     // Exportar Libros por Categoría
+        async function exportarLibrosPorCategoria() {
+        const canvas = document.getElementById("graficaLibrosPorCategoria");
+        const base64 = canvas.toDataURL("image/png");
+
+        const workbook = new ExcelJS.Workbook();
+        const hoja = workbook.addWorksheet("Libros por Categoría");
+
+        // Insertar encabezados
+        hoja.addRow(["Categoría", "Cantidad"]);
+
+        // Obtener los datos desde el gráfico
+        const labels = window.graficaLibrosPorCategoria.data.labels;
+        const data = window.graficaLibrosPorCategoria.data.datasets[0].data;
+
+        for (let i = 0; i < labels.length; i++) {
+            hoja.addRow([labels[i], data[i]]);
+        }
+
+        // Insertar la imagen (a partir de columna E)
+        const imageId = workbook.addImage({
+            base64: base64,
+            extension: 'png',
+        });
+
+        hoja.addImage(imageId, {
+            tl: { col: 3, row: 1 }, // Columna E (col=4 es E, col=3 es D)
+            ext: { width: 400, height: 300 }
+        });
+
+        // Descargar archivo
+        const buffer = await workbook.xlsx.writeBuffer();
+        const blob = new Blob([buffer], { type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" });
+
+        const link = document.createElement("a");
+        link.href = URL.createObjectURL(blob);
+        link.download = "LibrosPorCategoria.xlsx";
+        link.click();
+
+        URL.revokeObjectURL(link.href);
+    }
+
+
+    // Exportar Préstamos por Tipo
+    async function exportarPrestamosPorTipo() {
+        const canvas = document.getElementById("graficaPorTipo");
+        const base64 = canvas.toDataURL("image/png");
+
+        const workbook = new ExcelJS.Workbook();
+        const hoja = workbook.addWorksheet("Préstamos por Tipo");
+
+        // Insertar encabezados
+        hoja.addRow(["Tipo", "Cantidad"]);
+
+        // Obtener los datos desde el gráfico
+        const labels = window.graficaPrestamosPorTipo.data.labels;
+        const data = window.graficaPrestamosPorTipo.data.datasets[0].data;
+
+        for (let i = 0; i < labels.length; i++) {
+            hoja.addRow([labels[i], data[i]]);
+        }
+
+        // Insertar imagen
+        const imageId = workbook.addImage({
+            base64: base64,
+            extension: 'png',
+        });
+
+        hoja.addImage(imageId, {
+            tl: { col: 3, row: 1 },
+            ext: { width: 400, height: 300 }
+        });
+
+        const buffer = await workbook.xlsx.writeBuffer();
+        const blob = new Blob([buffer], { type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" });
+
+        const link = document.createElement("a");
+        link.href = URL.createObjectURL(blob);
+        link.download = "PrestamosPorTipo.xlsx";
+        link.click();
+        URL.revokeObjectURL(link.href);
+    }
+
+
+    // Exportar Préstamos por Semestre
+    async function exportarPrestamosPorSemestre() {
+        const canvas = document.getElementById("graficaPorSemestre");
+        const base64 = canvas.toDataURL("image/png");
+
+        const workbook = new ExcelJS.Workbook();
+        const hoja = workbook.addWorksheet("Préstamos por Ciclo");
+
+        hoja.addRow(["Ciclo", "Cantidad"]);
+
+        const labels = window.graficaPrestamosPorSemestre.data.labels;
+        const data = window.graficaPrestamosPorSemestre.data.datasets[0].data;
+
+        for (let i = 0; i < labels.length; i++) {
+            hoja.addRow([labels[i], data[i]]);
+        }
+
+        const imageId = workbook.addImage({
+            base64: base64,
+            extension: 'png',
+        });
+
+        hoja.addImage(imageId, {
+            tl: { col: 3, row: 1 },
+            ext: { width: 400, height: 300 }
+        });
+
+        const buffer = await workbook.xlsx.writeBuffer();
+        const blob = new Blob([buffer], { type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" });
+
+        const link = document.createElement("a");
+        link.href = URL.createObjectURL(blob);
+        link.download = "PrestamosPorCiclo.xlsx";
+        link.click();
+        URL.revokeObjectURL(link.href);
+    } 
+    *@
+
+
+</script>

@@ -280,6 +280,23 @@ namespace Library.Client.MVC.Controllers
             return Json(resultado);
         }
 
+        [HttpGet]
+        public async Task<JsonResult> LibrosPorCategoria()
+        {
+            var libros = await booksBL.GetIncludePropertiesAsync(new Books());
+
+            var resultado = libros
+                .Where(b => b.Categories != null)
+                .GroupBy(b => b.Categories.CATEGORY_NAME)
+                .Select(g => new
+                {
+                    categoria = g.Key,
+                    cantidad = g.Count()
+                }).ToList();
+
+            return Json(resultado);
+        }
+
 
     }
 }

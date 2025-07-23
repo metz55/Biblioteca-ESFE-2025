@@ -52,5 +52,31 @@ namespace Library.Client.MVC.Controllers
             return View(loans);
         }
 
+        [HttpGet]
+        public async Task<JsonResult> ReservacionesMensuales()
+        {
+            var resultado = await loansBL.GetAllLoansAsync();
+
+            var datos = resultado
+                .GroupBy(l => l.REGISTRATION_DATE.Month)
+                .Select(g => new
+                {
+                    mes = g.Key,
+                    cantidad = g.Count()
+                })
+                .OrderBy(x => x.mes)
+                .ToList();
+
+            var nombresMeses = new[] { "Ene", "Feb", "Mar", "Abr", "May", "Jun", "Jul", "Ago", "Sep", "Oct", "Nov", "Dic" };
+            var datosConNombres = datos.Select(d => new
+            {
+                mes = nombresMeses[d.mes - 1],
+                cantidad = d.cantidad
+            });
+
+            return Json(datosConNombres);
+        }
+
+
     }
 }

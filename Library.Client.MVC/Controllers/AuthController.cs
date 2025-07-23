@@ -186,7 +186,7 @@ public class AuthController : Controller
     {
         // Cerrar la sesión del admin
         await HttpContext.SignOutAsync("AdminScheme");
-        return RedirectToAction("Index", "Library");
+        return RedirectToAction("LoginAdmin", "Auth");
     }
 
     public async Task<IActionResult> Profile()
@@ -237,6 +237,4 @@ public class AuthController : Controller
 
         return View("Profile", loans); // usa la vista Profile.cshtml
     }
-
-
 }

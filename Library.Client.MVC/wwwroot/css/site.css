@@ -234,3 +234,10 @@ margin: 10px 0px 0px 260px;
         margin-left: 0 !important;
     }
 }
+
+@media (max-width: 768px) {
+    #mobileNav span.text-dark {
+        margin-right: 20px !important;
+    }
+}
+
