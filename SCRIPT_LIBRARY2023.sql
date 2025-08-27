@@ -162,7 +162,7 @@ INSERT INTO CATALOGS VALUES ('Software'),('Mercadeo'),('Turismo'),('El�ctrica'
 
 INSERT INTO LOAN_TYPES VALUES ('Local'),('Externo');
  
-INSERT INTO RESERVATION_STATUS VALUES ('Prestado'),('Devuelto'),('Reservado'),('Renovado'),('Cancelado');
+INSERT INTO RESERVATION_STATUS VALUES ('Prestado'),('Devuelto'),('Reservado'),('Renovado');
 
 INSERT INTO POSTS_CATEGORIES VALUES ('Noticias');
 
