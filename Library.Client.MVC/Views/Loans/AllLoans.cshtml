@@ -1,0 +1,168 @@
+﻿@model IEnumerable<Library.DataAccess.Domain.Loans>
+
+@using System.Text.Json
+@{
+    ViewData["Title"] = "Todos los Préstamos";
+    Layout = "_LayoutP";
+    var loanIds = new List<long>();
+}
+
+<style>
+    body {
+        overflow-x: hidden;
+    }
+
+    #contenedor-principal {
+        border-radius: 1rem;
+    }
+
+    #btn-create {
+        transition: all 0.3s ease;
+    }
+
+        #btn-create:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 6px 15px rgba(0, 0, 0, 0.2);
+        }
+
+    @@media (max-width: 768px) {
+        .form-busqueda {
+            flex-direction: column !important;
+            align-items: stretch !important;
+        }
+
+        .table-responsive {
+            overflow-x: auto;
+        }
+
+        table.table td,
+        table.table th {
+            font-size: 14px;
+            white-space: nowrap;
+        }
+
+        #btnExportarExcel {
+            width: 100% !important;
+            margin-bottom: 15px;
+            background-color: #10B981;
+        }
+    }
+
+    #btnExportarExcel {
+        transition: all 0.3s ease;
+    }
+
+        #btnExportarExcel:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 6px 15px rgba(0, 0, 0, 0.2);
+        }
+</style>
+
+<div class="card" id="contenedor-principal">
+    <div class="card-body">
+        <h1 style="font-family: 'Poppins', sans-serif; font-weight: 600;">Registro de Préstamos</h1>
+
+        <div class="spacer">
+            <button type="button" id="btnExportarExcel" class="btn btn-success" style="background-color: #1E7940;">
+                <i class="bi bi-file-earmark-excel"></i> Exportar a Excel
+            </button>
+        </div>
+
+
+        <hr />
+
+        <div class="table-responsive">
+            <table id="customers" class="table">
+                <thead>
+                    <tr>
+                        <th class="borIz">ID Préstamo</th>
+                        <th>Tipo Préstamo</th>
+                        <th>Código</th>
+                        <th>Nombre del Estudiante</th>
+                        <th>Carrera</th>
+                        <th>Libro</th>
+                        <th>Ejemplar</th>
+                        <th>Contacto</th>
+                        <th>Fecha Registro</th>
+                        <th class="borDer">Estado</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var item in Model)
+                    {
+                        loanIds.Add(item.ID_LENDER);
+                        <tr>
+                            <td>@item.LOAN_ID</td>
+                            <td>@item.LoanTypes?.TYPES_NAME</td>
+                            <td class="tdStudentCode_@item.ID_LENDER">Cargando...</td>
+                            <td class="tdStudentName_@item.ID_LENDER">Cargando...</td>
+                            <td class="tdStudentCareer_@item.ID_LENDER">Cargando...</td>
+                            <td>@item.Books?.TITLE</td>
+                            <td>@item.COPY</td>
+                            <td>@item.LENDER_CONTACT</td>
+                            <td>@item.REGISTRATION_DATE.ToShortDateString()</td>
+                            <td>@(item.STATUS ? "Activo" : "Inactivo")</td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        var loanIds = @Html.Raw(JsonSerializer.Serialize(loanIds));
+        loanIds.forEach(function (id) {
+            fnBuscarEstudiante(id);
+        });
+    });
+
+    function fnBuscarEstudiante(id) {
+        $.ajax({
+            method: 'POST',
+            url: '@Url.Action("BuscarEstudianteId", "Loans")',
+            data: { id: id },
+            datatype: 'json',
+            success: function (data) {
+                $('.tdStudentCode_' + id).text(data.studentCode || "No disponible");
+                $('.tdStudentName_' + id).text(data.fullName || "No disponible");
+                $('.tdStudentCareer_' + id).text(data.career || "No disponible");
+            },
+            error: function () {
+                $('.tdStudentCode_' + id).text("No disponible");
+                $('.tdStudentName_' + id).text("No disponible");
+                $('.tdStudentCareer_' + id).text("No disponible");
+            }
+        });
+    }
+</script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+<script>
+    document.getElementById('btnExportarExcel').addEventListener('click', function () {
+        const tabla = document.getElementById('customers');
+
+        // Clonar la tabla sin modificar la original
+        const tablaClonada = tabla.cloneNode(true);
+
+        // Reemplazar "Cargando..." por "No disponible"
+        const filas = tablaClonada.querySelectorAll('tr');
+        filas.forEach(fila => {
+            fila.querySelectorAll('td, th').forEach(celda => {
+                if (celda.textContent.trim() === "Cargando...") {
+                    celda.textContent = "No disponible";
+                }
+            });
+        });
+
+        // Convertir a hoja de Excel
+        const ws = XLSX.utils.table_to_sheet(tablaClonada);
+        const wb = XLSX.utils.book_new();
+        XLSX.utils.book_append_sheet(wb, ws, "Prestamos");
+
+        // Exportar
+        XLSX.writeFile(wb, "prestamos.xlsx");
+    });
+</script>
+
+

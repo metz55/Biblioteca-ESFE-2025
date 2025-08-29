@@ -11,226 +11,145 @@
     List<Library.DataAccess.Domain.Categories> categories = ViewBag.Categories as List<Library.DataAccess.Domain.Categories>;
 }
 
-<style>
-    #contenedor-principal {
-        border-radius: 1rem;
-    }
+<link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet">
 
-    .form-label {
-        font-weight: 600;
-    }
+<div class="row">
+    <div class="col-md-12 grid-margin stretch-card">
+        <div class="card">
+            <div class="card-body">
+                <h4 class="card-title text-center" style="font-family: 'Poppins', sans-serif; font-weight: 600;">Nuevo Préstamo</h4>
 
-    .form-control, select {
-        border-radius: 0.5rem;
-    }
+                @if (TempData["Alerta"] != null)
+                {
+                    <div class="alert alert-success">@TempData["Alerta"]</div>
+                }
+                @if (!string.IsNullOrEmpty(ViewBag.Alerta))
+                {
+                    <div class="alert alert-danger">@ViewBag.Alerta</div>
+                }
+                @if (!string.IsNullOrEmpty(ViewBag.Alerta2))
+                {
+                    <div class="alert alert-danger">@ViewBag.Alerta2</div>
+                }
+                @if (!string.IsNullOrEmpty(ViewBag.AlertaPrestamoEx))
+                {
+                    <div class="alert alert-danger">@ViewBag.AlertaPrestamoEx</div>
+                }
 
-    .btn {
-        border-radius: 0.5rem;
-        transition: all 0.2s ease-in-out;
-    }
+                <form asp-action="Create" class="forms-sample">
+                    <div asp-validation-summary="ModelOnly" class="text-danger"></div>
 
-        .btn:hover {
-            transform: scale(1.02);
-        }
-
-    .card h2 {
-        font-size: 1.5rem;
-        font-weight: 700;
-        color: #264DFF;
-        border-bottom: 2px solid #ccc;
-        padding-bottom: 0.5rem;
-    }
-
-    @@media (max-width: 576px) {
-        .btn-group-responsive
-
-    {
-        flex-direction: column !important;
-    }
-
-    .btn-group-responsive > * {
-        width: 100% !important;
-        margin-bottom: 0.5rem;
-    }
-
-    }
-
-     @@media (max-width: 576px) {
-        /* Hacer que los inputs no se vean tan juntos */
-        .row.mb-3 > div, .row.mb-4 > div
-
-    {
-        margin-bottom: 1rem;
-    }
-
-    /* Botones uno debajo de otro */
-    .d-flex.flex-wrap.justify-content-between {
-        flex-direction: column;
-        gap: 0.75rem !important;
-    }
-
-    .btn.flex-grow-1 {
-        width: 100%;
-    }
-
-    /* Ajuste de tablas en modales para que no se desborden */
-    .modal-body table {
-        font-size: 0.9rem;
-    }
-
-    }
-
-    @@media (min-width: 577px) and (max-width: 768px) {
-        /* Para pantallas tipo tablet, ajustes suaves */
-        .row.mb-3 > div, .row.mb-4 > div
-
-    {
-        margin-bottom: 0.75rem;
-    }
-
-    .btn.flex-grow-1 {
-        flex: 1 1 48%;
-    }
-
-    }
-
-
-</style>
-
-<div class="container mt-5">
-    <div class="row justify-content-center">
-        <div class="col-lg-8 col-md-10">
-            <div class="card shadow" id="contenedor-principal">
-                <div class="card-body p-4">
-                    <h2 class="text-center mb-4">CREAR NUEVO PRÉSTAMO</h2>
-
-                    @* ALERTAS*@
-                    @if (TempData["Alerta"] != null)
-                    {
-                        <div class="alert alert-success">@TempData["Alerta"]</div>
-                    }
-                    @if (!string.IsNullOrEmpty(ViewBag.Alerta))
-                    {
-                        <div class="alert alert-danger">@ViewBag.Alerta</div>
-                    }
-                    @if (!string.IsNullOrEmpty(ViewBag.Alerta2))
-                    {
-                        <div class="alert alert-danger">@ViewBag.Alerta2</div>
-                    }
-                    @if (!string.IsNullOrEmpty(ViewBag.AlertaPrestamoEx))
-                    {
-                        <div class="alert alert-danger">@ViewBag.AlertaPrestamoEx</div>
-                    }
-
-                    <form asp-action="Create">
-                        <div asp-validation-summary="ModelOnly" class="text-danger"></div>
-
-                        <div class="row mb-3">
-                            <div class="col-md-4">
-                                <input type="text" class="form-control" id="txtCodigoMostrar" placeholder="Código" disabled>
-                                <input asp-for="ID_LENDER" class="form-control" id="txtCodigo" hidden>
-                            </div>
-                            <div class="col-md-8">
-                                <input type="text" class="form-control" id="txtNombreEstudiante" placeholder="Nombre del Estudiante" disabled>
-                            </div>
-                        </div>
-
-                        <div class="row mb-3">
-                            <div class="col-md-6">
-                                <input id="txtTelefono" asp-for="LENDER_CONTACT" type="text" class="form-control" readonly placeholder="Teléfono">
-                            </div>
-                            <div class="col-md-6">
-                                <select asp-for="ID_TYPE" class="form-control">
-                                    <option selected value="0">Tipo de Préstamo</option>
-                                    @foreach (var item in loanTypes)
-                                    {
-                                        <option value="@item.TYPES_ID">@item.TYPES_NAME</option>
-                                    }
-                                </select>
-                                <span asp-validation-for="ID_TYPE" class="text-danger"></span>
-                            </div>
-                        </div>
-
-                        <div class="row mb-3">
-                            <div class="col-md-8">
-                                <input asp-for="ID_BOOK" type="text" id="idBook" hidden />
-                                <input type="text" class="form-control" placeholder="Título del Libro" disabled id="txtTitulo">
-                            </div>
-                            <div class="col-md-4 text-end">
-                                <button type="button" class="btn btn-primary w-100" data-bs-toggle="modal" data-bs-target="#mdlBuscarLibros">
-                                    Buscar Libro
+                    <div class="row">
+                        <div class="mb-3 col-md-6">
+                            <label class="form-label">Código del Estudiante</label>
+                            <input asp-for="ID_LENDER" type="hidden" id="txtCodigo" />
+                            <div class="input-group">
+                                <input type="text" class="form-control" id="txtCodigoMostrar" readonly>
+                                <button type="button" class="btn btn-outline-primary" data-bs-toggle="modal" data-bs-target="#mdlBuscarEstudiantes">
+                                    <i class="bi bi-search"></i> Buscar
                                 </button>
-
                             </div>
                         </div>
 
-                        <div class="row mb-4">
-                            <div class="col-md-6">
-                                <label>Fecha de Inicio</label>
-                                <input type="date" class="form-control" id="fechaInicio" name="fechaInicio" />
-                            </div>
-                            <div class="col-md-6">
-                                <label>Fecha de Cierre</label>
-                                <input type="date" class="form-control" id="fechaCierre" name="fechaCierre" />
+                        <div class="mb-3 col-md-6">
+                            <label class="form-label">Nombre del Estudiante</label>
+                            <input type="text" class="form-control" id="txtNombreEstudiante" readonly>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="mb-3 col-md-6">
+                            <label asp-for="LENDER_CONTACT" class="form-label">Teléfono</label>
+                            <input asp-for="LENDER_CONTACT" type="text" class="form-control" id="txtTelefono" readonly>
+                        </div>
+
+                        <div class="mb-3 col-md-6">
+                            <label asp-for="ID_TYPE" class="form-label">Tipo de Préstamo</label>
+                            <select asp-for="ID_TYPE" class="form-select">
+                                <option value="0">Seleccionar</option>
+                                @foreach (var item in loanTypes)
+                                {
+                                    <option value="@item.TYPES_ID">@item.TYPES_NAME</option>
+                                }
+                            </select>
+                            <span asp-validation-for="ID_TYPE" class="text-danger"></span>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="mb-3 col-md-6">
+                            <label class="form-label">Título del Libro</label>
+                            <input asp-for="ID_BOOK" type="hidden" id="idBook" />
+                            <div class="input-group">
+                                <input type="text" class="form-control" id="txtTitulo" readonly>
+                                <button type="button" class="btn btn-outline-primary" data-bs-toggle="modal" data-bs-target="#mdlBuscarLibros">
+                                    <i class="bi bi-search"></i> Buscar
+                                </button>
                             </div>
                         </div>
 
-                        <div class="d-flex flex-wrap justify-content-between mt-4" style="gap: 20px;">
-                            <button type="submit" class="btn btn-success flex-grow-1">
-                                Crear Préstamo
-                            </button>
-                            <a asp-action="Index" class="btn btn-secondary flex-grow-1">
-                                Regresar
-                            </a>
-                            <button type="button" class="btn btn-info flex-grow-1" data-bs-toggle="modal" data-bs-target="#mdlBuscarEstudiantes">
-                                Buscar Estudiante
-                            </button>
+                        <div class="mb-3 col-md-6">
+                            <label class="form-label">Fecha de Inicio</label>
+                            <input type="date" class="form-control" id="fechaInicio" name="fechaInicio" />
                         </div>
+                    </div>
 
+                    <div class="row">
+                        <div class="mb-3 col-md-6">
+                            <label class="form-label">Fecha de Cierre</label>
+                            <input type="date" class="form-control" id="fechaCierre" name="fechaCierre" />
+                        </div>
+                    </div>
 
-
-                    </form>
-
-                </div>
+                    <div class="d-flex justify-content-center mt-4">
+                        <button type="submit" class="btn btn-success me-2">
+                            <i class="bi bi-floppy"></i> Crear Préstamo
+                        </button>
+                        <a asp-action="Index" class="btn btn-secondary">
+                            <i class="bi bi-reply-fill"></i> Regresar
+                        </a>
+                    </div>
+                </form>
             </div>
         </div>
     </div>
 </div>
 
-@* Aquí puedes dejar tus modales y scripts como los tienes *@
 
+@* Aquí puedes dejar tus modales y scripts como los tienes *@
 <!-- Modal Buscar Estudiantes -->
 <div class="modal fade" id="mdlBuscarEstudiantes" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="mdlBuscarEstudiantesLabel" aria-hidden="true">
-    <div class="modal-dialog modal-lg modal-dialog2 modal-dialog-scrollable">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h1 class="modal-title fs-5" id="mdlBuscarEstudiantesLabel">BUSCAR ESTUDIANTE</h1>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+    <div class="modal-dialog modal-lg modal-dialog-scrollable">
+        <div class="modal-content shadow">
+            <div class="modal-header bg-primary text-white">
+                <h5 class="modal-title fw-bold" id="mdlBuscarEstudiantesLabel">
+                    <i class="bi bi-person-search me-2"></i> Estudiantes
+                </h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
-            <div class="modal-body">
 
-                <form class="card text-bg-light mb-3" id="frmBuscarEstudiantes">
-                    <div class="card-header text-center fw-bold">Búsqueda por Código</div>
+            <div class="modal-body">
+                <form id="frmBuscarEstudiantes" class="card shadow-sm mb-4 border">
+                    <div class="card-header text-center fw-bold bg-light border-bottom">
+                        Búsqueda por Código
+                    </div>
                     <div class="card-body">
-                        <div class="row g-3 align-items-end">
-                            <div class="col-5">
-                                <label for="txtCodigoEstudiante" class="form-label">Código del Estudiante:</label>
-                                <input type="text" class="form-control" id="txtCodigoEstudiante" name="codigoEstudiante" placeholder="Ingrese código del estudiante" />
+                        <div class="row align-items-end">
+                            <div class="col-md-6">
+                                <label for="txtCodigoEstudiante" class="form-label">Código del Estudiante</label>
+                                <input type="text" class="form-control" id="txtCodigoEstudiante" name="codigoEstudiante" placeholder="Ingrese código del estudiante">
                             </div>
-                            <div class="col-6 d-flex align-items-end">
-                                <button type="button" id="btnBuscarEstudiante" class="btn btn-primary me-2">
-                                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-search" viewBox="0 0 16 16">
-                                        <path d="M11.742 10.344a6.5 6.5 0 1 0-1.397 1.398h-.001q.044.06.098.115l3.85 3.85a1 1 0 0 0 1.415-1.414l-3.85-3.85a1 1 0 0 0-.115-.1zM12 6.5a5.5 5.5 0 1 1-11 0 5.5 5.5 0 0 1 11 0" />
-                                    </svg>
-                                    Buscar
+                            <div class="col-md-6 text-end">
+                                <button type="button" id="btnBuscarEstudiante" class="btn btn-primary btn-icon-text mt-3">
+                                    <i class="bi bi-search me-1"></i> Buscar
                                 </button>
                             </div>
                         </div>
                     </div>
                 </form>
 
-                <table class="table table-striped table-bordered" id="tbDatosEstudiante" style="display:none;">
-                    <thead>
+                <table class="table table-hover table-bordered align-middle text-center" id="tbDatosEstudiante" style="display:none;">
+                    <thead class="table-light">
                         <tr>
                             <th>Código</th>
                             <th>Nombre Completo</th>
@@ -244,14 +163,11 @@
                 </table>
 
                 <div id="mensajeError" class="alert alert-danger mt-3" style="display:none;"></div>
-
             </div>
+
             <div class="modal-footer">
                 <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-x-lg" viewBox="0 0 16 16">
-                        <path d="M2.146 2.854a.5.5 0 1 1 .708-.708L8 7.293l5.146-5.147a.5.5 0 0 1 .708.708L8.707 8l5.147 5.146a.5.5 0 0 1-.708.708L8 8.707l-5.146 5.147a.5.5 0 0 1-.708-.708L7.293 8z" />
-                    </svg>
-                    Cancelar
+                    <i class="bi bi-x-lg me-1"></i> Cancelar
                 </button>
             </div>
         </div>
@@ -334,36 +250,37 @@
 <!------------------------------------------------------->
 <!-- Modal Buscar Libros -->
 <div class="modal fade" id="mdlBuscarLibros" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="mdlBuscarLibrosLabel" aria-hidden="true">
-    <div class="modal-dialog modal-lg modal-dialog2 modal-dialog-scrollable">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h1 class="modal-title fs-5" id="mdlBuscarLibrosLabel">BUSCAR LIBRO</h1>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+    <div class="modal-dialog modal-lg modal-dialog-scrollable">
+        <div class="modal-content shadow">
+            <div class="modal-header bg-primary text-white">
+                <h5 class="modal-title fw-bold" id="mdlBuscarLibrosLabel">
+                    <i class="bi bi-book-fill me-2"></i> Libros
+                </h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
-            <div class="modal-body">
 
-                <form class="card text-bg-light mb-3" id="frmBuscarLibros">
-                    <div class="card-header text-center fw-bold">Búsqueda por Título</div>
+            <div class="modal-body">
+                <form id="frmBuscarLibros" class="card shadow-sm mb-4 border">
+                    <div class="card-header text-center fw-bold bg-light border-bottom">
+                        Búsqueda por Título
+                    </div>
                     <div class="card-body">
-                        <div class="row g-3 align-items-end">
-                            <div class="col-7">
-                                <label for="txtTituloLibro" class="form-label">Título del Libro:</label>
-                                <input type="text" class="form-control" id="txtTituloLibro" name="tituloLibro" placeholder="Ingrese título o parte del título" />
+                        <div class="row align-items-end">
+                            <div class="col-md-6">
+                                <label for="txtTituloLibro" class="form-label">Título del Libro</label>
+                                <input type="text" class="form-control" id="txtTituloLibro" name="tituloLibro" placeholder="Ingrese título o parte del título">
                             </div>
-                            <div class="col-4 d-flex align-items-end">
-                                <button type="button" id="btnBuscarLibro" class="btn btn-primary me-2">
-                                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-search" viewBox="0 0 16 16">
-                                        <path d="M11.742 10.344a6.5 6.5 0 1 0-1.397 1.398h-.001q.044.06.098.115l3.85 3.85a1 1 0 0 0 1.415-1.414l-3.85-3.85a1 1 0 0 0-.115-.1zM12 6.5a5.5 5.5 0 1 1-11 0 5.5 5.5 0 0 1 11 0" />
-                                    </svg>
-                                    Buscar
+                            <div class="col-md-6 text-end">
+                                <button type="button" id="btnBuscarLibro" class="btn btn-primary btn-icon-text mt-3">
+                                    <i class="bi bi-search me-1"></i> Buscar
                                 </button>
                             </div>
                         </div>
                     </div>
                 </form>
 
-                <table class="table table-striped table-bordered" id="tbDatosLibro" style="display:none;">
-                    <thead>
+                <table class="table table-hover table-bordered align-middle text-center" id="tbDatosLibro" style="display:none;">
+                    <thead class="table-light">
                         <tr>
                             <th>Título</th>
                             <th>Autor</th>
@@ -377,19 +294,70 @@
                 </table>
 
                 <div id="mensajeErrorLibro" class="alert alert-danger mt-3" style="display:none;"></div>
-
             </div>
+
             <div class="modal-footer">
                 <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-x-lg" viewBox="0 0 16 16">
-                        <path d="M2.146 2.854a.5.5 0 1 1 .708-.708L8 7.293l5.146-5.147a.5.5 0 0 1 .708.708L8.707 8l5.147 5.146a.5.5 0 0 1-.708.708L8 8.707l-5.146 5.147a.5.5 0 0 1-.708-.708L7.293 8z" />
-                    </svg>
-                    Cancelar
+                    <i class="bi bi-x-lg me-1"></i> Cancelar
                 </button>
             </div>
         </div>
     </div>
 </div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Mostrar alertas de éxito o error usando SweetAlert
+         @if (TempData["Alerta"] != null)
+        {
+                <text>
+                    Swal.fire({
+                    icon: 'success',
+                    title: 'Éxito',
+                    text: '@TempData["Alerta"]',
+                    confirmButtonColor: '#003366'
+                    }).then((result) => {
+                    if (result.isConfirmed) {
+                    window.location.href = '@Url.Action("Index", "Loans")';
+                    }
+                    });
+                </text>
+        }
+        @if (!string.IsNullOrEmpty(ViewBag.Alerta))
+        {
+                <text>
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Error',
+                        text: '@ViewBag.Alerta',
+                        confirmButtonColor: '#003366'
+                    });
+                </text>
+        }
+        @if (!string.IsNullOrEmpty(ViewBag.Alerta2))
+        {
+                <text>
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Error',
+                        text: '@ViewBag.Alerta2',
+                        confirmButtonColor: '#003366'
+                    });
+                </text>
+        }
+        @if (!string.IsNullOrEmpty(ViewBag.AlertaPrestamoEx))
+        {
+                <text>
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Error',
+                        text: '@ViewBag.AlertaPrestamoEx',
+                        confirmButtonColor: '#003366'
+                    });
+                </text>
+        }
+    });
+</script>
 
 <script>
         $(document).ready(function () {

@@ -1,5 +1,4 @@
 ﻿@model IEnumerable<Library.DataAccess.Domain.Loans>
-
 @{
     ViewData["Title"] = "Status2Loans";
     int numPage = 1;
@@ -11,7 +10,6 @@
     List<Library.DataAccess.Domain.LoanTypes> loanTypes = ViewBag.LoansTypes as List<Library.DataAccess.Domain.LoanTypes>;
     List<Library.DataAccess.Domain.ReservationStatus> reservations = ViewBag.ReservationStatus as List<Library.DataAccess.Domain.ReservationStatus>;
 }
-
 <style>
     body {
         overflow-x: hidden;
@@ -25,44 +23,98 @@
         border-radius: 1rem;
     }
 
-    @@media (max-width: 768px) {
-        .form-busqueda
-
-    {
-        flex-direction: column !important;
-        align-items: stretch !important;
-    }
-
-    .spacer {
-        margin-right: 0 !important;
-        margin-bottom: 10px !important;
+    .anchoAcciones > div {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        flex-wrap: nowrap;
     }
 
     .anchoAcciones .btn {
-        display: block;
-        width: 100%;
-        margin-bottom: 5px;
-    }
-
-    table.table td,
-    table.table th {
-        font-size: 14px;
+        flex: 1 1 0;
         white-space: nowrap;
     }
 
-    .table-responsive {
-        overflow-x: auto;
+    .fade-page {
+        opacity: 0;
+        transition: opacity 0.5s ease;
     }
 
-    }</style>
+        .fade-page.show {
+            opacity: 1;
+        }
 
+    .pagination-container {
+        display: flex;
+        justify-content: center;
+        margin-top: 15px;
+        gap: 5px;
+    }
+
+    .page-btn {
+        display: inline-block;
+        padding: 6px 12px;
+        border: 1px solid #d1d5db;
+        background-color: #f9fafb;
+        color: #374151;
+        text-decoration: none;
+        border-radius: 5px;
+        font-size: 14px;
+        transition: all 0.2s ease;
+    }
+
+        .page-btn:hover {
+            background-color: #e5e7eb;
+            color: #111827;
+        }
+
+        .page-btn.active {
+            background-color: #d1d5db;
+            color: #111827;
+            font-weight: bold;
+            border-color: #9ca3af;
+        }
+
+    @@media (max-width: 768px) {
+        .form-busqueda {
+            flex-direction: column !important;
+            align-items: stretch !important;
+        }
+
+        .spacer {
+            margin-right: 0 !important;
+            margin-bottom: 10px !important;
+        }
+
+        .anchoAcciones > div {
+            flex-wrap: wrap;
+            gap: 6px;
+            flex-direction: column;
+            align-items: stretch;
+        }
+
+        .anchoAcciones .btn {
+            flex: none;
+            width: 100% !important;
+        }
+
+        table.table td,
+        table.table th {
+            font-size: 14px;
+            white-space: nowrap;
+        }
+
+        .table-responsive {
+            overflow-x: auto;
+        }
+    }
+</style>
 <div class="card" id="contenedor-principal">
     <div class="card-body">
-
         <h1 style="padding:15px; font-family: 'Poppins', sans-serif; font-weight: 600; margin-left: -15px;">Préstamos Finalizados</h1>
         <form asp-action="Status2Loans" class="d-flex flex-wrap form-busqueda mb-3">
             <div class="spacer">
-                <input type="text" placeholder="Código de Estudiante" class="form-control" name="ID_LENDER" />
+                <input type="text" placeholder="Código de Estudiante" class="form-control" name="studentCode" value="@ViewData["studentCode"]" />
             </div>
             <div class="spacer">
                 <select name="ID_TYPE" class="form-control">
@@ -76,8 +128,7 @@
             <div class="spacer">
                 <select id="selectRedireccion" class="form-control">
                     <option selected value="">Préstamos</option>
-                    <option value="opcion0">Activos</option>
-                    <option value="opcion1">Finalizados</option>
+                    <option value="opcion1">Activos</option>
                     <option value="opcion2">Eliminados</option>
                 </select>
             </div>
@@ -93,22 +144,22 @@
                 </select>
             </div>
             <div class="spacer">
-                <button id="search-button" type="submit" class="btn btn-info">
-                    <i class="bi bi-search"></i> Buscar
+                <button id="search-button" type="submit" class="btn btn-secondary">
+                    <i class="bi bi-reply-fill"></i> Buscar
                 </button>
             </div>
         </form>
-
         <hr />
-
-        <div class="table-responsive">
+        <div class="table-responsive fade-page show" id="tableContainer">
             <table id="customers" class="table">
                 <thead>
                     <tr>
                         <th class="borIz">@Html.DisplayNameFor(model => model.LOAN_ID)</th>
                         <th>@Html.DisplayNameFor(model => model.ID_TYPE)</th>
                         <th>@Html.DisplayNameFor(model => model.ID_RESERVATION)</th>
-                        <th>@Html.DisplayNameFor(model => model.ID_LENDER)</th>
+                        <th>Código</th>
+                        <th>Nombre del Estudiante</th>
+                        <th>Carrera</th>
                         <th>@Html.DisplayNameFor(model => model.ID_BOOK)</th>
                         <th>@Html.DisplayNameFor(model => model.STATUS)</th>
                         <th class="borDer">Acciones</th>
@@ -124,24 +175,22 @@
                                 <td>@item.LOAN_ID</td>
                                 <td>@item.LoanTypes.TYPES_NAME</td>
                                 <td>@item.ReservationStatus.STATUS_NAME</td>
-                                <td class="tdStudentCode_@item.ID_LENDER"></td>
+                                <td class="tdStudentCode_@item.ID_LENDER">Cargando...</td>
+                                <td class="tdStudentName_@item.ID_LENDER">Cargando...</td>
+                                <td class="tdStudentCareer_@item.ID_LENDER">Cargando...</td>
                                 <td>@item.Books.TITLE</td>
                                 <td>
                                     <span>@(item.STATUS ? "ACTIVO" : "ELIMINADO")</span>
                                 </td>
                                 <td class="anchoAcciones">
-                                    <div class="d-flex justify-content-between gap-2 flex-wrap">
-                                        <a href="@Url.Action("Details", new { id = item.LOAN_ID })" class="btn btn-info" style="background: #1D4ED8">
-                                            <i class="bi bi-eye"></i> Detalles
-                                        </a>
-                                        <a href="@Url.Action("Delite", new { id = item.LOAN_ID })" class="btn btn-danger" style="background-color: #EF4444">
-                                            <i class="bi bi-trash3"></i> Eliminar
+                                    <div>
+                                        <a href="@Url.Action("Edit", new { id = item.LOAN_ID })" class="btn btn-info" style="background: #1D4ED8">
+                                            <i class="bi bi-eye"></i> Editar
                                         </a>
                                     </div>
                                 </td>
                             </tr>
                         }
-
                         numRegistros++;
                         if (numRegistros == numRegistrosPorPage)
                         {
@@ -149,7 +198,6 @@
                             numRegistros = 0;
                         }
                     }
-
                     @if (numRegistros == 0)
                     {
                         numPage--;
@@ -157,25 +205,25 @@
                 </tbody>
             </table>
         </div>
-
         @if (numPage > 1)
         {
-            <div class="row" style="overflow:auto">
-                <div class="col-md-12">
-                    <ul class="pagination paginationjs" data-numpage="@numPage" data-pageactive="1">
-                        <li class="page-item" data-typepage="Previous"><a class="page-link" href="#">Previous</a></li>
-                        @for (var i = 1; i <= numPage; i++)
-                        {
-                            <li class="page-item" data-page="@i" data-typepage="Item"><a class="page-link" href="#">@i</a></li>
-                        }
-                        <li class="page-item" data-typepage="Next"><a class="page-link" href="#">Next</a></li>
-                    </ul>
-                </div>
-            </div>
+            <nav class="pagination-container">
+                @if (numPage > 1 && ViewBag.PaginaActual > 1)
+                {
+                    <a class="page-btn" asp-action="Status2Loans" asp-route-page="@(ViewBag.PaginaActual - 1)">Anterior</a>
+                }
+                @for (var i = 1; i <= numPage; i++)
+                {
+                    <a class="page-btn @(i == ViewBag.PaginaActual ? "active" : "")" asp-action="Status2Loans" asp-route-page="@i">@i</a>
+                }
+                @if (numPage > 1 && ViewBag.PaginaActual < numPage)
+                {
+                    <a class="page-btn" asp-action="Status2Loans" asp-route-page="@(ViewBag.PaginaActual + 1)">Siguiente</a>
+                }
+            </nav>
         }
     </div>
 </div>
-
 <script>
     document.addEventListener('DOMContentLoaded', function () {
         var loanIds = @Html.Raw(Json.Serialize(loanIds));
@@ -190,12 +238,15 @@
             url: '@Url.Action("BuscarEstudianteId", "Loans")',
             data: { id: id },
             datatype: 'json',
-            success: function (lista) {
-                var studentCode = lista.studentCode;
-                $('.tdStudentCode_' + id).text(studentCode || "No disponible");
+            success: function (data) {
+                $('.tdStudentCode_' + id).text(data.studentCode || "No disponible");
+                $('.tdStudentName_' + id).text(data.fullName || "No disponible");
+                $('.tdStudentCareer_' + id).text(data.career || "No disponible");
             },
-            error: function (error) {
-                alert("Error: " + error.statusText);
+            error: function () {
+                $('.tdStudentCode_' + id).text("No disponible");
+                $('.tdStudentName_' + id).text("No disponible");
+                $('.tdStudentCareer_' + id).text("No disponible");
             }
         });
     }
@@ -204,11 +255,11 @@
         var selectedOption = this.value;
         var redirectUrl = '';
         switch (selectedOption) {
-            case 'opcion0': redirectUrl = '/Loans'; break;
-            case 'opcion1': redirectUrl = '/Loans/Status2Loans'; break;
+            case 'opcion1': redirectUrl = '/Loans/Index'; break;
             case 'opcion2': redirectUrl = '/Loans/LoansDelite'; break;
         }
         if (redirectUrl) window.location.href = redirectUrl;
         this.selectedIndex = 0;
     });
 </script>
+

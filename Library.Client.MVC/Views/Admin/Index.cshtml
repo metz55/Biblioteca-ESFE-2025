@@ -4,6 +4,7 @@
     Layout = "_LayoutP";
 }
 
+
 <style>
     .btn-exportar {
         background-color: #0d6efd;
@@ -25,61 +26,70 @@
         .btn-exportar i {
             margin-right: 6px;
         }
+
+    #total-transaction {
+        min-height: 120px !important;
+    }
+
 </style>
 
 
+
 <div class="container mt-4">
-    <div class="container mt-4">
-        <div class="row">
+    <div class="row">
 
-            <div class="col-md-6 grid-margin stretch-card">
-                <div class="card shadow-sm">
-                    <div class="card-body">
-                        <h4 class="card-title">Libros por Categoría</h4>
-                        @*<button onclick="exportarLibrosPorCategoria()" class="btn-exportar mb-2">
-                            <i class="bi bi-file-earmark-excel"></i> Exportar a Excel
-                        </button>*@
-                        <canvas id="graficaLibrosPorCategoria" height="200"></canvas>
-                    </div>
+        <!-- Libros por Categoría -->
+        <div class="col-md-6 mb-4">
+            <div class="card shadow-sm">
+                <div class="card-body">
+                    <h4 class="card-title">Libros por Categoría</h4>
+                    <canvas id="graficaLibrosPorCategoria" height="200"></canvas>
                 </div>
             </div>
-
-
-            <!-- Préstamos por Tipo -->
-            <div class="col-md-6 mb-4">
-                <div class="card shadow-sm">
-                    <div class="card-body">
-                        <h4 class="card-title">Préstamos por Tipo</h4>
-                        @*<button onclick="exportarPrestamosPorTipo()" class="btn-exportar mb-2">
-                            <i class="bi bi-file-earmark-excel"></i> Exportar a Excel
-                        </button>*@
-                        <canvas id="graficaPorTipo" height="200"></canvas>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Préstamos por Semestre -->
-            <div class="col-md-6 mb-4 mt-4">
-                <div class="card shadow-sm">
-                    <div class="card-body">
-                        <h4 class="card-title">Préstamos por Ciclos</h4>
-                        @*<button onclick="exportarPrestamosPorSemestre()" class="btn-exportar mb-2">
-                            <i class="bi bi-file-earmark-excel"></i> Exportar a Excel
-                        </button>*@
-                        <canvas id="graficaPorSemestre" height="200"></canvas>
-                    </div>
-                </div>
-            </div>
-
         </div>
+
+        <!-- Préstamos por Tipo -->
+        <div class="col-md-6 mb-4">
+            <div class="card shadow-sm">
+                <div class="card-body">
+                    <h4 class="card-title">Préstamos por Tipo</h4>
+                    <canvas id="graficaPorTipo" height="200"></canvas>
+                </div>
+            </div>
+        </div>
+
+        <!-- Préstamos por Ciclos -->
+        <div class="col-md-6 mb-4">
+            <div class="card shadow-sm">
+                <div class="card-body">
+                    <h4 class="card-title">Préstamos por Ciclos</h4>
+                    <canvas id="graficaPorSemestre" height="200"></canvas>
+                </div>
+            </div>
+        </div>
+
+        <!-- Prestamos por Mes -->
+        <div class="col-md-6 mb-4">
+            <div class="card shadow-sm">
+                <div class="card-body">
+                    <h4 class="card-title mb-0">Prestamos por Mes</h4>
+                    
+                    <canvas id="sales-statistics-overview" height="205"></canvas>
+                </div>
+            </div>
+        </div>
+
     </div>
 </div>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/exceljs/4.3.0/exceljs.min.js"></script>
 
 
-    <script>
-                // ----------- FUNCIONES DE COLORES ----------
+
+@section Scripts {
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/exceljs/4.3.0/exceljs.min.js"></script>
+
+<script>
+       // ----------- FUNCIONES DE COLORES ----------
         function generarColores(labels) {
             const coloresBase = [
                 "rgba(255, 99, 132",   // rojo
@@ -228,137 +238,70 @@
 
                 document.getElementById("graficaPorSemestre").style.display = "block";
             });
-
                 function exportarExcel(nombreArchivo, nombreHoja, columnas, filas) {
-        const ws_data = [columnas, ...filas];
-        const ws = XLSX.utils.aoa_to_sheet(ws_data);
-        const wb = XLSX.utils.book_new();  
-        XLSX.utils.book_append_sheet(wb, ws, nombreHoja);
-        XLSX.writeFile(wb, `${nombreArchivo}.xlsx`);
-    }
+                const ws_data = [columnas, ...filas];
+                const ws = XLSX.utils.aoa_to_sheet(ws_data);
+                const wb = XLSX.utils.book_new();  
+                XLSX.utils.book_append_sheet(wb, ws, nombreHoja);
+                XLSX.writeFile(wb, `${nombreArchivo}.xlsx`);
+             }
 
-     @*
-     // Exportar Libros por Categoría
-        async function exportarLibrosPorCategoria() {
-        const canvas = document.getElementById("graficaLibrosPorCategoria");
-        const base64 = canvas.toDataURL("image/png");
+            // JS Préstamos por Mes
 
-        const workbook = new ExcelJS.Workbook();
-        const hoja = workbook.addWorksheet("Libros por Categoría");
+            document.addEventListener("DOMContentLoaded", function () {
+            const ctx = document.getElementById("sales-statistics-overview")?.getContext("2d");
 
-        // Insertar encabezados
-        hoja.addRow(["Categoría", "Cantidad"]);
+            if (ctx) {
+                fetch('/Loans/PrestamosPorMes')
+                .then(response => response.json())
+                .then(data => {
+                    console.log("Datos recibidos:", data); 
+                    const labels = ["Ene", "Feb", "Mar", "Abr", "May", "Jun", "Jul", "Ago", "Sep", "Oct", "Nov", "Dic"];
+                    const cantidades = new Array(12).fill(0);
 
-        // Obtener los datos desde el gráfico
-        const labels = window.graficaLibrosPorCategoria.data.labels;
-        const data = window.graficaLibrosPorCategoria.data.datasets[0].data;
+                    data.forEach(d => {
+                        const mes = d.Mes ?? d.mes;
+                        const cantidad = d.Cantidad ?? d.cantidad ?? 0;
+                        if (mes >= 1 && mes <= 12) {
+                            cantidades[mes - 1] = cantidad;
+                        }
+                    });
 
-        for (let i = 0; i < labels.length; i++) {
-            hoja.addRow([labels[i], data[i]]);
-        }
-
-        // Insertar la imagen (a partir de columna E)
-        const imageId = workbook.addImage({
-            base64: base64,
-            extension: 'png',
+                    new Chart(ctx, {
+                        type: 'line',
+                        data: {
+                            labels: labels,
+                            datasets: [{
+                                label: 'Cantidad de Préstamos por Mes',
+                                data: cantidades,
+                                borderColor: '#392c70',
+                                backgroundColor: 'rgba(57, 44, 112, 0.3)',
+                                fill: true,
+                                tension: 0.4
+                            }]
+                        },
+                        options: {
+                            responsive: true,
+                            plugins: {
+                                legend: {
+                                    display: true,
+                                    labels: { color: "#000" }
+                                }
+                            },
+                            scales: {
+                                x: {
+                                    ticks: { color: "#000" },
+                                    grid: { display: false }
+                                },
+                                y: {
+                                    ticks: { color: "#000" },
+                                    grid: { color: "rgba(0,0,0,0.05)" }
+                                }
+                            }
+                        }
+                    });
+                });
+            }
         });
-
-        hoja.addImage(imageId, {
-            tl: { col: 3, row: 1 }, // Columna E (col=4 es E, col=3 es D)
-            ext: { width: 400, height: 300 }
-        });
-
-        // Descargar archivo
-        const buffer = await workbook.xlsx.writeBuffer();
-        const blob = new Blob([buffer], { type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" });
-
-        const link = document.createElement("a");
-        link.href = URL.createObjectURL(blob);
-        link.download = "LibrosPorCategoria.xlsx";
-        link.click();
-
-        URL.revokeObjectURL(link.href);
-    }
-
-
-    // Exportar Préstamos por Tipo
-    async function exportarPrestamosPorTipo() {
-        const canvas = document.getElementById("graficaPorTipo");
-        const base64 = canvas.toDataURL("image/png");
-
-        const workbook = new ExcelJS.Workbook();
-        const hoja = workbook.addWorksheet("Préstamos por Tipo");
-
-        // Insertar encabezados
-        hoja.addRow(["Tipo", "Cantidad"]);
-
-        // Obtener los datos desde el gráfico
-        const labels = window.graficaPrestamosPorTipo.data.labels;
-        const data = window.graficaPrestamosPorTipo.data.datasets[0].data;
-
-        for (let i = 0; i < labels.length; i++) {
-            hoja.addRow([labels[i], data[i]]);
-        }
-
-        // Insertar imagen
-        const imageId = workbook.addImage({
-            base64: base64,
-            extension: 'png',
-        });
-
-        hoja.addImage(imageId, {
-            tl: { col: 3, row: 1 },
-            ext: { width: 400, height: 300 }
-        });
-
-        const buffer = await workbook.xlsx.writeBuffer();
-        const blob = new Blob([buffer], { type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" });
-
-        const link = document.createElement("a");
-        link.href = URL.createObjectURL(blob);
-        link.download = "PrestamosPorTipo.xlsx";
-        link.click();
-        URL.revokeObjectURL(link.href);
-    }
-
-
-    // Exportar Préstamos por Semestre
-    async function exportarPrestamosPorSemestre() {
-        const canvas = document.getElementById("graficaPorSemestre");
-        const base64 = canvas.toDataURL("image/png");
-
-        const workbook = new ExcelJS.Workbook();
-        const hoja = workbook.addWorksheet("Préstamos por Ciclo");
-
-        hoja.addRow(["Ciclo", "Cantidad"]);
-
-        const labels = window.graficaPrestamosPorSemestre.data.labels;
-        const data = window.graficaPrestamosPorSemestre.data.datasets[0].data;
-
-        for (let i = 0; i < labels.length; i++) {
-            hoja.addRow([labels[i], data[i]]);
-        }
-
-        const imageId = workbook.addImage({
-            base64: base64,
-            extension: 'png',
-        });
-
-        hoja.addImage(imageId, {
-            tl: { col: 3, row: 1 },
-            ext: { width: 400, height: 300 }
-        });
-
-        const buffer = await workbook.xlsx.writeBuffer();
-        const blob = new Blob([buffer], { type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" });
-
-        const link = document.createElement("a");
-        link.href = URL.createObjectURL(blob);
-        link.download = "PrestamosPorCiclo.xlsx";
-        link.click();
-        URL.revokeObjectURL(link.href);
-    } 
-    *@
-
-
 </script>
+}

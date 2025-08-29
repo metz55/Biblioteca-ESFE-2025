@@ -7,6 +7,7 @@
     List<Library.DataAccess.Domain.LoanDates2> loanDate = ViewBag.LoanDates as List<Library.DataAccess.Domain.LoanDates2>;
 }
 
+
 <style>
     #contenedor-principal {
         border-radius: 1rem;
@@ -67,7 +68,7 @@
         .anchodeImagen2
 
     {
-        max-width: 215px;
+        max-width: 315px;
     }
 
     }
@@ -91,7 +92,7 @@
 <div class="card" id="contenedor-principal">
     <div class="card-body">
         <div class="container-fluid">
-            <h1 class="py-3 px-2" style="font-family: 'Poppins', sans-serif; font-weight: 600;">Editar Préstamo</h1>
+            <h1 class="card-title text-center" style="font-family: 'Poppins', sans-serif; font-weight: 600;">Editar Préstamo</h1>
             <hr />
             <div class="row">
                 <div class="col-12 col-lg-7">
@@ -153,11 +154,11 @@
                                 <input asp-for="COPY" hidden />
                                 <span asp-validation-for="COPY" class="text-danger"></span>
                             </div>
-                            <div class="col-12 col-md-6">
+                            @*<div class="col-12 col-md-6">
                                 <label asp-for="ID_LENDER" class="form-label"></label>
                                 <input asp-for="ID_LENDER" class="form-control" disabled />
                                 <span asp-validation-for="ID_LENDER" class="text-danger"></span>
-                            </div>
+                            </div>*@
 
                             <div class="col-12 mt-3 mb-3">
                                 <button type="button" class="btn btn-primary w-100" id="mostrarFechas">
@@ -179,7 +180,7 @@
                             </div>
 
                             <div class="col-12 col-md-6 mb-2">
-                                <input type="submit" value="Guardar" class="btn btn-primary w-100" />
+                                <input type="submit" value="Guardar" class="btn w-100" style="background-color:#198754; border-color:#198754; color:white;" />
                             </div>
                             <div class="col-12 col-md-6 mb-2">
                                 <a asp-action="Index" class="btn btn-secondary w-100" id="confirmar">Regresar</a>
@@ -231,7 +232,6 @@
         </div>
     </div>
 </div>
-
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <script>
     $(document).ready(function () {
@@ -262,6 +262,31 @@
         }
     });
 
+</script>
+<script>
+    $(document).ready(function() {
+        // Confirmación al regresar al índice
+        $("#confirmar").on("click", function(e) {
+            e.preventDefault();
+            Swal.fire({
+                icon: 'question',
+                title: '¿Regresar al índice?',
+                text: "Si regresas ahora, los cambios no guardados se perderán. ¿Estás seguro?",
+                showCancelButton: true,
+                confirmButtonColor: '#6c757d',
+                cancelButtonColor: '#d33',
+                confirmButtonText: 'Sí, regresar',
+                cancelButtonText: 'Cancelar'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    window.location.href = '@Url.Action("Index", "Loans")';
+                }
+            });
+        });
+
+        document.querySelector('.main-content')?.classList.remove('with-menu');
+        document.querySelector('.main-content')?.classList.add('full-width');
+    });
 </script>
 
 

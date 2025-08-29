@@ -1,13 +1,8 @@
 ﻿@model IEnumerable<Library.DataAccess.Domain.Books>
-
 @{
     ViewData["Title"] = "Index";
-    int numPage = 1;
-    int numRegistros = 0;
-    int numRegistrosPorPage = 10;
     int[] tops = { 10, 20, 50, 100, 500, 1000, 10000, -1 };
     int topActual = Convert.ToInt32(ViewBag.Top);
-
     List<Library.DataAccess.Domain.Categories> categories = ViewBag.Categories as List<Library.DataAccess.Domain.Categories>;
     List<Library.DataAccess.Domain.AcquisitionTypes> acquisitionTypes = ViewBag.AcquisitionTypes as List<Library.DataAccess.Domain.AcquisitionTypes>;
     List<Library.DataAccess.Domain.Editorials> editorials = ViewBag.Editorials as List<Library.DataAccess.Domain.Editorials>;
@@ -16,7 +11,6 @@
     List<Library.DataAccess.Domain.Countries> countries = ViewBag.Countries as List<Library.DataAccess.Domain.Countries>;
     List<Library.DataAccess.Domain.Catalogs> catalogs = ViewBag.Catalogs as List<Library.DataAccess.Domain.Catalogs>;
 }
-
 <style>
     body {
         overflow-x: hidden;
@@ -39,7 +33,6 @@
             box-shadow: 0 6px 15px rgba(0, 0, 0, 0.2);
         }
 
-    /* Ajuste para alinear horizontalmente los botones de acciones con mismo tamaño */
     .anchoAccionesLibro > div {
         display: flex;
         align-items: center;
@@ -52,48 +45,88 @@
         white-space: nowrap;
     }
 
-    @@media (max-width: 768px) {
-        .form-busqueda {
-            flex-direction: column !important;
-            align-items: stretch !important;
-        }
-
-        .spacer {
-            margin-right: 0 !important;
-            margin-bottom: 10px !important;
-        }
-
-        #btn-create {
-            width: 100% !important;
-            margin-bottom: 15px;
-            background-color: #10B981;
-        }
-        /* Móvil: apilar botones igual ancho */
-        .anchoAccionesLibro > div {
-            flex-wrap: wrap;
-            gap: 6px;
-            flex-direction: column;
-            align-items: stretch;
-        }
-
-        .anchoAccionesLibro .btn {
-            flex: none;
-            width: 100% !important;
-        }
-
-        table.table td,
-        table.table th {
-            font-size: 14px;
-            white-space: nowrap;
-        }
-
-        .table-responsive {
-            overflow-x: auto;
-        }
+    .fade-page {
+        opacity: 0;
+        transition: opacity 0.5s ease;
     }
-</style>
 
+        .fade-page.show {
+            opacity: 1;
+        }
 
+    .pagination-container {
+        display: flex;
+        justify-content: center;
+        margin-top: 15px;
+        gap: 5px;
+    }
+
+    .page-btn {
+        display: inline-block;
+        padding: 6px 12px;
+        border: 1px solid #d1d5db;
+        background-color: #f9fafb;
+        color: #374151;
+        text-decoration: none;
+        border-radius: 5px;
+        font-size: 14px;
+        transition: all 0.2s ease;
+    }
+
+        .page-btn:hover {
+            background-color: #e5e7eb;
+            color: #111827;
+        }
+
+        .page-btn.active {
+            background-color: #d1d5db;
+            color: #111827;
+            font-weight: bold;
+            border-color: #9ca3af;
+        }
+
+    @@media (max-width: 768px) {
+        .form-busqueda
+
+    {
+        flex-direction: column !important;
+        align-items: stretch !important;
+    }
+
+    .spacer {
+        margin-right: 0 !important;
+        margin-bottom: 10px !important;
+    }
+
+    #btn-create {
+        width: 100% !important;
+        margin-bottom: 15px;
+        background-color: #10B981;
+    }
+
+    .anchoAccionesLibro > div {
+        flex-wrap: wrap;
+        gap: 6px;
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    .anchoAccionesLibro .btn {
+        flex: none;
+        width: 100% !important;
+    }
+
+    table.table td,
+    table.table th {
+        font-size: 14px;
+        white-space: nowrap;
+    }
+
+    .table-responsive {
+        overflow-x: auto;
+    }
+
+    }</style>
 <div class="card" id="contenedor-principal">
     <div class="card-body">
         <h1 style="padding:15px; font-family: 'Poppins', sans-serif; font-weight: 600; margin-left: -15px;">
@@ -110,7 +143,7 @@
                 </a>
             </div>
             <div class="col">
-                <form asp-action="Index" class="d-flex form-busqueda flex-wrap">
+                <form asp-action="Index" class="d-flex form-busqueda flex-wrap" method="get">
                     <div class="spacer">
                         <input type="text" placeholder="Título" class="form-control" name="TITLE" />
                     </div>
@@ -144,22 +177,21 @@
                         </select>
                     </div>
                     <div class="spacer">
-                        <button id="search-button" type="submit" class="btn btn-info" style="background-color: 	#6366F1">
-                            <i class="bi bi-search"></i> Buscar
+                        <button id="search-button" type="submit" class="btn btn-secondary">
+                            <i class="bi bi-reply-fill"></i> Buscar
                         </button>
                     </div>
+                    <input type="hidden" name="page" value="@ViewBag.PaginaActual" />
                 </form>
             </div>
         </div>
-
         <hr />
-
-        <div class="table-responsive">
+        <div class="table-responsive fade-page show" id="tableContainer">
             <table id="customers" class="table">
                 <thead>
                     <tr>
                         <th class="borIz">@Html.DisplayNameFor(model => model.TITLE)</th>
-                        <th>@Html.DisplayNameFor(model => model.ID_CATEGORY)</th>
+                        <th>@Html.DisplayNameFor(model => model.Categories.CATEGORY_NAME)</th>
                         <th>@Html.DisplayNameFor(model => model.EJEMPLARS)</th>
                         <th>@Html.DisplayNameFor(model => model.EXISTENCES)</th>
                         <th class="borDer">Acciones</th>
@@ -187,35 +219,44 @@
                                 </div>
                             </td>
                         </tr>
-                        numRegistros++;
-                        if (numRegistros == numRegistrosPorPage)
-                        {
-                            numPage++;
-                            numRegistros = 0;
-                        }
-                    }
-                    @if (numRegistros == 0)
-                    {
-                        numPage--;
                     }
                 </tbody>
             </table>
         </div>
-
-        @if (numPage > 1)
+        @if (ViewBag.TotalPaginas > 1)
         {
-            <div class="row" style="overflow:auto">
-                <div class="col-md-12">
-                    <ul class="pagination paginationjs" data-numpage="@numPage" data-pageactive="1">
-                        <li class="page-item" data-typepage="Previous"><a class="page-link" href="#">Previous</a></li>
-                        @for (var i = 1; i <= numPage; i++)
-                        {
-                            <li class="page-item" data-page="@i" data-typepage="Item"><a class="page-link" href="#">@i</a></li>
-                        }
-                        <li class="page-item" data-typepage="Next"><a class="page-link" href="#">Next</a></li>
-                    </ul>
-                </div>
-            </div>
+            <nav class="pagination-container">
+                @if (ViewBag.PaginaActual > 1)
+                {
+                    <a class="page-btn" asp-action="Index" asp-route-page="@(ViewBag.PaginaActual - 1)">Anterior</a>
+                }
+                @for (int i = 1; i <= ViewBag.TotalPaginas; i++)
+                {
+                    <a class="page-btn @(i == ViewBag.PaginaActual ? "active" : "")" asp-action="Index" asp-route-page="@i">@i</a>
+                }
+                @if (ViewBag.PaginaActual < ViewBag.TotalPaginas)
+                {
+                    <a class="page-btn" asp-action="Index" asp-route-page="@(ViewBag.PaginaActual + 1)">Siguiente</a>
+                }
+            </nav>
         }
     </div>
 </div>
+<script>
+    document.addEventListener("DOMContentLoaded", () => {
+        const container = document.getElementById("tableContainer");
+        setTimeout(() => container.classList.add("show"), 50);
+
+        // Añade el evento a los botones de paginación
+        document.querySelectorAll(".page-btn").forEach(link => {
+            link.addEventListener("click", function (e) {
+                e.preventDefault();
+                container.classList.remove("show");
+                setTimeout(() => {
+                    window.location.href = this.href;
+                }, 500); // Tiempo para que termine la animación
+            });
+        });
+    });
+</script>
+

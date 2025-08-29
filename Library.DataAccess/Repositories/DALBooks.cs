@@ -34,7 +34,7 @@ namespace Library.DataAccess.Repositories
             using (var dbContext = new DBContext())
             {
                 var books = await dbContext.Books.FirstOrDefaultAsync(s => s.BOOK_ID == pBooks.BOOK_ID);
-                pBooks.COVER = pBooks.CoverImagePath;
+                books.COVER = pBooks.CoverImagePath;
 
                 books.ID_CATEGORY = pBooks.ID_CATEGORY;
                 books.ID_ACQUISITION = pBooks.ID_ACQUISITION;

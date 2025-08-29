@@ -19,19 +19,35 @@ namespace Library.Client.MVC.Controllers
         BLAuthors authorsBL = new BLAuthors();
         BLEditions editionsBL = new BLEditions();
         BLCountries countriesBL = new BLCountries();
-        BLCatalogs catalogsBL = new BLCatalogs(); 
+        BLCatalogs catalogsBL = new BLCatalogs();
 
-        public async Task<IActionResult> Index(Books pBooks = null)
+        public async Task<IActionResult> Index(Books pBooks, int page = 1, int pageSize = 10)
         {
             if (pBooks == null)
                 pBooks = new Books();
-            if (pBooks.Top_Aux == 0)
-                pBooks.Top_Aux = 10;
-            else if (pBooks.Top_Aux == -1)
-                pBooks.Top_Aux = 0;
 
+            // Si Top_Aux es -1, no se aplica límite (se usa para "Todos")
+            if (pBooks.Top_Aux == -1)
+                pBooks.Top_Aux = 0; // 0 significa "sin límite" en tu capa de negocio
 
-            var books = await booksBL.GetIncludePropertiesAsync(pBooks);
+            var allBooks = await booksBL.GetIncludePropertiesAsync(pBooks);
+            allBooks = allBooks.OrderBy(b => b.BOOK_ID).ToList();
+
+            // Aplica la paginación manualmente, ignorando Top_Aux
+            int totalRegistros = allBooks.Count();
+            int totalPaginas = (int)Math.Ceiling((double)totalRegistros / pageSize);
+
+            Console.WriteLine($"Total de registros: {totalRegistros}, Total de páginas: {totalPaginas}, Página actual: {page}");
+
+            var books = allBooks
+                .Skip((page - 1) * pageSize)
+                .Take(pageSize)
+                .ToList();
+
+            ViewBag.TotalPaginas = totalPaginas;
+            ViewBag.PaginaActual = page;
+            ViewBag.Top = pageSize;
+            ViewBag.ShowMenu = true;
             ViewBag.Categories = await categoriesBL.GetAllCategoriesAsync();
             ViewBag.AcquisitionTypes = await acquisitionTypesBL.GetAllAcquisitionTypesAsync();
             ViewBag.Editorials = await editorialsBL.GetAllEditorialsAsync();
@@ -40,11 +56,10 @@ namespace Library.Client.MVC.Controllers
             ViewBag.Countries = await countriesBL.GetAllCountriesAsync();
             ViewBag.Catalogs = await catalogsBL.GetAllCatalogsAsync();
 
-            ViewBag.Top = pBooks.Top_Aux;
-            ViewBag.ShowMenu = true;
-           
             return View(books);
         }
+
+
 
         // GET: BooksController/Details/5
         public async Task<IActionResult> Details(int id)
@@ -144,18 +159,17 @@ namespace Library.Client.MVC.Controllers
         public async Task<IActionResult> Edit(long id)
         {
             var books = await booksBL.GetBooksByIdAsync(new Books { BOOK_ID = id });
+            books.CoverImagePath = books.COVER; // Asigna la ruta de la imagen actual a CoverImagePath
+
             var editorial = await editorialsBL.GetEditorialsByIdAsync(new Editorials { EDITORIAL_ID = books.ID_EDITORIAL });
-            var autor = await authorsBL.GetAuthorsByIdAsync(new Authors {AUTHOR_ID = books.ID_AUTHOR});
-            var pais = await countriesBL.GetCountriesByIdAsync(new Countries {COUNTRY_ID = books.ID_COUNTRY});
+            var autor = await authorsBL.GetAuthorsByIdAsync(new Authors { AUTHOR_ID = books.ID_AUTHOR });
+            var pais = await countriesBL.GetCountriesByIdAsync(new Countries { COUNTRY_ID = books.ID_COUNTRY });
             var edicion = await editionsBL.GetEditionsByIdAsync(new Editions { EDITION_ID = books.ID_EDITION });
 
             ViewBag.EditorialName = editorial.EDITORIAL_NAME;
             ViewBag.AutorName = autor.AUTHOR_NAME;
             ViewBag.PaisName = pais.COUNTRY_NAME;
             ViewBag.EdicionName = edicion.EDITION_NUMBER;
-
-          
-
 
             ViewBag.Categories = await categoriesBL.GetAllCategoriesAsync();
             ViewBag.AcquisitionTypes = await acquisitionTypesBL.GetAllAcquisitionTypesAsync();
@@ -164,27 +178,35 @@ namespace Library.Client.MVC.Controllers
             ViewBag.Editions = await editionsBL.GetAllEditionsAsync();
             ViewBag.Countries = await countriesBL.GetAllCountriesAsync();
             ViewBag.Catalogs = await catalogsBL.GetAllCatalogsAsync();
-
-
             ViewBag.Error = "";
             ViewBag.ShowMenu = true;
+
             return View(books);
         }
 
-        // POST: BooksController/Edit/5
+
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, Books pBooks, IFormFile newcoverImage)
+        public async Task<IActionResult> Edit(int id, Books pBooks, IFormFile newcoverImage, string imageDeleted)
         {
             try
             {
-                if(newcoverImage != null && newcoverImage.Length > 0)
+                // Si se eliminó la imagen y no se subió una nueva, asigna "SinPortada"
+                if (imageDeleted == "true" && (newcoverImage == null || newcoverImage.Length == 0))
                 {
-                    // guardar la imagen en el sistema de archivos y obtener la ruta
+                    pBooks.COVER = "SinPortada";
+                }
+                // Si no se sube una nueva imagen, conserva la imagen actual
+                else if (newcoverImage == null || newcoverImage.Length == 0)
+                {
+                    var existingBook = await booksBL.GetBooksByIdAsync(new Books { BOOK_ID = id });
+                    pBooks.COVER = existingBook.COVER;
+                }
+                // Si se sube una nueva imagen, guárdala
+                else
+                {
                     string imagePath = SaveCoverImage(newcoverImage);
-
-                    // Almacena la ruta en la propiedad de la entidad
-                    pBooks.CoverImagePath = imagePath;
+                    pBooks.COVER = imagePath;
                 }
 
                 int result = await booksBL.UpdateBooksAsync(pBooks);
@@ -196,6 +218,9 @@ namespace Library.Client.MVC.Controllers
                 return View(pBooks);
             }
         }
+
+
+
 
 
         // GET: BooksController/Delete/5

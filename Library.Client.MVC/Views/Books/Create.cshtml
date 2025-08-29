@@ -1,9 +1,6 @@
 ﻿@model Library.DataAccess.Domain.Books
 
 @{
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet">
-
-
     ViewData["Title"] = "Create";
     int numPage = 1;
     int numRegistros = 0;
@@ -20,257 +17,217 @@
     List<Library.DataAccess.Domain.Catalogs> catalogs = ViewBag.Catalogs as List<Library.DataAccess.Domain.Catalogs>;
 }
 
+<link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet">
 
-<style>
-    body {
-        overflow-x: hidden; /* Evitar el desbordamiento horizontal */
-    }
 
-    #contenedor-principal {
-        border-radius: 1rem;
-    }
-</style>
-
-<div class="card" id="contenedor-principal">
-    <div class="card-body">
-
-        <h1 class="d-flex justify-content-center" style="padding:15px; font-family: 'Poppins', sans-serif; font-weight: 600;">Nuevo Libro</h1>
-<hr />
-<div class="container">
-    <div class="d-flex justify-content-center">
-        <form asp-action="Create" method="post" class="col-md-8" enctype="multipart/form-data">
-            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
-            <div class="row">
-                <div class="form-group col-md-6">
-                    <label asp-for="ID_CATEGORY" class="control-label">Categoría</label>
-                    <select asp-for="ID_CATEGORY" class="form-control" id="categoryDropdown">
-                        <option value="0">Seleccionar</option>
-                        @if (categories != null)
-                        {
-                            @foreach (var item in categories)
-                            {
-                                <option value="@item.CATEGORY_ID">@item.CATEGORY_NAME</option>
-                            }
-                        }
-                    </select>
-                    <span asp-validation-for="ID_CATEGORY" class="text-danger"></span>
-                </div>
-                <div class="form-group col-md-6">
-                    <label asp-for="ID_ACQUISITION" class="control-label">Tipo de Adquisición</label>
-                    <select asp-for="ID_ACQUISITION" class="form-control">
-                        <option value="0">Seleccionar</option>
-                        @if (acquisitionTypes != null)
-                        {
-                            @foreach (var item in acquisitionTypes)
-                            {
-                                <option value="@item.ACQUISITION_ID">@item.ACQUISITION_TYPE</option>
-                            }
-                        }
-                    </select>
-                    <span asp-validation-for="ID_ACQUISITION" class="text-danger"></span>
-                </div>
-            </div>
-
-            <div class="row">
-                <div class="form-group col-md-6">
-                    <label asp-for="ID_EDITORIAL" class="control-label">Editorial</label>
-                    <input asp-for="ID_EDITORIAL" type="text" class="form-control" id="txtIdEditorial" hidden />
-                    <div class="input-group">
-                        <input type="text" class="form-control" id="txtNombreEditorial" readonly>
-                        <div class="input-group-append" style="margin-left: 10px;">
-                            <button type="button" style="padding: 5px 20px 5px 13px" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#ModalEditorial">
-                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-search" viewBox="0 0 16 16">
-                                    <path d="M11.742 10.344a6.5 6.5 0 1 0-1.397 1.398h-.001q.044.06.098.115l3.85 3.85a1 1 0 0 0 1.415-1.414l-3.85-3.85a1 1 0 0 0-.115-.1zM12 6.5a5.5 5.5 0 1 1-11 0 5.5 5.5 0 0 1 11 0" />
-                                </svg>
-                                Buscar Editorial
-                            </button>
+<div class="row">
+    <div class="col-md-12 grid-margin stretch-card">
+        <div class="card">
+            <div class="card-body">
+                <h4 class="card-title text-center" style="font-family: 'Poppins', sans-serif; font-weight: 600;">Nuevo Libro</h4>
+                <form asp-action="Create" method="post" enctype="multipart/form-data" class="forms-sample">
+                    <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+                    <div class="row">
+                        <div class="mb-3 col-md-6">
+                            <label asp-for="ID_CATEGORY" class="form-label">Categoría</label>
+                            <select asp-for="ID_CATEGORY" class="form-select">
+                                <option value="0">Seleccionar</option>
+                                @if (categories != null)
+                                {
+                                    @foreach (var item in categories)
+                                    {
+                                        <option value="@item.CATEGORY_ID">@item.CATEGORY_NAME</option>
+                                    }
+                                }
+                            </select>
+                            <span asp-validation-for="ID_CATEGORY" class="text-danger"></span>
                         </div>
-                    </div>
-                    <span asp-validation-for="ID_EDITORIAL" class="text-danger"></span>
-                </div>
-                <div class="form-group col-md-6">
-                    <label asp-for="ID_AUTHOR" class="control-label">Autor</label>
-                    <input asp-for="ID_AUTHOR" type="text" class="form-control" id="txtIdAuthor" hidden />
-                    <div class="input-group">
-                        <input type="text" class="form-control" id="txtNombreAutor" readonly>
-                        <div class="input-group-append" style="margin-left: 10px;">
-                            <button type="button" style="padding: 5px 20px 5px 13px" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#ModalAutor">
-                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-search" viewBox="0 0 16 16">
-                                    <path d="M11.742 10.344a6.5 6.5 0 1 0-1.397 1.398h-.001q.044.06.098.115l3.85 3.85a1 1 0 0 0 1.415-1.414l-3.85-3.85a1 1 0 0 0-.115-.1zM12 6.5a5.5 5.5 0 1 1-11 0 5.5 5.5 0 0 1 11 0" />
-                                </svg>
-                                Buscar Autor
-                            </button>
-                        </div>
-                    </div>
-                    <span asp-validation-for="ID_AUTHOR" class="text-danger"></span>
-                </div>
-            </div>
 
-            <div class="row">
-                <div class="form-group col-md-6">
-                    <label asp-for="ID_EDITION" class="control-label">Edicion</label>
-                    <input asp-for="ID_EDITION" type="text" class="form-control" id="txtEdicionID" hidden />
-
-                    <div class="input-group">
-                        <input type="text" class="form-control" id="txtEdicionName" readonly>
-                        <div class="input-group-append" style="margin-left: 10px;">
-                            <button type="button" style="padding: 5px 20px 5px 13px" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#ModalEdicion">
-                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-search" viewBox="0 0 16 16">
-                                    <path d="M11.742 10.344a6.5 6.5 0 1 0-1.397 1.398h-.001q.044.06.098.115l3.85 3.85a1 1 0 0 0 1.415-1.414l-3.85-3.85a1 1 0 0 0-.115-.1zM12 6.5a5.5 5.5 0 1 1-11 0 5.5 5.5 0 0 1 11 0" />
-                                </svg>
-                                Buscar Edicion
-                            </button>
+                        <div class="mb-3 col-md-6">
+                            <label asp-for="ID_ACQUISITION" class="form-label">Tipo de Adquisición</label>
+                            <select asp-for="ID_ACQUISITION" class="form-select">
+                                <option value="0">Seleccionar</option>
+                                @if (acquisitionTypes != null)
+                                {
+                                    @foreach (var item in acquisitionTypes)
+                                    {
+                                        <option value="@item.ACQUISITION_ID">@item.ACQUISITION_TYPE</option>
+                                    }
+                                }
+                            </select>
+                            <span asp-validation-for="ID_ACQUISITION" class="text-danger"></span>
                         </div>
                     </div>
 
-                    <span asp-validation-for="ID_EDITION" class="text-danger"></span>
-                </div>
-                <div class="form-group col-md-6">
-                    <label asp-for="ID_COUNTRY" class="control-label">Pais</label>
-                    <input asp-for="ID_COUNTRY" type="text" class="form-control" id="txtIdPais" hidden />
-                    <div class="input-group">
-                        <input type="text" class="form-control" id="txtNombrePais" readonly>
-                        <div class="input-group-append" style="margin-left: 10px;">
-                            <button type="button" style="padding: 5px 20px 5px 13px" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#ModalPais">
-                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-search" viewBox="0 0 16 16">
-                                    <path d="M11.742 10.344a6.5 6.5 0 1 0-1.397 1.398h-.001q.044.06.098.115l3.85 3.85a1 1 0 0 0 1.415-1.414l-3.85-3.85a1 1 0 0 0-.115-.1zM12 6.5a5.5 5.5 0 1 1-11 0 5.5 5.5 0 0 1 11 0" />
-                                </svg>
-                                Buscar Pais
-                            </button>
-                        </div>
-                    </div>
-                    <span asp-validation-for="ID_COUNTRY" class="text-danger"></span>
-                </div>
-            </div>
-
-            <div class="row">
-                <div class="form-group col-md-6">
-                    <label asp-for="ID_CATALOG" class="control-label">Catálogo</label>
-                    <select asp-for="ID_CATALOG" class="form-control" id="catalogDropdown">
-                        <option value="0">Seleccionar</option>
-                        @if (catalogs != null)
-                        {
-                            @foreach (var item in catalogs)
-                            {
-                                <option value="@item.CATALOG_ID">@item.CATALOG_NAME</option>
-                            }
-                        }
-                    </select>
-                    <span asp-validation-for="ID_CATALOG" class="text-danger"></span>
-                </div>
-
-                <div class="form-group col-md-6">
-                    <label asp-for="DEWEY" class="control-label">DEWEY</label>
-                    <input asp-for="DEWEY" class="form-control" />
-                    <span asp-validation-for="DEWEY" class="text-danger"></span>
-                </div>
-            </div>
-
-            <div class="row">
-                <div class="form-group col-md-6">
-                    <label asp-for="CUTER" class="control-label">CUTER</label>
-                    <input asp-for="CUTER" class="form-control" />
-                    <span asp-validation-for="CUTER" class="text-danger"></span>
-                </div>
-                <div class="form-group col-md-6">
-                    <label asp-for="TITLE" class="control-label">Título</label>
-                    <input asp-for="TITLE" class="form-control" />
-                    <span asp-validation-for="TITLE" class="text-danger"></span>
-                </div>
-            </div>
-
-            <div class="row">
-                <div class="form-group col-md-6">
-                    <label asp-for="YEAR" class="control-label">Año</label>
-                    <input asp-for="YEAR" class="form-control" />
-                    <span asp-validation-for="YEAR" class="text-danger"></span>
-                </div>
-                <div class="form-group col-md-6">
-                    <label asp-for="EJEMPLARS" class="control-label">Ejemplares</label>
-                    <input asp-for="EJEMPLARS" class="form-control" />
-                    <span asp-validation-for="EJEMPLARS" class="text-danger"></span>
-                </div>
-            </div>
-
-            <div class="row">
-                <div class="form-group col-md-6">
-                    <label asp-for="EXISTENCES" class="control-label">Existencias</label>
-                    <input asp-for="EXISTENCES" class="form-control" />
-                    <span asp-validation-for="EXISTENCES" class="text-danger"></span>
-                </div>
-
-                        <div class="form-group col-md-6">
-                            <label asp-for="CoverImagePath" class="control-label">Portada</label>
-                            <input name="coverImage" type="file" class="form-control" id="coverImageInput" accept="image/*" />
-
-                            <!-- Imagen de previsualización -->
-                            <div class="mt-3">
-                                <img id="previewImage" src="#" alt="Vista previa de portada" style="display:none; max-width: 100%; max-height: 250px; border-radius: 10px; border: 1px solid #ccc; padding: 5px;" />
+                    <div class="row">
+                        <div class="mb-3 col-md-6">
+                            <label asp-for="ID_EDITORIAL" class="form-label">Editorial</label>
+                            <input asp-for="ID_EDITORIAL" type="hidden" id="txtIdEditorial" />
+                            <div class="input-group">
+                                <input type="text" class="form-control" id="txtNombreEditorial" readonly>
+                                <button type="button" class="btn btn-outline-primary" data-bs-toggle="modal" data-bs-target="#ModalEditorial">
+                                    <i class="bi bi-search"></i> Buscar
+                                </button>
                             </div>
+                            <span asp-validation-for="ID_EDITORIAL" class="text-danger"></span>
                         </div>
 
-            </div>
-            <br />
-            <div class="form-group d-flex justify-content-center">
-                
-                <button type="submit" class="btn btn-success">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-floppy" viewBox="0 0 16 16">
-                        <path d="M11 2H9v3h2z" />
-                        <path d="M1.5 0h11.586a1.5 1.5 0 0 1 1.06.44l1.415 1.414A1.5 1.5 0 0 1 16 2.914V14.5a1.5 1.5 0 0 1-1.5 1.5h-13A1.5 1.5 0 0 1 0 14.5v-13A1.5 1.5 0 0 1 1.5 0M1 1.5v13a.5.5 0 0 0 .5.5H2v-4.5A1.5 1.5 0 0 1 3.5 9h9a1.5 1.5 0 0 1 1.5 1.5V15h.5a.5.5 0 0 0 .5-.5V2.914a.5.5 0 0 0-.146-.353l-1.415-1.415A.5.5 0 0 0 13.086 1H13v4.5A1.5 1.5 0 0 1 11.5 7h-7A1.5 1.5 0 0 1 3 5.5V1H1.5a.5.5 0 0 0-.5.5m3 4a.5.5 0 0 0 .5.5h7a.5.5 0 0 0 .5-.5V1H4zM3 15h10v-4.5a.5.5 0 0 0-.5-.5h-9a.5.5 0 0 0-.5.5z" />
-                    </svg>
-                    Guardar
-                </button> 
-                <div style="width: 10px;"></div> <!-- Agrega un espacio de 10px entre los botones -->
-                <a asp-action="Index" class="btn btn-info">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-reply-fill" viewBox="0 0 16 16">
-                        <path d="M5.921 11.9 1.353 8.62a.72.72 0 0 1 0-1.238L5.921 4.1A.716.716 0 0 1 7 4.719V6c1.5 0 6 0 7 8-2.5-4.5-7-4-7-4v1.281c0 .56-.606.898-1.079.62z" />
-                    </svg>
-                    Regresar
-                </a>
-            </div>
+                        <div class="mb-3 col-md-6">
+                            <label asp-for="ID_AUTHOR" class="form-label">Autor</label>
+                            <input asp-for="ID_AUTHOR" type="hidden" id="txtIdAuthor" />
+                            <div class="input-group">
+                                <input type="text" class="form-control" id="txtNombreAutor" readonly>
+                                <button type="button" class="btn btn-outline-primary" data-bs-toggle="modal" data-bs-target="#ModalAutor">
+                                    <i class="bi bi-search"></i> Buscar
+                                </button>
+                            </div>
+                            <span asp-validation-for="ID_AUTHOR" class="text-danger"></span>
+                        </div>
+                    </div>
 
-        </form>
+                    <div class="row">
+                        <div class="mb-3 col-md-6">
+                            <label asp-for="ID_EDITION" class="form-label">Edición</label>
+                            <input asp-for="ID_EDITION" type="hidden" id="txtEdicionID" />
+                            <div class="input-group">
+                                <input type="text" class="form-control" id="txtEdicionName" readonly>
+                                <button type="button" class="btn btn-outline-primary" data-bs-toggle="modal" data-bs-target="#ModalEdicion">
+                                    <i class="bi bi-search"></i> Buscar
+                                </button>
+                            </div>
+                            <span asp-validation-for="ID_EDITION" class="text-danger"></span>
+                        </div>
+
+                        <div class="mb-3 col-md-6">
+                            <label asp-for="ID_COUNTRY" class="form-label">País</label>
+                            <input asp-for="ID_COUNTRY" type="hidden" id="txtIdPais" />
+                            <div class="input-group">
+                                <input type="text" class="form-control" id="txtNombrePais" readonly>
+                                <button type="button" class="btn btn-outline-primary" data-bs-toggle="modal" data-bs-target="#ModalPais">
+                                    <i class="bi bi-search"></i> Buscar
+                                </button>
+                            </div>
+                            <span asp-validation-for="ID_COUNTRY" class="text-danger"></span>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="mb-3 col-md-6">
+                            <label asp-for="ID_CATALOG" class="form-label">Catálogo</label>
+                            <select asp-for="ID_CATALOG" class="form-select">
+                                <option value="0">Seleccionar</option>
+                                @if (catalogs != null)
+                                {
+                                    @foreach (var item in catalogs)
+                                    {
+                                        <option value="@item.CATALOG_ID">@item.CATALOG_NAME</option>
+                                    }
+                                }
+                            </select>
+                            <span asp-validation-for="ID_CATALOG" class="text-danger"></span>
+                        </div>
+                        <div class="mb-3 col-md-6">
+                            <label asp-for="DEWEY" class="form-label">DEWEY</label>
+                            <input asp-for="DEWEY" class="form-control" />
+                            <span asp-validation-for="DEWEY" class="text-danger"></span>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="mb-3 col-md-6">
+                            <label asp-for="CUTER" class="form-label">CUTER</label>
+                            <input asp-for="CUTER" class="form-control" />
+                            <span asp-validation-for="CUTER" class="text-danger"></span>
+                        </div>
+                        <div class="mb-3 col-md-6">
+                            <label asp-for="TITLE" class="form-label">Título</label>
+                            <input asp-for="TITLE" class="form-control" />
+                            <span asp-validation-for="TITLE" class="text-danger"></span>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="mb-3 col-md-6">
+                            <label asp-for="YEAR" class="form-label">Año</label>
+                            <input asp-for="YEAR" class="form-control" />
+                            <span asp-validation-for="YEAR" class="text-danger"></span>
+                        </div>
+                        <div class="mb-3 col-md-6">
+                            <label asp-for="EJEMPLARS" class="form-label">Ejemplares</label>
+                            <input asp-for="EJEMPLARS" class="form-control" />
+                            <span asp-validation-for="EJEMPLARS" class="text-danger"></span>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="mb-3 col-md-6">
+                            <label asp-for="EXISTENCES" class="form-label">Existencias</label>
+                            <input asp-for="EXISTENCES" class="form-control" />
+                            <span asp-validation-for="EXISTENCES" class="text-danger"></span>
+                        </div>
+                        <div class="mb-3 col-md-6">
+                            <label asp-for="CoverImagePath" class="form-label">Portada</label>
+                            <input name="coverImage" type="file" class="form-control" id="coverImageInput" accept="image/*" />
+                            <div class="mt-3 image-container" style="position: relative; display: inline-block;">
+                                <img id="previewImage" src="#" alt="Vista previa de portada"
+                                     style="display:none; max-width:100%; max-height:250px; border-radius:10px; padding:0; transition: opacity 0.5s ease-out;" />
+                                <span id="cancelImage"
+                                      style="position: absolute; top: 5px; right: 5px; background: rgba(255, 255, 255, 0.8); border-radius: 50%; width: 25px; height: 25px; display: none; justify-content: center; align-items: center; cursor: pointer; font-weight: bold; color: #dc3545; border: 1px solid #dc3545;">
+                                    &times;
+                                </span>
+                            </div>
+                            <span asp-validation-for="CoverImagePath" class="text-danger"></span>
+                        </div>
+                    </div>
+
+                    <div class="d-flex justify-content-center mt-4">
+                        <button type="submit" class="btn btn-success me-2">
+                            <i class="bi bi-floppy"></i> Guardar
+                        </button>
+                        <a asp-action="Index" class="btn btn-secondary" id="confirmar">
+                            <i class="bi bi-reply-fill"></i> Regresar
+                        </a>
+                    </div>
+                </form>
+            </div>
+        </div>
     </div>
 </div>
+
 
 <!-- Modal Buscar Autores-->
-<div class="modal fade" id="ModalAutor" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
-    <div class="modal-dialog modal-dialog2  modal-dialog-scrollable">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h1 class="modal-title fs-5" id="staticBackdropLabel">AUTORES</h1>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+<div class="modal fade" id="ModalAutor" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="ModalAutorLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg modal-dialog-scrollable">
+        <div class="modal-content shadow">
+            <div class="modal-header bg-primary text-white">
+                <h5 class="modal-title fw-bold" id="ModalAutorLabel">
+                    <i class="bi bi-person-lines-fill me-2"></i>Autores
+                </h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
+
             <div class="modal-body">
-                <form class="card text-bg-light mb-3" id="frmBuscarAutores">
-                    <div class="card-header text-center fw-bold">Listado de Autores</div>
+                <form id="frmBuscarAutores" class="card shadow-sm mb-4 border">
+                    <div class="card-header text-center fw-bold bg-light border-bottom">
+                        Listado de Autores
+                    </div>
                     <div class="card-body">
-                        <div class="row">
-                            <div class="col-5">
-                                <label for="txtNombreB" class="form-label">Nombre:</label>
+                        <div class="row align-items-end">
+                            <div class="col-md-6">
+                                <label for="txtNombre" class="form-label">Nombre</label>
                                 <input type="text" class="form-control" id="txtNombre" name="AUTHOR_NAME">
                             </div>
-                            <div class="col-6 d-flex align-items-end">
-                                <button type="button" id="btnBuscarAutores" class="btn btn-primary btn-sm px-3">
-                                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-search" viewBox="0 0 16 16">
-                                        <path d="M11.742 10.344a6.5 6.5 0 1 0-1.397 1.398h-.001q.044.06.098.115l3.85 3.85a1 1 0 0 0 1.415-1.414l-3.85-3.85a1 1 0 0 0-.115-.1zM12 6.5a5.5 5.5 0 1 1-11 0 5.5 5.5 0 0 1 11 0" />
-                                    </svg>
-                                    Buscar
-                                </button>
-                                <button type="button" class="btn btn-success btn-sm px-3 " data-bs-toggle="modal" data-bs-target="#createAuthorModal" style="margin-left: 10px;">
-                                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-plus-square" viewBox="0 0 16 16">
-                                        <path d="M14 1a1 1 0 0 1 1 1v12a1 1 0 0 1-1 1H2a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1zM2 0a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V2a2 2 0 0 0-2-2z" />
-                                        <path d="M8 4a.5.5 0 0 1 .5.5v3h3a.5.5 0 0 1 0 1h-3v3a.5.5 0 0 1-1 0v-3h-3a.5.5 0 0 1 0-1h3v-3A.5.5 0 0 1 8 4" />
-                                    </svg>
-                                    Crear
+                            <div class="col-md-6 text-end">
+                                <button type="button" id="btnBuscarAutores" class="btn btn-primary btn-icon-text mt-3">
+                                    <i class="bi bi-search me-1"></i> Buscar Todos o en Especifico
                                 </button>
                             </div>
                         </div>
                     </div>
                 </form>
-                <div class="w-100"></div>
-                <table class="table table-striped table-bordered" id="tbDatosAutores">
-                    <thead>
+
+                <table class="table table-hover table-bordered align-middle text-center" id="tbDatosAutores">
+                    <thead class="table-light">
                         <tr>
                             <th>Nombre</th>
                             <th>Acciones</th>
@@ -279,93 +236,47 @@
                     <tbody></tbody>
                 </table>
             </div>
+
             <div class="modal-footer">
                 <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-x-lg" viewBox="0 0 16 16">
-                        <path d="M2.146 2.854a.5.5 0 1 1 .708-.708L8 7.293l5.146-5.147a.5.5 0 0 1 .708.708L8.707 8l5.147 5.146a.5.5 0 0 1-.708.708L8 8.707l-5.146 5.147a.5.5 0 0 1-.708-.708L7.293 8z" />
-                    </svg>
-                    Cancelar
+                    <i class="bi bi-x-lg me-1"></i> Cancelar
                 </button>
             </div>
         </div>
     </div>
 </div>
 
-<!-- Modal para crear Autor -->
-<div class="modal fade" id="createAuthorModal" tabindex="-1" role="dialog" aria-labelledby="createAuthorModalLabel" aria-hidden="true">
-    <div class="modal-dialog" role="document">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title" id="createAuthorModalLabel">Crear Autor</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+<!-- Modal Buscar Editorial -->
+<div class="modal fade" id="ModalEditorial" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="ModalEditorialLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg modal-dialog-scrollable">
+        <div class="modal-content shadow">
+            <div class="modal-header bg-primary text-white">
+                <h5 class="modal-title fw-bold" id="ModalEditorialLabel">
+                    <i class="bi bi-journal-bookmark-fill me-2"></i> Editoriales
+                </h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body">
-                <form id="createAuthorForm" asp-action="Create">
-                    <div class="form-group">
-                        <label for="AUTHOR_NAME">Nombre del Autor</label>
-                        <input type="text" class="form-control" id="AUTHOR_NAME" name="AUTHOR_NAME" required maxlength="200" />
-                        <span class="text-danger" id="authorNameError"></span>
+                <form id="frmBuscarEditoriales" class="card shadow-sm mb-4 border">
+                    <div class="card-header text-center fw-bold bg-light border-bottom">
+                        Listado de Editoriales
                     </div>
-                    <button type="submit" class="btn btn-success">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-floppy-fill" viewBox="0 0 16 16">
-                            <path d="M0 1.5A1.5 1.5 0 0 1 1.5 0H3v5.5A1.5 1.5 0 0 0 4.5 7h7A1.5 1.5 0 0 0 13 5.5V0h.086a1.5 1.5 0 0 1 1.06.44l1.415 1.414A1.5 1.5 0 0 1 16 2.914V14.5a1.5 1.5 0 0 1-1.5 1.5H14v-5.5A1.5 1.5 0 0 0 12.5 9h-9A1.5 1.5 0 0 0 2 10.5V16h-.5A1.5 1.5 0 0 1 0 14.5z" />
-                            <path d="M3 16h10v-5.5a.5.5 0 0 0-.5-.5h-9a.5.5 0 0 0-.5.5zm9-16H4v5.5a.5.5 0 0 0 .5.5h7a.5.5 0 0 0 .5-.5zM9 1h2v4H9z" />
-                        </svg>
-                        Guardar
-                    </button>
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-x-lg" viewBox="0 0 16 16">
-                            <path d="M2.146 2.854a.5.5 0 1 1 .708-.708L8 7.293l5.146-5.147a.5.5 0 0 1 .708.708L8.707 8l5.147 5.146a.5.5 0 0 1-.708.708L8 8.707l-5.146 5.147a.5.5 0 0 1-.708-.708L7.293 8z" />
-                        </svg>
-                        Cancelar
-                    </button>
-                    <div id="authorResponseMessage" class="mt-3"></div>
-                </form>
-            </div>
-        </div>
-    </div>
-</div>
-
-<!-------------------------------------->
-
-<!-- Modal Buscar Editorial-->
-<div class="modal fade" id="ModalEditorial" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
-    <div class="modal-dialog modal-dialog2  modal-dialog-scrollable">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h1 class="modal-title fs-5" id="staticBackdropLabel">EDITORIALES</h1>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-            </div>
-            <div class="modal-body">
-                <form class="card text-bg-light mb-3" id="frmBuscarEditoriales">
-                    <div class="card-header text-center fw-bold">Listado de Editoriales</div>
                     <div class="card-body">
-                        <div class="row">
-                            <div class="col-5">
-                                <label for="txtNombreB" class="form-label">Nombre:</label>
+                        <div class="row align-items-end">
+                            <div class="col-md-6">
+                                <label for="txtNombre" class="form-label">Nombre</label>
                                 <input type="text" class="form-control" id="txtNombre" name="EDITORIAL_NAME">
                             </div>
-                            <div class="col-6 d-flex align-items-end">
-                                <button type="button" id="btnBuscarEditoriales" class="btn btn-primary">
-                                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-search" viewBox="0 0 16 16">
-                                        <path d="M11.742 10.344a6.5 6.5 0 1 0-1.397 1.398h-.001q.044.06.098.115l3.85 3.85a1 1 0 0 0 1.415-1.414l-3.85-3.85a1 1 0 0 0-.115-.1zM12 6.5a5.5 5.5 0 1 1-11 0 5.5 5.5 0 0 1 11 0" />
-                                    </svg>
-                                    Buscar
-                                 </button>
-                                <button type="button" class="btn btn-success" data-bs-toggle="modal" data-bs-target="#createEditorialModal" style="margin: 0px 0px 0px 10px">
-                                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-plus-square" viewBox="0 0 16 16">
-                                        <path d="M14 1a1 1 0 0 1 1 1v12a1 1 0 0 1-1 1H2a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1zM2 0a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V2a2 2 0 0 0-2-2z" />
-                                        <path d="M8 4a.5.5 0 0 1 .5.5v3h3a.5.5 0 0 1 0 1h-3v3a.5.5 0 0 1-1 0v-3h-3a.5.5 0 0 1 0-1h3v-3A.5.5 0 0 1 8 4" />
-                                    </svg>
-                                    Crear
+                            <div class="col-md-6 text-end">
+                                <button type="button" id="btnBuscarEditoriales" class="btn btn-primary btn-icon-text mt-3">
+                                    <i class="bi bi-search me-1"></i> Buscar Todos o en Especifico
                                 </button>
                             </div>
                         </div>
                     </div>
                 </form>
-                <div class="w-100"></div>
-                <table class="table table-striped table-bordered" id="tbDatosEditorial">
-                    <thead>
+                <table class="table table-hover table-bordered align-middle text-center" id="tbDatosEditorial">
+                    <thead class="table-light">
                         <tr>
                             <th>Nombre</th>
                             <th>Acciones</th>
@@ -376,93 +287,46 @@
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-x-lg" viewBox="0 0 16 16">
-                        <path d="M2.146 2.854a.5.5 0 1 1 .708-.708L8 7.293l5.146-5.147a.5.5 0 0 1 .708.708L8.707 8l5.147 5.146a.5.5 0 0 1-.708.708L8 8.707l-5.146 5.147a.5.5 0 0 1-.708-.708L7.293 8z" />
-                    </svg>
-                    Cancelar
+                    <i class="bi bi-x-lg me-1"></i> Cancelar
                 </button>
             </div>
         </div>
     </div>
 </div>
 
-<!-- Modal para crear Editorial -->
-<div class="modal fade" id="createEditorialModal" tabindex="-1" role="dialog" aria-labelledby="createEditorialModalLabel" aria-hidden="true">
-    <div class="modal-dialog" role="document">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title" id="createEditorialModalLabel">Crear Editorial</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+<!-- Modal Buscar Edición -->
+<div class="modal fade" id="ModalEdicion" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="ModalEdicionLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg modal-dialog-scrollable">
+        <div class="modal-content shadow">
+            <div class="modal-header bg-primary text-white">
+                <h5 class="modal-title fw-bold" id="ModalEdicionLabel">
+                    <i class="bi bi-123 me-2"></i> Ediciones
+                </h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body">
-                <form id="createEditorialForm" asp-action="Create">
-                    <div class="form-group">
-                        <label for="EDITORIAL_NAME">Nombre de Editorial</label>
-                        <input type="text" class="form-control" id="" name="EDITORIAL_NAME" required maxlength="200" />
-                        <span class="text-danger" id="editorialNameError"></span>
+                <form id="frmBuscarEdiciones" class="card shadow-sm mb-4 border">
+                    <div class="card-header text-center fw-bold bg-light border-bottom">
+                        Listado de Ediciones
                     </div>
-                    <button type="submit" class="btn btn-success">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-floppy-fill" viewBox="0 0 16 16">
-                            <path d="M0 1.5A1.5 1.5 0 0 1 1.5 0H3v5.5A1.5 1.5 0 0 0 4.5 7h7A1.5 1.5 0 0 0 13 5.5V0h.086a1.5 1.5 0 0 1 1.06.44l1.415 1.414A1.5 1.5 0 0 1 16 2.914V14.5a1.5 1.5 0 0 1-1.5 1.5H14v-5.5A1.5 1.5 0 0 0 12.5 9h-9A1.5 1.5 0 0 0 2 10.5V16h-.5A1.5 1.5 0 0 1 0 14.5z" />
-                            <path d="M3 16h10v-5.5a.5.5 0 0 0-.5-.5h-9a.5.5 0 0 0-.5.5zm9-16H4v5.5a.5.5 0 0 0 .5.5h7a.5.5 0 0 0 .5-.5zM9 1h2v4H9z" />
-                        </svg>
-                        Guardar
-                    </button>
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-x-lg" viewBox="0 0 16 16">
-                            <path d="M2.146 2.854a.5.5 0 1 1 .708-.708L8 7.293l5.146-5.147a.5.5 0 0 1 .708.708L8.707 8l5.147 5.146a.5.5 0 0 1-.708.708L8 8.707l-5.146 5.147a.5.5 0 0 1-.708-.708L7.293 8z" />
-                        </svg>
-                        Cancelar
-                    </button>
-                    <div id="editorialResponseMessage" class="mt-3"></div>
-                </form>
-            </div>
-        </div>
-    </div>
-</div>
-
-<!------------------------------------------------------->
-
-<!-- Modal Buscar Edicion-->
-<div class="modal fade" id="ModalEdicion" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
-    <div class="modal-dialog modal-dialog2  modal-dialog-scrollable">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h1 class="modal-title fs-5" id="staticBackdropLabel">EDICIONES</h1>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-            </div>
-            <div class="modal-body">
-                <form class="card text-bg-light mb-3" id="frmBuscarEdiciones">
-                    <div class="card-header text-center fw-bold">Listado de Ediciones</div>
                     <div class="card-body">
-                        <div class="row">
-                            <div class="col-5">
-                                <label for="txtNombreB" class="form-label">Nombre:</label>
-                                <input type="text" class="form-control" id="txtNombre" name="EDITION_NUMBER">
+                        <div class="row align-items-end">
+                            <div class="col-md-6">
+                                <label for="txtNombreEdicion" class="form-label">Número de Edición</label>
+                                <input type="text" class="form-control" id="txtNombreEdicion" name="EDITION_NUMBER">
                             </div>
-                            <div class="col-6 d-flex align-items-end">
-                                <button type="button" id="btnBuscarEdicion" class="btn btn-primary"> 
-                                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-search" viewBox="0 0 16 16">
-                                        <path d="M11.742 10.344a6.5 6.5 0 1 0-1.397 1.398h-.001q.044.06.098.115l3.85 3.85a1 1 0 0 0 1.415-1.414l-3.85-3.85a1 1 0 0 0-.115-.1zM12 6.5a5.5 5.5 0 1 1-11 0 5.5 5.5 0 0 1 11 0" />
-                                    </svg>
-                                    Buscar
-                                 </button>
-                                <button type="button" class="btn btn-success" data-bs-toggle="modal" data-bs-target="#createEditionModal" style="margin: 0px 0px 0px 10px">
-                                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-plus-square" viewBox="0 0 16 16">
-                                        <path d="M14 1a1 1 0 0 1 1 1v12a1 1 0 0 1-1 1H2a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1zM2 0a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V2a2 2 0 0 0-2-2z" />
-                                        <path d="M8 4a.5.5 0 0 1 .5.5v3h3a.5.5 0 0 1 0 1h-3v3a.5.5 0 0 1-1 0v-3h-3a.5.5 0 0 1 0-1h3v-3A.5.5 0 0 1 8 4" />
-                                    </svg>
-                                    Crear
+                            <div class="col-md-6 text-end">
+                                <button type="button" id="btnBuscarEdicion" class="btn btn-primary btn-icon-text mt-3">
+                                    <i class="bi bi-search me-1"></i> Buscar Todos o en Especifico
                                 </button>
                             </div>
                         </div>
                     </div>
                 </form>
-                <div class="w-100"></div>
-                <table class="table table-striped table-bordered" id="tbDatosEdiciones">
-                    <thead>
+                <table class="table table-hover table-bordered align-middle text-center" id="tbDatosEdiciones">
+                    <thead class="table-light">
                         <tr>
-                            <th>Nombre</th>
+                            <th>Número</th>
                             <th>Acciones</th>
                         </tr>
                     </thead>
@@ -471,89 +335,46 @@
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-x-lg" viewBox="0 0 16 16">
-                        <path d="M2.146 2.854a.5.5 0 1 1 .708-.708L8 7.293l5.146-5.147a.5.5 0 0 1 .708.708L8.707 8l5.147 5.146a.5.5 0 0 1-.708.708L8 8.707l-5.146 5.147a.5.5 0 0 1-.708-.708L7.293 8z" />
-                    </svg>
-                    Cancelar
+                    <i class="bi bi-x-lg me-1"></i> Cancelar
                 </button>
             </div>
         </div>
     </div>
 </div>
 
-<!-- Modal para crear Edicion -->
-<div class="modal fade" id="createEditionModal" tabindex="-1" role="dialog" aria-labelledby="createEditionModalLabel" aria-hidden="true">
-    <div class="modal-dialog" role="document">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title" id="createEditionModalLabel">Crear Edición</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+<!-- Modal Buscar Ciudad -->
+<div class="modal fade" id="ModalPais" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="ModalPaisLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg modal-dialog-scrollable">
+        <div class="modal-content shadow">
+            <div class="modal-header bg-primary text-white">
+                <h5 class="modal-title fw-bold" id="ModalPaisLabel">
+                    <i class="bi bi-geo-alt-fill me-2"></i> Ciudades
+                </h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
-            <div class="modal-body">
-                <form id="createEditionForm" asp-action="Create">
-                    <div class="form-group">
-                        <label for="EDITION_NUMBER">Numero de Edición</label>
-                        <input type="text" class="form-control" id="" name="EDITION_NUMBER" required maxlength="200" />
-                        <span class="text-danger" id="editionNameError"></span>
-                    </div>
-                    <button type="submit" class="btn btn-success">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-floppy-fill" viewBox="0 0 16 16">
-                            <path d="M0 1.5A1.5 1.5 0 0 1 1.5 0H3v5.5A1.5 1.5 0 0 0 4.5 7h7A1.5 1.5 0 0 0 13 5.5V0h.086a1.5 1.5 0 0 1 1.06.44l1.415 1.414A1.5 1.5 0 0 1 16 2.914V14.5a1.5 1.5 0 0 1-1.5 1.5H14v-5.5A1.5 1.5 0 0 0 12.5 9h-9A1.5 1.5 0 0 0 2 10.5V16h-.5A1.5 1.5 0 0 1 0 14.5z" />
-                            <path d="M3 16h10v-5.5a.5.5 0 0 0-.5-.5h-9a.5.5 0 0 0-.5.5zm9-16H4v5.5a.5.5 0 0 0 .5.5h7a.5.5 0 0 0 .5-.5zM9 1h2v4H9z" />
-                        </svg>
-                        Guardar
-                    </button>
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-x-lg" viewBox="0 0 16 16">
-                            <path d="M2.146 2.854a.5.5 0 1 1 .708-.708L8 7.293l5.146-5.147a.5.5 0 0 1 .708.708L8.707 8l5.147 5.146a.5.5 0 0 1-.708.708L8 8.707l-5.146 5.147a.5.5 0 0 1-.708-.708L7.293 8z" />
-                        </svg>
-                        Cancelar
-                    </button>
-                    <div id="editionResponseMessage" class="mt-3"></div>
-                </form>
-            </div>
-        </div>
-    </div>
-</div>
 
-<!-- Modal Buscar Pais-->
-<div class="modal fade" id="ModalPais" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
-    <div class="modal-dialog modal-dialog2  modal-dialog-scrollable">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h1 class="modal-title fs-5" id="staticBackdropLabel">CIUDADES</h1>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-            </div>
             <div class="modal-body">
-                <form class="card text-bg-light mb-3" id="frmBuscarPais">
-                    <div class="card-header text-center fw-bold">Listado de Ciudades</div>
+                <form id="frmBuscarPais" class="card shadow-sm mb-4 border">
+                    <div class="card-header text-center fw-bold bg-light border-bottom">
+                        Listado de Ciudades
+                    </div>
                     <div class="card-body">
-                        <div class="row">
-                            <div class="col-5">
-                                <label for="txtNombreB" class="form-label">Nombre:</label>
+                        <div class="row align-items-end">
+                            <div class="col-md-6">
+                                <label for="txtNombre" class="form-label">Nombre</label>
                                 <input type="text" class="form-control" id="txtNombre" name="COUNTRY_NAME">
                             </div>
-                            <div class="col-6 d-flex align-items-end">
-                                <button type="button" id="btnBuscarCiudades" class="btn btn-primary">
-                                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-search" viewBox="0 0 16 16">
-                                        <path d="M11.742 10.344a6.5 6.5 0 1 0-1.397 1.398h-.001q.044.06.098.115l3.85 3.85a1 1 0 0 0 1.415-1.414l-3.85-3.85a1 1 0 0 0-.115-.1zM12 6.5a5.5 5.5 0 1 1-11 0 5.5 5.5 0 0 1 11 0" />
-                                    </svg>
-                                    Buscar
-                                </button>
-                                <button type="button" class="btn btn-success" data-bs-toggle="modal" data-bs-target="#createCountryModal" style="margin: 0px 0px 0px 10px">
-                                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-plus-square" viewBox="0 0 16 16">
-                                        <path d="M14 1a1 1 0 0 1 1 1v12a1 1 0 0 1-1 1H2a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1zM2 0a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V2a2 2 0 0 0-2-2z" />
-                                        <path d="M8 4a.5.5 0 0 1 .5.5v3h3a.5.5 0 0 1 0 1h-3v3a.5.5 0 0 1-1 0v-3h-3a.5.5 0 0 1 0-1h3v-3A.5.5 0 0 1 8 4" />
-                                    </svg>
-                                    Crear
+                            <div class="col-md-6 text-end">
+                                <button type="button" id="btnBuscarCiudades" class="btn btn-primary btn-icon-text mt-3">
+                                    <i class="bi bi-search me-1"></i> Buscar Todos o en Especifico
                                 </button>
                             </div>
                         </div>
                     </div>
                 </form>
-                <div class="w-100"></div>
-                <table class="table table-striped table-bordered" id="tbDatosCiudades">
-                    <thead>
+
+                <table class="table table-hover table-bordered align-middle text-center" id="tbDatosCiudades">
+                    <thead class="table-light">
                         <tr>
                             <th>Nombre</th>
                             <th>Acciones</th>
@@ -562,226 +383,242 @@
                     <tbody></tbody>
                 </table>
             </div>
+
             <div class="modal-footer">
                 <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-x-lg" viewBox="0 0 16 16">
-                        <path d="M2.146 2.854a.5.5 0 1 1 .708-.708L8 7.293l5.146-5.147a.5.5 0 0 1 .708.708L8.707 8l5.147 5.146a.5.5 0 0 1-.708.708L8 8.707l-5.146 5.147a.5.5 0 0 1-.708-.708L7.293 8z" />
-                    </svg>
-                    Cancelar
+                    <i class="bi bi-x-lg me-1"></i> Cancelar
                 </button>
             </div>
         </div>
     </div>
 </div>
-<!-- Modal para crear Pais -->
-<div class="modal fade" id="createCountryModal" tabindex="-1" role="dialog" aria-labelledby="createCountryModalLabel" aria-hidden="true">
-    <div class="modal-dialog" role="document">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title" id="createCountryModalLabel">Crear Ciudad</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-            </div>
-            <div class="modal-body">
-                <form id="createCountryForm" asp-action="Create">
-                    <div class="form-group">
-                        <label for="COUNTRY_NAME">Nombre de Ciudad</label>
-                        <input type="text" class="form-control" id="" name="COUNTRY_NAME" required maxlength="200" />
-                        <span class="text-danger" id="countryNameError"></span>
-                    </div>
-                    <button type="submit" class="btn btn-success">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-floppy-fill" viewBox="0 0 16 16">
-                            <path d="M0 1.5A1.5 1.5 0 0 1 1.5 0H3v5.5A1.5 1.5 0 0 0 4.5 7h7A1.5 1.5 0 0 0 13 5.5V0h.086a1.5 1.5 0 0 1 1.06.44l1.415 1.414A1.5 1.5 0 0 1 16 2.914V14.5a1.5 1.5 0 0 1-1.5 1.5H14v-5.5A1.5 1.5 0 0 0 12.5 9h-9A1.5 1.5 0 0 0 2 10.5V16h-.5A1.5 1.5 0 0 1 0 14.5z" />
-                            <path d="M3 16h10v-5.5a.5.5 0 0 0-.5-.5h-9a.5.5 0 0 0-.5.5zm9-16H4v5.5a.5.5 0 0 0 .5.5h7a.5.5 0 0 0 .5-.5zM9 1h2v4H9z" />
-                        </svg>
-                        Guardar
-                    </button>
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-x-lg" viewBox="0 0 16 16">
-                            <path d="M2.146 2.854a.5.5 0 1 1 .708-.708L8 7.293l5.146-5.147a.5.5 0 0 1 .708.708L8.707 8l5.147 5.146a.5.5 0 0 1-.708.708L8 8.707l-5.146 5.147a.5.5 0 0 1-.708-.708L7.293 8z" />
-                        </svg>
-                        Cancelar
-                    </button>
-                    <div id="countryResponseMessage" class="mt-3"></div>
-                </form>
-            </div>
-        </div>
-    </div>
-</div>
 
+@section Scripts {
+    <script>
+        $(document).ready(function () {
 
+            // AUTORES
+            // Limpiar tabla al abrir modal
+            $('#ModalAutor').on('show.bs.modal', function () {
+                $("#tbDatosAutores > tbody").empty();
+            });
 
-        @section Scripts {
-            <script>
-                $(document).ready(function () {
+            $("#btnBuscarAutores").click(function () {
+                fnBuscarAutores();
+            });
 
-                    // --------------------------------------------
-                    // AUTORES
-                    $("#btnBuscarAutores").click(function () {
-                        fnBuscarAutores();
-                    });
+            function fnBuscarAutores() {
+                $.ajax({
+                    method: 'POST',
+                    url: '@Url.Action("BuscarAutor", "Books")',
+                    data: $("#frmBuscarAutores").serialize(),
+                    dataType: 'json',
+                    success: function (lista) {
+                        var tbody = $("#tbDatosAutores > tbody");
+                        tbody.empty();
 
-                    function fnBuscarAutores() {
-                        $.ajax({
-                            method: 'POST',
-                            url: '@Url.Action("BuscarAutor", "Books")',
-                            data: $("#frmBuscarAutores").serialize(),
-                            dataType: 'json',
-                            success: function (lista) {
-                                var tbody = $("#tbDatosAutores > tbody");
-                                tbody.empty();
-                                for (var i = 0; i < lista.length; i++) {
-                                    var fila = `<tr>
-                                        <td>${lista[i].AUTHOR_NAME}</td>
-                                        <td>
-                                            <button type='button' class='btn btn-info' onclick="setAuthor(${lista[i].AUTHOR_ID},'${lista[i].AUTHOR_NAME}')">Seleccionar</button>
-                                        </td>
-                                    </tr>`;
-                                    tbody.append(fila);
-                                }
-                            },
-                            error: function (error) {
-                                alert("Error: " + error.statusText);
-                            }
-                        });
+                        if (lista.length === 0) {
+                            tbody.append("<tr><td colspan='2'>No se encontraron autores</td></tr>");
+                            return;
+                        }
+
+                        for (var i = 0; i < lista.length; i++) {
+                            var fila = `<tr>
+                                <td>${lista[i].AUTHOR_NAME ?? ""}</td>
+                                <td>
+                                    <button type='button' class='btn btn-info'
+                                        onclick="setAuthor(${lista[i].AUTHOR_ID}, '${lista[i].AUTHOR_NAME}')">
+                                        Seleccionar
+                                    </button>
+                                </td>
+                            </tr>`;
+                            tbody.append(fila);
+                        }
+                    },
+                    error: function (error) {
+                        alert("Error: " + error.statusText);
                     }
-
-                    function setAuthor(id, nombre) {
-                        $("#txtIdAuthor").val(id);
-                        $("#txtNombreAutor").val(nombre);
-                        $("#ModalAutor").modal('hide');
-                    }
-
-                    // --------------------------------------------
-                    // EDITORIALES
-                    $("#btnBuscarEditoriales").click(function () {
-                        fnBuscarEditoriales();
-                    });
-
-                    function fnBuscarEditoriales() {
-                        $.ajax({
-                            method: 'POST',
-                            url: '@Url.Action("BuscarEditorial", "Books")',
-                            data: $("#frmBuscarEditoriales").serialize(),
-                            dataType: 'json',
-                            success: function (lista) {
-                                var tbody = $("#tbDatosEditorial > tbody");
-                                tbody.empty();
-                                for (var i = 0; i < lista.length; i++) {
-                                    var fila = `<tr>
-                                        <td>${lista[i].EDITORIAL_NAME}</td>
-                                        <td>
-                                            <button type='button' class='btn btn-info' onclick="setEditorial(${lista[i].EDITORIAL_ID},'${lista[i].EDITORIAL_NAME}')">Seleccionar</button>
-                                        </td>
-                                    </tr>`;
-                                    tbody.append(fila);
-                                }
-                            },
-                            error: function (error) {
-                                alert("Error: " + error.statusText);
-                            }
-                        });
-                    }
-
-                    function setEditorial(id, nombre) {
-                        $("#txtIdEditorial").val(id);
-                        $("#txtNombreEditorial").val(nombre);
-                        $("#ModalEditorial").modal('hide');
-                    }
-
-                    // --------------------------------------------
-                    // EDICIONES
-                    $("#btnBuscarEdicion").click(function () {
-                        fnBuscarEdicion();
-                    });
-
-                    function fnBuscarEdicion() {
-                        $.ajax({
-                            method: 'POST',
-                            url: '@Url.Action("BuscarEdicion", "Books")',
-                            data: $("#frmBuscarEdiciones").serialize(),
-                            dataType: 'json',
-                            success: function (lista) {
-                                var tbody = $("#tbDatosEdiciones > tbody");
-                                tbody.empty();
-                                for (var i = 0; i < lista.length; i++) {
-                                    var fila = `<tr>
-                                        <td>${lista[i].EDITION_NUMBER}</td>
-                                        <td>
-                                            <button type='button' class='btn btn-info' onclick="setEditions(${lista[i].EDITION_ID},'${lista[i].EDITION_NUMBER}')">Seleccionar</button>
-                                        </td>
-                                    </tr>`;
-                                    tbody.append(fila);
-                                }
-                            },
-                            error: function (error) {
-                                alert("Error: " + error.statusText);
-                            }
-                        });
-                    }
-
-                    function setEditions(id, nombre) {
-                        $("#txtEdicionID").val(id);
-                        $("#txtEdicionName").val(nombre);
-                        $("#ModalEdicion").modal('hide');
-                    }
-
-                    // --------------------------------------------
-                    // PAISES (CIUDADES)
-                    $("#btnBuscarCiudades").click(function () {
-                        fnBuscarCiudades();
-                    });
-
-                    function fnBuscarCiudades() {
-                        $.ajax({
-                            method: 'POST',
-                            url: '@Url.Action("BuscarCiudad", "Books")',
-                            data: $("#frmBuscarPais").serialize(),
-                            dataType: 'json',
-                            success: function (lista) {
-                                var tbody = $("#tbDatosCiudades > tbody");
-                                tbody.empty();
-                                for (var i = 0; i < lista.length; i++) {
-                                    var fila = `<tr>
-                                        <td>${lista[i].COUNTRY_NAME}</td>
-                                        <td>
-                                            <button type='button' class='btn btn-info' onclick="setPais(${lista[i].COUNTRY_ID},'${lista[i].COUNTRY_NAME}')">Seleccionar</button>
-                                        </td>
-                                    </tr>`;
-                                    tbody.append(fila);
-                                }
-                            },
-                            error: function (error) {
-                                alert("Error: " + error.statusText);
-                            }
-                        });
-                    }
-
-                    function setPais(id, nombre) {
-                        $("#txtIdPais").val(id);
-                        $("#txtNombrePais").val(nombre);
-                        $("#ModalPais").modal('hide');
-                    }
-
-                    // --------------------------------------------
-                    // OPCIONAL: Al cargar la página, que haga las búsquedas iniciales
-                    fnBuscarAutores();
-                    fnBuscarEditoriales();
-                    fnBuscarEdicion();
-                    fnBuscarCiudades();
-
-                    // Ajuste del diseño
-                    document.querySelector('.main-content').classList.remove('with-menu');
-                    document.querySelector('.main-content').classList.add('full-width');
-
                 });
-            </script>
-            @{
-                await Html.RenderPartialAsync("_ValidationScriptsPartial");
             }
+
+            function setAuthor(id, nombre) {
+                $("#txtIdAuthor").val(id);
+                $("#txtNombreAutor").val(nombre);
+                $("#ModalAutor").modal('hide');
+            }
+
+        // EDITORIALES: Limpiar tabla al abrir modal
+        $('#ModalEditorial').on('show.bs.modal', function () {
+            $("#tbDatosEditorial > tbody").empty();
+        });
+
+        $("#btnBuscarEditoriales").click(function () {
+            fnBuscarEditoriales();
+        });
+
+            function fnBuscarEditoriales() {
+            $.ajax({
+                method: 'POST',
+                url: '@Url.Action("BuscarEditorial", "Books")',
+                data: $("#frmBuscarEditoriales").serialize(),
+                dataType: 'json',
+                success: function (lista) {
+                    var tbody = $("#tbDatosEditorial > tbody");
+                    tbody.empty();
+                    if (lista.length === 0) {
+                        tbody.append("<tr><td colspan='2'>No se encontraron editoriales</td></tr>");
+                        return;
+                    }
+                    for (var i = 0; i < lista.length; i++) {
+                        var nombre = lista[i].editoriaL_NAME ? lista[i].editoriaL_NAME.replace(/'/g, "\\'") : "";
+                        var id = lista[i].editoriaL_ID ? lista[i].editoriaL_ID : 0;
+                        var fila = `<tr>
+                            <td>${nombre}</td>
+                            <td>
+                                <button type='button' class='btn btn-success btn-sm'
+                                    onclick="window.setEditorial(${id}, '${nombre.replace(/'/g, "\\'")}')">
+                                    Seleccionar
+                                </button>
+                            </td>
+                        </tr>`;
+                        tbody.append(fila);
+                    }
+                },
+                error: function (error) {
+                    alert("Error: " + error.statusText);
+                }
+            });
         }
 
-    </div>
-</div>
+                window.setEditorial = function(id, nombre) {
+            console.log("ID:", id, "Nombre:", nombre);
+            $("#txtIdEditorial").val(id);
+            $("#txtNombreEditorial").val(nombre);
+            $("#ModalEditorial").modal('hide');
+        };
+
+        // EDICIONES: Limpiar tabla al abrir modal
+        $('#ModalEdicion').on('show.bs.modal', function () {
+            $("#tbDatosEdiciones > tbody").empty();
+            $("#txtNombreEdicion").val(""); // Limpiar el campo de búsqueda
+        });
+
+        $("#btnBuscarEdicion").click(function () {
+            fnBuscarEdicion();
+        });
+
+            function fnBuscarEdicion() {
+            $.ajax({
+                method: 'POST',
+                url: '@Url.Action("BuscarEdicion", "Books")',
+                data: $("#frmBuscarEdiciones").serialize(),
+                dataType: 'json',
+                success: function (lista) {
+                    var tbody = $("#tbDatosEdiciones > tbody");
+                    tbody.empty();
+                    if (lista.length === 0) {
+                        tbody.append("<tr><td colspan='2'>No se encontraron ediciones</td></tr>");
+                        return;
+                    }
+                    for (var i = 0; i < lista.length; i++) {
+                        // Usa los nombres exactos del JSON: editioN_ID y editioN_NUMBER
+                        var number = lista[i].editioN_NUMBER ? lista[i].editioN_NUMBER : "";
+                        var id = lista[i].editioN_ID ? lista[i].editioN_ID : 0;
+                        var fila = `<tr>
+                            <td>${number}</td>
+                            <td>
+                                <button type='button' class='btn btn-success btn-sm'
+                                    onclick="window.setEdition(${id}, '${number}')">
+                                    Seleccionar
+                                </button>
+                            </td>
+                        </tr>`;
+                        tbody.append(fila);
+                    }
+                },
+                error: function (error) {
+                    alert("Error: " + error.statusText);
+                }
+            });
+        }
+
+
+               window.setEdition = function(id, number) {
+            $("#txtEdicionID").val(id);
+            $("#txtEdicionName").val(number);
+            $("#ModalEdicion").modal('hide');
+        };
+
+
+
+        // PAISES (CIUDADES): Limpiar tabla al abrir modal
+        $('#ModalPais').on('show.bs.modal', function () {
+            $("#tbDatosCiudades > tbody").empty();
+            $("#txtNombre").val(""); // Limpiar el campo de búsqueda
+        });
+
+        $("#btnBuscarCiudades").click(function () {
+            fnBuscarCiudades();
+        });
+
+        function fnBuscarCiudades() {
+            $.ajax({
+                method: 'POST',
+                url: '@Url.Action("BuscarCiudad", "Books")',
+                data: $("#frmBuscarPais").serialize(),
+                dataType: 'json',
+                success: function (lista) {
+                    var tbody = $("#tbDatosCiudades > tbody");
+                    tbody.empty();
+                    if (lista.length === 0) {
+                        tbody.append("<tr><td colspan='2'>No se encontraron países/ciudades</td></tr>");
+                        return;
+                    }
+                    for (var i = 0; i < lista.length; i++) {
+                        // Usa los nombres exactos del JSON: countrY_ID y countrY_NAME
+                        var nombre = lista[i].countrY_NAME ? lista[i].countrY_NAME : "";
+                        var id = lista[i].countrY_ID ? lista[i].countrY_ID : 0;
+                        var fila = `<tr>
+                            <td>${nombre}</td>
+                            <td>
+                                <button type='button' class='btn btn-success btn-sm'
+                                    onclick="window.setPais(${id}, '${nombre.replace(/'/g, "\\'")}')">
+                                    Seleccionar
+                                </button>
+                            </td>
+                        </tr>`;
+                        tbody.append(fila);
+                    }
+                },
+                error: function (error) {
+                    alert("Error: " + error.statusText);
+                }
+            });
+        }
+
+        window.setPais = function(id, nombre) {
+            $("#txtIdPais").val(id);
+            $("#txtNombrePais").val(nombre);
+            $("#ModalPais").modal('hide');
+        };
+
+
+            // OPCIONAL: Al cargar la página, que haga las búsquedas iniciales
+            fnBuscarAutores();
+            fnBuscarEditoriales();
+            fnBuscarEdicion();
+            fnBuscarCiudades();
+
+            // Ajuste del diseño
+            document.querySelector('.main-content').classList.remove('with-menu');
+            document.querySelector('.main-content').classList.add('full-width');
+
+        });
+    </script>
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+}
 
 <!-- Esta funcion de JS se agrego para solucionar un error en la modal -Buscar Autores -->
 <script>
@@ -834,180 +671,116 @@
         });
     });
 </script>
-<!------------------------------------------------------->
-<!-- Esta funcion de JS se agrego para solucionar un error en la modal -Buscar Pais -->
 <script>
-    $(document).ready(function () {
-        $('#btnBuscarCiudades').click(function () {
-            var nombre = $('#txtNombre').val();
+    const input = document.getElementById("coverImageInput");
+    const preview = document.getElementById("previewImage");
+    const cancelButton = document.getElementById("cancelImage");
+    const container = document.querySelector('.image-container');
 
-            $.ajax({
-                url: '/Countries/Search', // O el nombre correcto del controlador
-                type: 'GET',
-                data: { nombre: nombre },
-                success: function (data) {
-                    var tbody = $('#tbDatosCiudades tbody');
-                    tbody.empty();
-
-                    if (data.length === 0) {
-                        tbody.append('<tr><td colspan="2" class="text-center">No se encontraron ciudades</td></tr>');
-                    } else {
-                        data.forEach(function (item) {
-                            var row = `
-                                <tr>
-                                    <td>${item.nombre}</td>
-                                    <td>
-                                        <button type="button" class="btn btn-success btn-sm seleccionar-pais"
-                                            data-id="${item.id}" data-nombre="${item.nombre}">
-                                            Seleccionar
-                                        </button>
-                                    </td>
-                                </tr>`;
-                            tbody.append(row);
-                        });
-                    }
-                },
-                error: function () {
-                    alert('Error al buscar ciudades.');
-                }
-            });
-        });
-
-        // Evento para seleccionar ciudad desde la tabla
-        $(document).on('click', '.seleccionar-pais', function () {
-            var id = $(this).data('id');
-            var nombre = $(this).data('nombre');
-
-            $('#txtIdPais').val(id);
-            $('#txtNombrePais').val(nombre);
-
-            $('#ModalPais').modal('hide');
-        });
-    });
-</script>
-<!------------------------------------------------------->
-<!-- Esta funcion de JS se agrego para solucionar un error en la modal -Buscar Ediciones -->
-<script>
-       $(document).ready(function () {
-        $('#btnBuscarEdicion').click(function () {
-            var nombre = $('#txtNombre').val();
-
-            $.ajax({
-                url: '/Editions/Search', // Cambia la ruta si es necesario
-                type: 'GET',
-                data: { nombre: nombre },
-                success: function (data) {
-                    var tbody = $('#tbDatosEdiciones tbody');
-                    tbody.empty();
-
-                    if (data.length === 0) {
-                        tbody.append('<tr><td colspan="2" class="text-center">No se encontraron ediciones</td></tr>');
-                    } else {
-                        data.forEach(function (item) {
-                            var row = `
-                                <tr>
-                                    <td>${item.editionNumber}</td>
-                                    <td>
-                                        <button type="button" class="btn btn-success btn-sm seleccionar-edicion"
-                                            data-id="${item.editionId}" data-number="${item.editionNumber}">
-                                            Seleccionar
-                                        </button>
-                                    </td>
-                                </tr>`;
-                            tbody.append(row);
-                        });
-                    }
-                },
-                error: function () {
-                    alert('Error al buscar ediciones.');
-                }
-            });
-        });
-
-        // Evento para seleccionar edición desde la tabla
-        $(document).on('click', '.seleccionar-edicion', function () {
-            var id = $(this).data('id');
-            var number = $(this).data('number');
-
-            $('#txtEdicionID').val(id);          // Guarda el id oculto
-            $('#txtEdicionName').val(number);    // Muestra el número en el input visible
-
-            $('#ModalEdicion').modal('hide');
-        });
-    });
-</script>
-<!------------------------------------------------------->
-<!-- Esta funcion de JS se agrego para solucionar un error en la modal -Buscar Editoriales -->
-<script>
-    $(document).ready(function () {
-
-        // Buscar editoriales
-        $('#btnBuscarEditoriales').click(function () {
-            var nombre = $('#txtNombre').val(); // input de búsqueda dentro del modal
-
-            $.ajax({
-                url: '/Editorials/Search',
-                type: 'GET',
-                data: { nombre: nombre },
-                success: function (data) {
-                    var tbody = $('#tbDatosEditorial tbody');
-                    tbody.empty();
-
-                    if (data.length === 0) {
-                        tbody.append('<tr><td colspan="2" class="text-center">No se encontraron editoriales</td></tr>');
-                    } else {
-                        data.forEach(function (item) {
-                            var row = `
-                                <tr>
-                                    <td>${item.editorialName}</td>
-                                    <td>
-                                        <button type="button" class="btn btn-success btn-sm seleccionar-editorial"
-                                            data-id="${item.editorialId}" data-name="${item.editorialName}">
-                                            Seleccionar
-                                        </button>
-                                    </td>
-                                </tr>`;
-                            tbody.append(row);
-                        });
-                    }
-                },
-                error: function () {
-                    alert('Error al buscar editoriales.');
-                }
-            });
-        });
-
-        // Seleccionar editorial
-        $(document).on('click', '.seleccionar-editorial', function () {
-            var id = $(this).data('id');
-            var name = $(this).data('name');
-
-            $('#txtIdEditorial').val(id);
-            $('#txtNombreEditorial').val(name);
-
-            $('#ModalEditorial').modal('hide');
-        });
-
-    });
-</script>
-
-<script>
-    document.getElementById("coverImageInput").addEventListener("change", function (event) {
-        const input = event.target;
-        const preview = document.getElementById("previewImage");
-
+    input.addEventListener("change", function(event) {
         if (input.files && input.files[0]) {
             const reader = new FileReader();
-            reader.onload = function (e) {
+            reader.onload = function(e) {
                 preview.src = e.target.result;
                 preview.style.display = "block";
+                preview.style.opacity = "1";
             };
             reader.readAsDataURL(input.files[0]);
         } else {
             preview.src = "#";
             preview.style.display = "none";
+            cancelButton.style.display = "none";
         }
     });
-</script>
 
-<!------------------------------------------------------->
+    // Mostrar la X al pasar el cursor sobre el contenedor
+    container.addEventListener("mouseenter", function() {
+        if (preview.style.display === "block") {
+            cancelButton.style.display = "flex";
+        }
+    });
+
+    // Ocultar la X al salir del contenedor
+    container.addEventListener("mouseleave", function() {
+        cancelButton.style.display = "none";
+    });
+
+    // Cancelar la imagen con animación
+    cancelButton.addEventListener("click", function(e) {
+        e.stopPropagation();
+        preview.style.opacity = "0";
+        setTimeout(function() {
+            input.value = "";
+            preview.src = "#";
+            preview.style.display = "none";
+            cancelButton.style.display = "none";
+            preview.style.opacity = "1";
+        }, 500); // Tiempo igual a la duración de la transición
+    });
+</script>
+<script>
+    $(document).ready(function() {
+        // Confirmación al regresar al índice
+        $("#confirmar").on("click", function(e) {
+            e.preventDefault();
+            Swal.fire({
+                icon: 'question',
+                title: '¿Regresar al índice?',
+                text: "Si regresas ahora, los cambios no guardados se perderán. ¿Estás seguro?",
+                showCancelButton: true,
+                confirmButtonColor: '#6c757d',
+                cancelButtonColor: '#d33',
+                confirmButtonText: 'Sí, regresar',
+                cancelButtonText: 'Cancelar'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    window.location.href = '@Url.Action("Index", "Books")';
+                }
+            });
+        });
+
+        // Confirmación al guardar
+        $("form").on("submit", function (e) {
+            e.preventDefault(); // Evita envío automático
+
+            // Validación: verificar campos vacíos
+            let isEmpty = false;
+
+            // Revisa inputs de texto
+            $(this).find("input[type='text'], input[type='number'], input[type='file'], input[type='hidden'], select").each(function () {
+                if ($(this).is("select") && $(this).val() === "0") {
+                    isEmpty = true;
+                } else if ($(this).val().trim() === "" && $(this).attr("type") !== "file") {
+                    isEmpty = true;
+                }
+            });
+
+            if (isEmpty) {
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Campos vacíos',
+                    text: 'Por favor, completa todos los campos obligatorios antes de guardar.',
+                    confirmButtonColor: '#d33',
+                });
+                return; // Detiene el envío
+            }
+
+                // Si todo está lleno → mostrar mensaje de éxito y enviar
+            Swal.fire({
+                icon: 'success',
+                title: '¡Éxito!',
+                text: 'El libro se guardará correctamente.',
+                confirmButtonColor: '#198754',
+                confirmButtonText: 'Aceptar'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    e.target.submit(); // Envía el formulario
+                }
+            });
+
+        });
+
+        document.querySelector('.main-content')?.classList.remove('with-menu');
+        document.querySelector('.main-content')?.classList.add('full-width');
+    });
+</script>

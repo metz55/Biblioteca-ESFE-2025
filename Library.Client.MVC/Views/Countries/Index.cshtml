@@ -63,6 +63,45 @@
     }
     }
 
+    .fade-page {
+        opacity: 0;
+        transition: opacity 0.5s ease;
+    }
+
+        .fade-page.show {
+            opacity: 1;
+        }
+
+    .pagination-container {
+        display: flex;
+        justify-content: center;
+        margin-top: 15px;
+        gap: 5px;
+    }
+
+    .page-btn {
+        display: inline-block;
+        padding: 6px 12px;
+        border: 1px solid #d1d5db; 
+        background-color: #f9fafb; 
+        color: #374151; 
+        text-decoration: none;
+        border-radius: 5px;
+        font-size: 14px;
+        transition: all 0.2s ease;
+    }
+
+        .page-btn:hover {
+            background-color: #e5e7eb;
+            color: #111827;
+        }
+
+        .page-btn.active {
+            background-color: #d1d5db;
+            color: #111827;
+            font-weight: bold;
+            border-color: #9ca3af;
+        }
 </style>
 
 <div class="card" id="contenedor-principal">
@@ -95,8 +134,8 @@
                         </select>
                     </div>
                     <div class="spacer">
-                        <button id="search-button" type="submit" class="btn btn-info">
-                            <i class="bi bi-search"></i> Buscar
+                        <button id="search-button" type="submit" class="btn btn-secondary">
+                            <i class="bi bi-reply-fill"></i> Buscar
                         </button>
                     </div>
                 </form>
@@ -105,7 +144,7 @@
 
         <hr />
 
-        <div class="table-responsive">
+        <div class="table-responsive fade-page show" id="tableContainer">
             <table id="customers" class="table">
                 <thead>
                     <tr>
@@ -121,19 +160,8 @@
                             <td>@Html.DisplayFor(modelItem => item.COUNTRY_ID)</td>
                             <td>@Html.DisplayFor(modelItem => item.COUNTRY_NAME)</td>
                             <td>
-                                <a href="@Url.Action("Edit", new { id = item.COUNTRY_ID })" class="btn btn-warning" style="background: #1D4ED8">
-                                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-pencil-square" viewBox="0 0 16 16">
-                                        <path d="M15.502 1.94a.5.5 0 0 1 0 .706L14.459 3.69l-2-2L13.502.646a.5.5 0 0 1 .707 0l1.293 1.293zm-1.75 2.456-2-2L4.939 9.21a.5.5 0 0 0-.121.196l-.805 2.414a.25.25 0 0 0 .316.316l2.414-.805a.5.5 0 0 0 .196-.12l6.813-6.814z" />
-                                        <path fill-rule="evenodd" d="M1 13.5A1.5 1.5 0 0 0 2.5 15h11a1.5 1.5 0 0 0 1.5-1.5v-6a.5.5 0 0 0-1 0v6a.5.5 0 0 1-.5.5h-11a.5.5 0 0 1-.5-.5v-11a.5.5 0 0 1 .5-.5H9a.5.5 0 0 0 0-1H2.5A1.5 1.5 0 0 0 1 2.5z" />
-                                    </svg>
-                                    Editar
-                                </a>
-                                <a href="@Url.Action("Delete", new { id = item.COUNTRY_ID })" class="btn btn-danger" style="background-color: #EF4444">
-                                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-trash3" viewBox="0 0 16 16">
-                                        <path d="M6.5 1h3a.5.5 0 0 1 .5.5v1H6v-1a.5.5 0 0 1 .5-.5M11 2.5v-1A1.5 1.5 0 0 0 9.5 0h-3A1.5 1.5 0 0 0 5 1.5v1H1.5a.5.5 0 0 0 0 1h.538l.853 10.66A2 2 0 0 0 4.885 16h6.23a2 2 0 0 0 1.994-1.84l.853-10.66h.538a.5.5 0 0 0 0-1zm1.958 1-.846 10.58a1 1 0 0 1-.997.92h-6.23a1 1 0 0 1-.997-.92L3.042 3.5zm-7.487 1a.5.5 0 0 1 .528.47l.5 8.5a.5.5 0 0 1-.998.06L5 5.03a.5.5 0 0 1 .47-.53Zm5.058 0a.5.5 0 0 1 .47.53l-.5 8.5a.5.5 0 1 1-.998-.06l.5-8.5a.5.5 0 0 1 .528-.47M8 4.5a.5.5 0 0 1 .5.5v8.5a.5.5 0 0 1-1 0V5a.5.5 0 0 1 .5-.5" />
-                                    </svg>
-                                    Eliminar
-                                </a>
+                                <a href="@Url.Action("Edit", new { id = item.COUNTRY_ID })" class="btn btn-warning" style="background: #1D4ED8">Editar</a>
+                                <a href="@Url.Action("Delete", new { id = item.COUNTRY_ID })" class="btn btn-danger" style="background-color: #EF4444">Eliminar</a>
                             </td>
                         </tr>
                         numRegistros++;
@@ -151,23 +179,44 @@
             </table>
         </div>
 
-
-        @if (numPage > 1)
+        @if (ViewBag.TotalPaginas > 1)
         {
-            <div class="row" style="overflow:auto">
-                <div class="col-md-12">
-                    <ul class="pagination paginationjs" data-numpage="@numPage" data-pageactive="1">
-                        <li class="page-item" data-typepage="Previous"><a class="page-link" href="#">Previous</a></li>
-                        @for (var i = 1; i <= numPage; i++)
-                        {
-                            <li class="page-item" data-page="@i" data-typepage="Item"><a class="page-link" href="#">@i</a></li>
-                        }
-                        <li class="page-item" data-typepage="Next"><a class="page-link" href="#">Next</a></li>
-                    </ul>
-                </div>
-            </div>
-        }
+            <nav class="pagination-container">
+                @if (ViewBag.PaginaActual > 1)
+                {
+                    <a class="page-btn" asp-action="Index" asp-route-page="@(ViewBag.PaginaActual - 1)">&lt;</a>
+                }
+
+                @for (int i = 1; i <= ViewBag.TotalPaginas; i++)
+                {
+                    <a class="page-btn @(i == ViewBag.PaginaActual ? "active" : "")" asp-action="Index" asp-route-page="@i">@i</a>
+                }
+
+                @if (ViewBag.PaginaActual < ViewBag.TotalPaginas)
+                {
+                    <a class="page-btn" asp-action="Index" asp-route-page="@(ViewBag.PaginaActual + 1)">&gt;</a>
+                }
+            </nav>
+          }
     </div>
 </div>
+<script>
+    document.addEventListener("DOMContentLoaded", () => {
+        const container = document.getElementById("tableContainer");
+
+        setTimeout(() => container.classList.add("show"), 50);
+
+        document.querySelectorAll(".page-btn").forEach(link => {
+            link.addEventListener("click", function (e) {
+                e.preventDefault();
+                container.classList.remove("show");
+                setTimeout(() => {
+                    window.location.href = this.href;
+                }, 500);
+            });
+        });
+    });
+</script>
+
 
 

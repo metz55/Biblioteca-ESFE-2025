@@ -77,9 +77,9 @@
                 </a>
             </div>
             <div class="col">
-                <form asp-action="Index" class="d-flex form-busqueda flex-wrap">
+                <form asp-action="Index" class="d-flex form-busqueda flex-wrap" method="get">
                     <div class="spacer">
-                        <input type="text" placeholder="Código de Estudiante" class="form-control" name="ID_LENDER" />
+                        <input type="text" placeholder="Código de Estudiante" class="form-control" name="studentCode" value="@ViewData["studentCode"]" />
                     </div>
                     <div class="spacer">
                         <select name="ID_TYPE" class="form-control">
@@ -116,14 +116,12 @@
                     <div class="spacer">
                         <select id="selectRedireccion" class="form-control">
                             <option selected value="">Préstamos</option>
-                            <option value="opcion0">Activos</option>
-                            <option value="opcion1">Finalizados</option>
                             <option value="opcion2">Eliminados</option>
                         </select>
                     </div>
                     <div class="spacer">
-                        <button id="search-button" type="submit" class="btn btn-info" style="background-color: 	#6366F1">
-                            <i class="bi bi-search"></i> Buscar
+                        <button id="search-button" type="submit" class="btn btn-secondary">
+                            <i class="bi bi-reply-fill"></i> Buscar
                         </button>
                     </div>
                 </form>
@@ -150,11 +148,13 @@
                 <tbody>
                     @{
                         var loanIds = new List<long>();
+                        bool hasResults = false;
                     }
                     @foreach (var item in Model)
                     {
                         if (item.ID_RESERVATION != 2 && item.ID_RESERVATION != 5 && item.STATUS == true)
                         {
+                            hasResults = true;
                             loanIds.Add(item.ID_LENDER);
                             <tr>
                                 <td>@item.LOAN_ID</td>
@@ -168,8 +168,8 @@
                                     @(item.STATUS ? "ACTIVO" : "ELIMINADO")
                                 </td>
                                 <td>
-                                    <a href="@Url.Action("Edit", new { id = item.LOAN_ID })" class="btn btn-warning" style="background: #1D4ED8">
-                                        <i class="bi bi-pencil-square"></i> Editar
+                                    <a href="@Url.Action("Edit", new { id = item.LOAN_ID })" class="btn btn-info" style="background: #1D4ED8">
+                                        <i class="bi bi-eye"></i> Editar
                                     </a>
                                 </td>
                             </tr>
@@ -180,6 +180,12 @@
                             numPage++;
                             numRegistros = 0;
                         }
+                    }
+                    @if (!hasResults)
+                    {
+                        <tr>
+                            <td colspan="9" class="text-center">No se encontraron préstamos.</td>
+                        </tr>
                     }
                     @if (numRegistros == 0) { numPage--; }
                 </tbody>
@@ -196,7 +202,7 @@
         });
     });
 
-        function fnBuscarEstudiante(id) {
+    function fnBuscarEstudiante(id) {
         $.ajax({
             method: 'POST',
             url: '@Url.Action("BuscarEstudianteId", "Loans")',
@@ -215,13 +221,10 @@
         });
     }
 
-
     document.getElementById('selectRedireccion').addEventListener('change', function () {
         var selectedOption = this.value;
         var redirectUrl = '';
         switch (selectedOption) {
-            case 'opcion0': redirectUrl = '/Loans'; break;
-            case 'opcion1': redirectUrl = '/Loans/Status2Loans'; break;
             case 'opcion2': redirectUrl = '/Loans/LoansDelite'; break;
         }
         if (redirectUrl !== '') {
@@ -230,4 +233,5 @@
         this.selectedIndex = 0;
     });
 </script>
+
 

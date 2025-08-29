@@ -1,6 +1,5 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using System.Drawing.Drawing2D;
 using Library.DataAccess.Domain;
 using Library.Client.MVC.services;
 using Library.BusinessRules;
@@ -26,7 +25,7 @@ namespace Library.Client.MVC.Controllers
             _loanService = loanService;
         }
 
-        public async Task<IActionResult> Index(Books pBooks, Loans pLoans = null)
+        public async Task<IActionResult> Index(Books pBooks, Loans pLoans = null, string studentCode = "")
         {
             if (pLoans == null)
                 pLoans = new Loans();
@@ -35,6 +34,28 @@ namespace Library.Client.MVC.Controllers
             else if (pLoans.Top_Aux == -1)
                 pLoans.Top_Aux = 0;
 
+            // Si se ingresó un código de estudiante, buscar su ID_LENDER
+            if (!string.IsNullOrEmpty(studentCode))
+            {
+                using (var httpClient = new HttpClient())
+                {
+                    try
+                    {
+                        var response = await httpClient.GetAsync($"http://190.242.151.49/esfeapi/ra/student/code/{studentCode}");
+                        string apiResponse = await response.Content.ReadAsStringAsync();
+                        var student = JsonSerializer.Deserialize<Student>(apiResponse, new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
+                        if (student != null)
+                        {
+                            pLoans.ID_LENDER = student.Id; // Asigna el ID del estudiante encontrado
+                        }
+                    }
+                    catch (Exception ex)
+                    {
+                        // Manejo de error (opcional: mostrar mensaje en ViewBag)
+                        ViewBag.Error = "No se pudo buscar el estudiante: " + ex.Message;
+                    }
+                }
+            }
 
             var loans = await loansBL.GetIncludePropertiesAsync(pLoans);
             ViewBag.Categories = await categoriesBL.GetAllCategoriesAsync();
@@ -45,9 +66,11 @@ namespace Library.Client.MVC.Controllers
 
             ViewBag.Top = pLoans.Top_Aux;
             ViewBag.ShowMenu = true;
+            ViewData["studentCode"] = studentCode; // Para que el campo no se borre al recargar
             return View(loans);
         }
 
+        // Resto de los métodos del controlador se mantienen igual
         public async Task<IActionResult> Status2Loans(Books pBooks, Loans pLoans = null)
         {
             if (pLoans == null)
@@ -57,7 +80,6 @@ namespace Library.Client.MVC.Controllers
             else if (pLoans.Top_Aux == -1)
                 pLoans.Top_Aux = 0;
 
-
             var loans = await loansBL.GetIncludePropertiesAsync(pLoans);
             ViewBag.Categories = await categoriesBL.GetAllCategoriesAsync();
             ViewBag.Loans = await loansBL.GetAllLoansAsync();
@@ -69,14 +91,37 @@ namespace Library.Client.MVC.Controllers
             ViewBag.ShowMenu = true;
             return View(loans);
         }
-        public async Task<IActionResult> LoansDelite(Books pBooks, Loans pLoans = null)
+
+        public async Task<IActionResult> LoansDelite(Books pBooks, Loans pLoans = null, string studentCode = "")
         {
             if (pLoans == null)
                 pLoans = new Loans();
             if (pLoans.Top_Aux == 0)
-                pLoans.Top_Aux = 10;
+                pLoans.Top_Aux = 20;
             else if (pLoans.Top_Aux == -1)
                 pLoans.Top_Aux = 0;
+
+            // Si se ingresó un código de estudiante, buscar su ID_LENDER
+            if (!string.IsNullOrEmpty(studentCode))
+            {
+                using (var httpClient = new HttpClient())
+                {
+                    try
+                    {
+                        var response = await httpClient.GetAsync($"http://190.242.151.49/esfeapi/ra/student/code/{studentCode}");
+                        string apiResponse = await response.Content.ReadAsStringAsync();
+                        var student = JsonSerializer.Deserialize<Student>(apiResponse, new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
+                        if (student != null)
+                        {
+                            pLoans.ID_LENDER = student.Id; // Asigna el ID del estudiante encontrado
+                        }
+                    }
+                    catch (Exception ex)
+                    {
+                        ViewBag.Error = "No se pudo buscar el estudiante: " + ex.Message;
+                    }
+                }
+            }
 
             var loans = await loansBL.GetIncludePropertiesAsync(pLoans);
             ViewBag.Categories = await categoriesBL.GetAllCategoriesAsync();
@@ -86,15 +131,15 @@ namespace Library.Client.MVC.Controllers
             ViewBag.Books = await booksBL.GetIncludePropertiesAsync(pBooks);
 
             ViewBag.Top = pLoans.Top_Aux;
+            ViewData["studentCode"] = studentCode; // Para que el campo no se borre al recargar
             return View(loans);
         }
+
 
         // GET: BooksController/Details/5
         public async Task<IActionResult> Details(int id)
         {
-            // Falta terminar 
             var loans = await loansBL.GetLoansByIdAsync(new Loans { LOAN_ID = id });
-            //Objeto anonimo
             loans.LoanTypes = await loansTypesBL.GetLoanTypesByIdAsync(new LoanTypes { TYPES_ID = loans.ID_TYPE });
             loans.ReservationStatus = await reservationStatusBL.GetReservationStatusByIdAsync(new ReservationStatus { RESERVATION_ID = loans.ID_RESERVATION });
             loans.Books = await booksBL.GetBooksByIdAsync(new Books { BOOK_ID = loans.ID_BOOK });
@@ -103,7 +148,7 @@ namespace Library.Client.MVC.Controllers
         }
 
         // GET: BooksController/Create
-        public async Task<IActionResult> Create( Books pBooks)
+        public async Task<IActionResult> Create(Books pBooks)
         {
             ViewBag.LoanTypes = await loansTypesBL.GetAllLoanTypesAsync();
             ViewBag.Categories = await categoriesBL.GetAllCategoriesAsync();
@@ -117,8 +162,7 @@ namespace Library.Client.MVC.Controllers
         // POST: BooksController/Create
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create(Loans pLoans, LoanDates pLoanDates,
-            DateTime fechaInicio, DateTime fechaCierre, int resultt, int result, Books2 pBooks)
+        public async Task<IActionResult> Create(Loans pLoans, LoanDates pLoanDates, DateTime fechaInicio, DateTime fechaCierre, int resultt, int result, Books2 pBooks)
         {
             try
             {
@@ -132,7 +176,7 @@ namespace Library.Client.MVC.Controllers
                 if (pLoans.ID_TYPE > 0 && pLoans.LENDER_CONTACT != null && fechaInicio != DateTime.MinValue && fechaCierre != DateTime.MinValue && pLoans.ID_BOOK > 0)
                 {
                     var cantidadPrestamosPorEst = reservations
-                        .Select(async reservation => await loansBL.GetLoansAsync(new Loans {  ID_LENDER = pLoans.ID_LENDER, ID_RESERVATION = reservation, STATUS = true }))
+                        .Select(async reservation => await loansBL.GetLoansAsync(new Loans { ID_LENDER = pLoans.ID_LENDER, ID_RESERVATION = reservation, STATUS = true }))
                         .Select(task => task.Result.Count)
                         .Sum();
                     if (cantidadPrestamosPorEst < 2)
@@ -157,7 +201,7 @@ namespace Library.Client.MVC.Controllers
                             pBooks.EXISTENCES = books.EXISTENCES - 1;
                             int resultUpdate = await booksBL.UpdateExistencesBooksAsync(pBooks);
 
-                            pLoans.Books = await booksBL.GetBooksByIdAsync(new Books{BOOK_ID=pLoans.ID_BOOK});
+                            pLoans.Books = await booksBL.GetBooksByIdAsync(new Books { BOOK_ID = pLoans.ID_BOOK });
                             await _loanService.SendEmailLoanCreated(pLoans, pLoanDates);
                         }
                         else
@@ -185,11 +229,10 @@ namespace Library.Client.MVC.Controllers
                 }
                 ViewBag.ShowMenu = true;
                 return View();
-
             }
             catch (Exception ex)
             {
-                if(result == 0)
+                if (result == 0)
                 {
                     ViewBag.LoanTypes = await loansTypesBL.GetAllLoanTypesAsync();
                 }
@@ -199,7 +242,6 @@ namespace Library.Client.MVC.Controllers
             }
         }
 
-
         // GET: BooksController/Edit/5
         public async Task<IActionResult> Edit(long id)
         {
@@ -208,7 +250,6 @@ namespace Library.Client.MVC.Controllers
             ViewBag.ReservationStatus = await reservationStatusBL.GetAllReservationStatusAsync();
             ViewBag.LoanDates = await loanDatesBL.GetLoanDatesByIdLoanAsync(new LoanDates { ID_LOAN = id });
 
-            //Mostrar el titulo del libro en input de tipo texto
             var titulo = await booksBL.GetBooksByIdAsync(new Books { BOOK_ID = loans.ID_BOOK });
             ViewBag.TituloB = titulo.TITLE;
             ViewBag.Portada = titulo.COVER;
@@ -241,14 +282,14 @@ namespace Library.Client.MVC.Controllers
                     pLoans.STATUS = true;
                 }
 
-                if (fechaInicio != DateTime.MinValue && fechaCierre != DateTime.MinValue && pLoans.ID_RESERVATION != 2 )
+                if (fechaInicio != DateTime.MinValue && fechaCierre != DateTime.MinValue && pLoans.ID_RESERVATION != 2)
                 {
                     pLoanDates.ID_LOAN = id;
                     pLoanDates.START_DATE = fechaInicio;
                     pLoanDates.END_DATE = fechaCierre;
                     pLoanDates.STATUS = 1;
 
-                    if(pLoans.ID_RESERVATION == 1)
+                    if (pLoans.ID_RESERVATION == 1)
                     {
                         pLoans.ID_RESERVATION = 4;
                     }
@@ -274,24 +315,22 @@ namespace Library.Client.MVC.Controllers
             }
         }
 
-        public async Task<JsonResult>BuscarLibros(Books pBooks)
+        public async Task<JsonResult> BuscarLibros(Books pBooks)
         {
             List<Books> lista = await booksBL.GetBooksAsync(pBooks);
-
             return Json(lista);
         }
+
         public async Task<JsonResult> ObtenerCategoria(Categories pCategories)
         {
             List<Categories> lista = await categoriesBL.GetCategoriesAsync(pCategories);
             return Json(lista);
         }
 
-
         [HttpGet]
         public async Task<JsonResult> BuscarEstudiante(string codigo)
         {
             List<Student> StudentList = new List<Student>();
-
             using (var httpClient = new HttpClient())
             {
                 try
@@ -306,21 +345,14 @@ namespace Library.Client.MVC.Controllers
                         }
                     }
                 }
-                catch
-                {
-                    // Manejo de error
-                }
+                catch { }
             }
-
             return Json(StudentList);
         }
-
-
 
         public async Task<JsonResult> BuscarEstudianteId(long id)
         {
             Student student = new Student();
-
             using (var httpClient = new HttpClient())
             {
                 using (var response = await httpClient.GetAsync($"http://190.242.151.49/esfeapi/ra/student/{id}"))
@@ -339,17 +371,12 @@ namespace Library.Client.MVC.Controllers
                     career = student.Career?.CareerName ?? "Desconocido"
                 });
             }
-
             return Json(new { studentCode = "No disponible", fullName = "", career = "" });
         }
 
-
-        // GET: BooksController/Edit/5
         public async Task<IActionResult> Delite(long id)
         {
             var loans = await loansBL.GetLoansByIdAsync(new Loans { LOAN_ID = id });
-
-            //Mostrar el titulo del libro en input de tipo texto
             var titulo = await booksBL.GetBooksByIdAsync(new Books { BOOK_ID = loans.ID_BOOK });
             var tituloB = titulo.TITLE;
             ViewBag.TituloB = tituloB;
@@ -358,10 +385,9 @@ namespace Library.Client.MVC.Controllers
             return View(loans);
         }
 
-        // POST: BooksController/Edit/5
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Delite(int id,Loans2 pLoans)
+        public async Task<IActionResult> Delite(int id, Loans2 pLoans)
         {
             try
             {
@@ -381,7 +407,6 @@ namespace Library.Client.MVC.Controllers
         {
             var prestamos = await loansBL.GetAllLoansAsync();
             var tipos = await loansTypesBL.GetAllLoanTypesAsync();
-
             var resultado = prestamos
                 .GroupBy(p => p.ID_TYPE)
                 .Select(g => new
@@ -389,7 +414,6 @@ namespace Library.Client.MVC.Controllers
                     Tipo = tipos.FirstOrDefault(t => t.TYPES_ID == g.Key)?.TYPES_NAME ?? "Desconocido",
                     Cantidad = g.Count()
                 }).ToList();
-
             return Json(resultado);
         }
 
@@ -398,59 +422,51 @@ namespace Library.Client.MVC.Controllers
         {
             var prestamos = await loansBL.GetAllLoansAsync();
             var currentYear = DateTime.Now.Year;
-
             int ciclo1 = prestamos.Count(p => p.REGISTRATION_DATE.Year == currentYear && p.REGISTRATION_DATE.Month >= 1 && p.REGISTRATION_DATE.Month <= 6);
             int ciclo2 = prestamos.Count(p => p.REGISTRATION_DATE.Year == currentYear && p.REGISTRATION_DATE.Month >= 7 && p.REGISTRATION_DATE.Month <= 12);
-
             var resultado = new[]
             {
               new { ciclo = "Ciclo 1", cantidad = ciclo1 },
               new { ciclo = "Ciclo 2", cantidad = ciclo2 }
             };
-
             return Json(resultado);
         }
 
+        public async Task<IActionResult> AllLoans(Books pBooks, Loans pLoans = null)
+        {
+            if (pLoans == null)
+                pLoans = new Loans();
+            if (pLoans.Top_Aux == 0)
+                pLoans.Top_Aux = 20;
+            else if (pLoans.Top_Aux == -1)
+                pLoans.Top_Aux = 0;
 
+            var loans = await loansBL.GetIncludePropertiesAsync(pLoans);
+            ViewBag.Categories = await categoriesBL.GetAllCategoriesAsync();
+            ViewBag.Loans = await loansBL.GetAllLoansAsync();
+            ViewBag.LoansTypes = await loansTypesBL.GetAllLoanTypesAsync();
+            ViewBag.ReservationStatus = await reservationStatusBL.GetAllReservationStatusAsync();
+            ViewBag.Books = await booksBL.GetIncludePropertiesAsync(pBooks);
+            ViewBag.Top = pLoans.Top_Aux;
+            ViewBag.ShowMenu = true;
+            return View(loans);
+        }
 
-        //// GET: BooksController/Delete/5
-        //public async Task<IActionResult> Delete(int id)
-        //{
-        //    var books = await booksBL.GetBooksByIdAsync(new Books { BOOK_ID = id });
-
-        //    books.Categories = await categoriesBL.GetCategoriesByIdAsync(new Categories { CATEGORY_ID = books.ID_CATEGORY });
-
-        //    books.AcquisitionTypes = await acquisitionTypesBL.GetAcquisitionTypesByIdAsync(new AcquisitionTypes { ACQUISITION_ID = books.ID_ACQUISITION });
-
-        //    books.Editorials = await editorialsBL.GetEditorialsByIdAsync(new Editorials { EDITORIAL_ID = books.ID_EDITORIAL });
-
-        //    books.Authors = await authorsBL.GetAuthorsByIdAsync(new Authors { AUTHOR_ID = books.ID_AUTHOR });
-
-        //    books.Editions = await editionsBL.GetEditionsByIdAsync(new Editions { EDITION_ID = books.ID_EDITION });
-
-        //    books.Countries = await countriesBL.GetCountriesByIdAsync(new Countries { COUNTRY_ID = books.ID_COUNTRY });
-
-        //    books.Catalogs = await catalogsBL.GetCatalogsByIdAsync(new Catalogs { CATALOG_ID = books.ID_CATALOG });
-
-        //    ViewBag.Error = "";
-        //    return View(books);
-        //}
-
-        //// POST: BooksController/Delete/5
-        //[HttpPost]
-        //[ValidateAntiForgeryToken]
-        //public async Task<IActionResult> Delete(int id, Books pBooks)
-        //{
-        //    try
-        //    {
-        //        int result = await booksBL.DeleteBooksAsync(pBooks);
-        //        return RedirectToAction(nameof(Index));
-        //    }
-        //    catch (Exception ex)
-        //    {
-        //        ViewBag.Error = ex.Message;
-        //        return View(pBooks);
-        //    }
-        //}
+        [HttpGet]
+        public async Task<JsonResult> PrestamosPorMes()
+        {
+            var prestamos = await loansBL.GetAllLoansAsync();
+            int anioActual = DateTime.Now.Year;
+            var datos = Enumerable.Range(1, 12)
+                .Select(m => new
+                {
+                    Mes = m,
+                    Cantidad = prestamos.Count(p =>
+                        p.REGISTRATION_DATE.Year == anioActual &&
+                        p.REGISTRATION_DATE.Month == m)
+                }).ToList();
+            return Json(datos);
+        }
     }
 }
+

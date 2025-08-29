@@ -209,14 +209,19 @@
                              Estado del Préstamo
                         </a>
                     </li>
-                    <li class="nav-item">
+                    @*<li class="nav-item">
                         <a class="nav-link" href="#" id="redireccionStatusLoan">
                             Prestamos Finalizados
                         </a>
-                    </li>
+                    </li>*@
                     <li class="nav-item">
                         <a class="nav-link" href="#" id="redireccionLDelite">
                             Prestamos Eliminados
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#" id="redirectionRLoans">
+                            Registro de Prestamos
                         </a>
                     </li>
                 </ul>
@@ -287,7 +292,8 @@
             redireccionStatusLoan: '/Loans/Status2Loans',
             redirectionStudent: '/Auth/Student',
             redireccionUser: '/User/Index',
-            redireccionLDelite: '/Loans/LoansDelite'
+            redireccionLDelite: '/Loans/LoansDelite',
+            redirectionRLoans: '/Loans/AllLoans'
         };
 
         Object.keys(redirectionMap).forEach(id => {
