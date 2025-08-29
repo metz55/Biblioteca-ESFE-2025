@@ -101,7 +101,7 @@
                                     </select>
                                 </div>
                                 <div class="col-2">
-                                    <input type="text" class="form-control" id="idLender" name="idLender" hidden/>
+                                    <input class="form-control" id="idLender" name="idLender" type="hidden"/>
                                 </div>
                             }
                         </div>
@@ -126,7 +126,7 @@
         function loadStudentData(){
                 var studentCode = "@studentCode";
                 $.ajax({
-                    method: 'POST',
+                    method: 'GET',
                     url: '@Url.Action("BuscarEstudiante", "Loans")',
                     contentType: 'application/x-www-form-urlencoded',
                     data: { codigo: studentCode },

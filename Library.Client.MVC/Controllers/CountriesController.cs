@@ -13,20 +13,38 @@ namespace Library.Client.MVC.Controllers
         BLCountries countriesBL = new BLCountries();
 
         // GET: AcquisitionTypesController
-        public async Task<IActionResult> Index(Countries pCountries = null)
+        public async Task<IActionResult> Index(string COUNTRY_NAME, int page = 1, int pageSize = 10)
         {
-            if (pCountries == null)
-                pCountries = new Countries();
-            if (pCountries.Top_Aux == -1)
-                pCountries.Top_Aux = 10;
-            else
-               if (pCountries.Top_Aux == 1)
-                pCountries.Top_Aux = 0;
-            var countries = await countriesBL.GetCountriesAsync(pCountries);
-            ViewBag.Top = pCountries.Top_Aux;
+            var filtro = new Countries
+            {
+                COUNTRY_NAME = COUNTRY_NAME,
+                Top_Aux = -1 
+            };
+
+            var allCountries = await countriesBL.GetCountriesAsync(filtro);
+
+            // Ordenar por COUNTRY_ID ascendente (o por nombre si quieres alfabéticamente)
+            allCountries = allCountries
+                .OrderBy(c => c.COUNTRY_ID) // o c.COUNTRY_NAME para orden alfabético
+                .ToList();
+
+            int totalRegistros = allCountries.Count();
+            int totalPaginas = (int)Math.Ceiling((double)totalRegistros / pageSize);
+
+            var countries = allCountries
+                .Skip((page - 1) * pageSize)
+                .Take(pageSize)
+                .ToList();
+
+
+            ViewBag.TotalPaginas = totalPaginas;
+            ViewBag.PaginaActual = page;
+            ViewBag.Top = pageSize;
             ViewBag.ShowMenu = true;
+
             return View(countries);
         }
+
 
         // GET: AcquisitionTypesController/Details/5
         public async Task<ActionResult> Details(int id)
@@ -133,5 +151,26 @@ namespace Library.Client.MVC.Controllers
                 return View(pCountries);
             }
         }
+
+        [HttpGet]
+        public async Task<IActionResult> Search(string nombre)
+        {
+            var filtro = new Countries
+            {
+                COUNTRY_NAME = nombre,
+                Top_Aux = 20 // o el número que prefieras
+            };
+
+            var lista = await countriesBL.GetCountriesAsync(filtro);
+
+            var resultados = lista.Select(p => new
+            {
+                id = p.COUNTRY_ID,
+                nombre = p.COUNTRY_NAME
+            });
+
+            return Json(resultados);
+        }
+
     }
 }

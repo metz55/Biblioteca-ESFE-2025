@@ -11,101 +11,415 @@
     List<Library.DataAccess.Domain.Categories> categories = ViewBag.Categories as List<Library.DataAccess.Domain.Categories>;
 }
 
-<div class="container mt-5">
-    <div class="row justify-content-center">
-        <div class="col-lg-8 col-md-10">
-            <div class="card shadow">
-                <div class="card-body">
-                    <h2 class="text-center mb-4">CREAR NUEVO PRÉSTAMO</h2>
+<link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet">
 
-                    @* ALERTAS *@
-                    @if (TempData["Alerta"] != null)
-                    {
-                        <div class="alert alert-success">@TempData["Alerta"]</div>
-                    }
-                    @if (!string.IsNullOrEmpty(ViewBag.Alerta))
-                    {
-                        <div class="alert alert-danger">@ViewBag.Alerta</div>
-                    }
-                    @if (!string.IsNullOrEmpty(ViewBag.Alerta2))
-                    {
-                        <div class="alert alert-danger">@ViewBag.Alerta2</div>
-                    }
-                    @if (!string.IsNullOrEmpty(ViewBag.AlertaPrestamoEx))
-                    {
-                        <div class="alert alert-danger">@ViewBag.AlertaPrestamoEx</div>
-                    }
+<div class="row">
+    <div class="col-md-12 grid-margin stretch-card">
+        <div class="card">
+            <div class="card-body">
+                <h4 class="card-title text-center" style="font-family: 'Poppins', sans-serif; font-weight: 600;">Nuevo Préstamo</h4>
 
-                    <form asp-action="Create">
-                        <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+                @if (TempData["Alerta"] != null)
+                {
+                    <div class="alert alert-success">@TempData["Alerta"]</div>
+                }
+                @if (!string.IsNullOrEmpty(ViewBag.Alerta))
+                {
+                    <div class="alert alert-danger">@ViewBag.Alerta</div>
+                }
+                @if (!string.IsNullOrEmpty(ViewBag.Alerta2))
+                {
+                    <div class="alert alert-danger">@ViewBag.Alerta2</div>
+                }
+                @if (!string.IsNullOrEmpty(ViewBag.AlertaPrestamoEx))
+                {
+                    <div class="alert alert-danger">@ViewBag.AlertaPrestamoEx</div>
+                }
 
-                        <div class="row mb-3">
-                            <div class="col-md-4">
-                                <input type="text" class="form-control" id="txtCodigoMostrar" placeholder="Código" disabled>
-                                <input asp-for="ID_LENDER" class="form-control" id="txtCodigo" hidden>
-                            </div>
-                            <div class="col-md-8">
-                                <input type="text" class="form-control" id="txtNombreEstudiante" placeholder="Nombre del Estudiante" disabled>
-                            </div>
-                        </div>
+                <form asp-action="Create" class="forms-sample">
+                    <div asp-validation-summary="ModelOnly" class="text-danger"></div>
 
-                        <div class="row mb-3">
-                            <div class="col-md-6">
-                                <input id="txtTelefono" asp-for="LENDER_CONTACT" type="text" class="form-control" readonly placeholder="Teléfono">
-                            </div>
-                            <div class="col-md-6">
-                                <select asp-for="ID_TYPE" class="form-control">
-                                    <option selected value="0">Tipo de Préstamo</option>
-                                    @foreach (var item in loanTypes)
-                                    {
-                                        <option value="@item.TYPES_ID">@item.TYPES_NAME</option>
-                                    }
-                                </select>
-                                <span asp-validation-for="ID_TYPE" class="text-danger"></span>
-                            </div>
-                        </div>
-
-                        <div class="row mb-3">
-                            <div class="col-md-8">
-                                <input asp-for="ID_BOOK" type="text" id="idBook" hidden />
-                                <input type="text" class="form-control" placeholder="Título del Libro" disabled id="txtTitulo">
-                            </div>
-                            <div class="col-md-4 text-end">
-                                <button type="button" class="btn btn-primary w-100" data-bs-toggle="modal" data-bs-target="#staticBackdrop">
-                                    Buscar Libro
+                    <div class="row">
+                        <div class="mb-3 col-md-6">
+                            <label class="form-label">Código del Estudiante</label>
+                            <input asp-for="ID_LENDER" type="hidden" id="txtCodigo" />
+                            <div class="input-group">
+                                <input type="text" class="form-control" id="txtCodigoMostrar" readonly>
+                                <button type="button" class="btn btn-outline-primary" data-bs-toggle="modal" data-bs-target="#mdlBuscarEstudiantes">
+                                    <i class="bi bi-search"></i> Buscar
                                 </button>
                             </div>
                         </div>
 
-                        <div class="row mb-4">
-                            <h5 class="text-center">Seleccionar Fechas de Préstamo</h5>
-                            <div class="col-md-6">
-                                <label>Fecha de Inicio</label>
-                                <input type="date" class="form-control" id="fechaInicio" name="fechaInicio" />
-                            </div>
-                            <div class="col-md-6">
-                                <label>Fecha de Cierre</label>
-                                <input type="date" class="form-control" id="fechaCierre" name="fechaCierre" />
+                        <div class="mb-3 col-md-6">
+                            <label class="form-label">Nombre del Estudiante</label>
+                            <input type="text" class="form-control" id="txtNombreEstudiante" readonly>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="mb-3 col-md-6">
+                            <label asp-for="LENDER_CONTACT" class="form-label">Teléfono</label>
+                            <input asp-for="LENDER_CONTACT" type="text" class="form-control" id="txtTelefono" readonly>
+                        </div>
+
+                        <div class="mb-3 col-md-6">
+                            <label asp-for="ID_TYPE" class="form-label">Tipo de Préstamo</label>
+                            <select asp-for="ID_TYPE" class="form-select">
+                                <option value="0">Seleccionar</option>
+                                @foreach (var item in loanTypes)
+                                {
+                                    <option value="@item.TYPES_ID">@item.TYPES_NAME</option>
+                                }
+                            </select>
+                            <span asp-validation-for="ID_TYPE" class="text-danger"></span>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="mb-3 col-md-6">
+                            <label class="form-label">Título del Libro</label>
+                            <input asp-for="ID_BOOK" type="hidden" id="idBook" />
+                            <div class="input-group">
+                                <input type="text" class="form-control" id="txtTitulo" readonly>
+                                <button type="button" class="btn btn-outline-primary" data-bs-toggle="modal" data-bs-target="#mdlBuscarLibros">
+                                    <i class="bi bi-search"></i> Buscar
+                                </button>
                             </div>
                         </div>
 
-                        <div class="d-flex justify-content-between">
-                            <button type="submit" class="btn btn-success">
-                                Crear Préstamo
-                            </button>
-                            <a asp-action="Index" class="btn btn-secondary">
-                                Regresar
-                            </a>
-                            <button type="button" class="btn btn-info" data-bs-toggle="modal" data-bs-target="#mdlBuscarEstudiantes">
-                                Buscar Estudiante
-                            </button>
+                        <div class="mb-3 col-md-6">
+                            <label class="form-label">Fecha de Inicio</label>
+                            <input type="date" class="form-control" id="fechaInicio" name="fechaInicio" />
                         </div>
-                    </form>
+                    </div>
 
-                </div>
+                    <div class="row">
+                        <div class="mb-3 col-md-6">
+                            <label class="form-label">Fecha de Cierre</label>
+                            <input type="date" class="form-control" id="fechaCierre" name="fechaCierre" />
+                        </div>
+                    </div>
+
+                    <div class="d-flex justify-content-center mt-4">
+                        <button type="submit" class="btn btn-success me-2">
+                            <i class="bi bi-floppy"></i> Crear Préstamo
+                        </button>
+                        <a asp-action="Index" class="btn btn-secondary">
+                            <i class="bi bi-reply-fill"></i> Regresar
+                        </a>
+                    </div>
+                </form>
             </div>
         </div>
     </div>
 </div>
 
+
 @* Aquí puedes dejar tus modales y scripts como los tienes *@
+<!-- Modal Buscar Estudiantes -->
+<div class="modal fade" id="mdlBuscarEstudiantes" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="mdlBuscarEstudiantesLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg modal-dialog-scrollable">
+        <div class="modal-content shadow">
+            <div class="modal-header bg-primary text-white">
+                <h5 class="modal-title fw-bold" id="mdlBuscarEstudiantesLabel">
+                    <i class="bi bi-person-search me-2"></i> Estudiantes
+                </h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+
+            <div class="modal-body">
+                <form id="frmBuscarEstudiantes" class="card shadow-sm mb-4 border">
+                    <div class="card-header text-center fw-bold bg-light border-bottom">
+                        Búsqueda por Código
+                    </div>
+                    <div class="card-body">
+                        <div class="row align-items-end">
+                            <div class="col-md-6">
+                                <label for="txtCodigoEstudiante" class="form-label">Código del Estudiante</label>
+                                <input type="text" class="form-control" id="txtCodigoEstudiante" name="codigoEstudiante" placeholder="Ingrese código del estudiante">
+                            </div>
+                            <div class="col-md-6 text-end">
+                                <button type="button" id="btnBuscarEstudiante" class="btn btn-primary btn-icon-text mt-3">
+                                    <i class="bi bi-search me-1"></i> Buscar
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </form>
+
+                <table class="table table-hover table-bordered align-middle text-center" id="tbDatosEstudiante" style="display:none;">
+                    <thead class="table-light">
+                        <tr>
+                            <th>Código</th>
+                            <th>Nombre Completo</th>
+                            <th>Teléfono</th>
+                            <th>Acciones</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <!-- Se llenan resultados con jQuery -->
+                    </tbody>
+                </table>
+
+                <div id="mensajeError" class="alert alert-danger mt-3" style="display:none;"></div>
+            </div>
+
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+                    <i class="bi bi-x-lg me-1"></i> Cancelar
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+<!------------------------------------------------------->
+<!-- Esta funcion de JS se agrego para solucionar un error en la modal -Buscar Estudiante -->
+<script>
+    $(document).ready(function () {
+        $('#btnBuscarEstudiante').click(function () {
+            var codigo = $('#txtCodigoEstudiante').val().trim();
+            var tbody = $('#tbDatosEstudiante tbody');
+            var mensajeError = $('#mensajeError');
+
+            mensajeError.hide();
+            tbody.empty();
+            $('#tbDatosEstudiante').hide();
+
+            if (!codigo) {
+                mensajeError.text('Por favor ingrese un código válido.').show();
+                return;
+            }
+
+            $.ajax({
+                url: '/Loans/BuscarEstudiante',
+                type: 'GET',
+                data: { codigo: codigo },
+                success: function (data) {
+                    if (!Array.isArray(data) || data.length === 0) {
+                        mensajeError.text('Estudiante no encontrado.').show();
+                        return;
+                    }
+
+                    data.forEach(function (estudiante) {
+                        var row = `<tr>
+                            <td>${estudiante.studentCode || 'N/A'}</td>
+                            <td>${(estudiante.studentName || '') + ' ' + (estudiante.studentLastName || '')}</td>
+                            <td>${estudiante.cellPhone || 'N/A'}</td>
+                            <td>
+                                <button type="button" class="btn btn-sm btn-primary seleccionar-estudiante"
+                                    data-id="${estudiante.id}"
+                                    data-code="${estudiante.studentCode}"
+                                    data-name="${estudiante.studentName}"
+                                    data-lastname="${estudiante.studentLastName}"
+                                    data-phone="${estudiante.cellPhone}">
+                                    Seleccionar
+                                </button>
+                            </td>
+                        </tr>`;
+                        tbody.append(row);
+                    });
+
+                    $('#tbDatosEstudiante').show();
+                },
+                error: function () {
+                    mensajeError.text('Error al buscar el estudiante.').show();
+                }
+            });
+        });
+
+        // Delegar evento para botones generados dinámicamente
+        $(document).on('click', '.seleccionar-estudiante', function () {
+            var id = $(this).data('id');
+            var code = $(this).data('code');
+            var name = $(this).data('name');
+            var lastname = $(this).data('lastname');
+            var phone = $(this).data('phone');
+
+            // Llenar formulario principal
+            $('#txtCodigo').val(id);
+            $('#txtCodigoMostrar').val(code);
+            $('#txtNombreEstudiante').val((name || '') + ' ' + (lastname || ''));
+            $('#txtTelefono').val(phone);
+
+            // Cerrar modal
+            $('#mdlBuscarEstudiantes').modal('hide');
+        });
+    });
+</script>
+<!------------------------------------------------------->
+<!-- Modal Buscar Libros -->
+<div class="modal fade" id="mdlBuscarLibros" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="mdlBuscarLibrosLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg modal-dialog-scrollable">
+        <div class="modal-content shadow">
+            <div class="modal-header bg-primary text-white">
+                <h5 class="modal-title fw-bold" id="mdlBuscarLibrosLabel">
+                    <i class="bi bi-book-fill me-2"></i> Libros
+                </h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+
+            <div class="modal-body">
+                <form id="frmBuscarLibros" class="card shadow-sm mb-4 border">
+                    <div class="card-header text-center fw-bold bg-light border-bottom">
+                        Búsqueda por Título
+                    </div>
+                    <div class="card-body">
+                        <div class="row align-items-end">
+                            <div class="col-md-6">
+                                <label for="txtTituloLibro" class="form-label">Título del Libro</label>
+                                <input type="text" class="form-control" id="txtTituloLibro" name="tituloLibro" placeholder="Ingrese título o parte del título">
+                            </div>
+                            <div class="col-md-6 text-end">
+                                <button type="button" id="btnBuscarLibro" class="btn btn-primary btn-icon-text mt-3">
+                                    <i class="bi bi-search me-1"></i> Buscar
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </form>
+
+                <table class="table table-hover table-bordered align-middle text-center" id="tbDatosLibro" style="display:none;">
+                    <thead class="table-light">
+                        <tr>
+                            <th>Título</th>
+                            <th>Autor</th>
+                            <th>Editorial</th>
+                            <th>Acciones</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <!-- Se llenan resultados con jQuery -->
+                    </tbody>
+                </table>
+
+                <div id="mensajeErrorLibro" class="alert alert-danger mt-3" style="display:none;"></div>
+            </div>
+
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+                    <i class="bi bi-x-lg me-1"></i> Cancelar
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Mostrar alertas de éxito o error usando SweetAlert
+         @if (TempData["Alerta"] != null)
+        {
+                <text>
+                    Swal.fire({
+                    icon: 'success',
+                    title: 'Éxito',
+                    text: '@TempData["Alerta"]',
+                    confirmButtonColor: '#003366'
+                    }).then((result) => {
+                    if (result.isConfirmed) {
+                    window.location.href = '@Url.Action("Index", "Loans")';
+                    }
+                    });
+                </text>
+        }
+        @if (!string.IsNullOrEmpty(ViewBag.Alerta))
+        {
+                <text>
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Error',
+                        text: '@ViewBag.Alerta',
+                        confirmButtonColor: '#003366'
+                    });
+                </text>
+        }
+        @if (!string.IsNullOrEmpty(ViewBag.Alerta2))
+        {
+                <text>
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Error',
+                        text: '@ViewBag.Alerta2',
+                        confirmButtonColor: '#003366'
+                    });
+                </text>
+        }
+        @if (!string.IsNullOrEmpty(ViewBag.AlertaPrestamoEx))
+        {
+                <text>
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Error',
+                        text: '@ViewBag.AlertaPrestamoEx',
+                        confirmButtonColor: '#003366'
+                    });
+                </text>
+        }
+    });
+</script>
+
+<script>
+        $(document).ready(function () {
+        $('#btnBuscarLibro').click(function () {
+            var titulo = $('#txtTituloLibro').val().trim();
+            var tbody = $('#tbDatosLibro tbody');
+            var mensajeError = $('#mensajeErrorLibro');
+
+            mensajeError.hide();
+            tbody.empty();
+            $('#tbDatosLibro').hide();
+
+            if (!titulo) {
+                mensajeError.text('Por favor ingrese un título válido.').show();
+                return;
+            }
+
+            $.ajax({
+                url: '/Books/BuscarLibro',
+                type: 'GET',
+                data: { titulo: titulo },
+                success: function (data) {
+                    if (!Array.isArray(data) || data.length === 0) {
+                        mensajeError.text('Libro no encontrado.').show();
+                        return;
+                    }
+
+                    data.forEach(function (libro) {
+                        var row = `<tr>
+                            <td>${libro.title || 'N/A'}</td>
+                            <td>${libro.authorName || 'N/A'}</td>
+                            <td>${libro.editorialName || 'N/A'}</td>
+                            <td>
+                                <button type="button" class="btn btn-sm btn-primary seleccionar-libro"
+                                    data-id="${libro.booK_ID}"
+                                    data-title="${libro.title}">
+                                    Seleccionar
+                                </button>
+                            </td>
+                        </tr>`;
+                        tbody.append(row);
+                    });
+
+                    $('#tbDatosLibro').show();
+                },
+                error: function () {
+                    mensajeError.text('Error al buscar el libro.').show();
+                }
+            });
+        });
+
+        // Evento delegado para botones generados dinámicamente
+        $(document).on('click', '.seleccionar-libro', function () {
+            var id = $(this).data('id');
+            var title = $(this).data('title');
+
+            // Llenar formulario principal
+            $('#idBook').val(id);
+            $('#txtTitulo').val(title);
+
+            // Cerrar modal
+            $('#mdlBuscarLibros').modal('hide');
+        });
+    });
+</script>

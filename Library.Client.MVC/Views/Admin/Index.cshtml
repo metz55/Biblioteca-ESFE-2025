@@ -3,39 +3,305 @@
     ViewBag.ShowMenu = true;
     Layout = "_LayoutP";
 }
-<div class="card" style="background-color: white;">
-    
 
-    <script>
-        const redirectionMap = {
-            redireccionBooks: '/Books/Index',
-            redireccionBlog: '/Posts/Manage',
-            redireccionBlogCategories: '/PostsCategories/Index',
-            redireccionListaBook: '/Library/Index',
-            redireccionAutor: '/Authors/Index',
-            redireccionEditorial: '/Editorials/Index',
-            redireccionCiudad: '/Countries/Index',
-            redireccionEdicion: '/Editions/Index',
-            redirecionCatalogo: '/Catalogs/Index',
-            redirecionCategoria: '/Categories/Index',
-            redirecionTipoAd: '/AcquisitionTypes/Index',
-            redireccionListaLoans: '/Loans/Index',
-            redireccionEsLoan: '/ReservationStatus/Index',
-            redireccionTipoLoan: '/LoanTypes/Index',
-            redireccionUser: '/User/Index'
-        };
 
-        Object.keys(redirectionMap).forEach(id => {
-            const element = document.getElementById(id);
-            if (element) {
-                element.addEventListener('click', () => {
-                    window.location.href = redirectionMap[id];
+<style>
+    .btn-exportar {
+        background-color: #0d6efd;
+        color: #fff;
+        border: none;
+        border-radius: 30px;
+        padding: 6px 18px;
+        font-size: 0.875rem;
+        font-weight: 500;
+        box-shadow: 0 3px 6px rgba(0, 0, 0, 0.15);
+        transition: background-color 0.3s ease, transform 0.2s ease;
+    }
+
+        .btn-exportar:hover {
+            background-color: #0b5ed7;
+            transform: translateY(-1px);
+        }
+
+        .btn-exportar i {
+            margin-right: 6px;
+        }
+
+    #total-transaction {
+        min-height: 120px !important;
+    }
+
+</style>
+
+
+
+<div class="container mt-4">
+    <div class="row">
+
+        <!-- Libros por Categoría -->
+        <div class="col-md-6 mb-4">
+            <div class="card shadow-sm">
+                <div class="card-body">
+                    <h4 class="card-title">Libros por Categoría</h4>
+                    <canvas id="graficaLibrosPorCategoria" height="200"></canvas>
+                </div>
+            </div>
+        </div>
+
+        <!-- Préstamos por Tipo -->
+        <div class="col-md-6 mb-4">
+            <div class="card shadow-sm">
+                <div class="card-body">
+                    <h4 class="card-title">Préstamos por Tipo</h4>
+                    <canvas id="graficaPorTipo" height="200"></canvas>
+                </div>
+            </div>
+        </div>
+
+        <!-- Préstamos por Ciclos -->
+        <div class="col-md-6 mb-4">
+            <div class="card shadow-sm">
+                <div class="card-body">
+                    <h4 class="card-title">Préstamos por Ciclos</h4>
+                    <canvas id="graficaPorSemestre" height="200"></canvas>
+                </div>
+            </div>
+        </div>
+
+        <!-- Prestamos por Mes -->
+        <div class="col-md-6 mb-4">
+            <div class="card shadow-sm">
+                <div class="card-body">
+                    <h4 class="card-title mb-0">Prestamos por Mes</h4>
+                    
+                    <canvas id="sales-statistics-overview" height="205"></canvas>
+                </div>
+            </div>
+        </div>
+
+    </div>
+</div>
+
+
+
+@section Scripts {
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/exceljs/4.3.0/exceljs.min.js"></script>
+
+<script>
+       // ----------- FUNCIONES DE COLORES ----------
+        function generarColores(labels) {
+            const coloresBase = [
+                "rgba(255, 99, 132",   // rojo
+                "rgba(54, 162, 235",   // azul
+                "rgba(255, 206, 86",   // amarillo
+                "rgba(75, 192, 192",   // verde agua
+                "rgba(153, 102, 255",  // violeta
+                "rgba(255, 159, 64",   // naranja
+                "rgba(201, 203, 207"   // gris
+            ];
+            return labels.map((_, i) => {
+                const base = coloresBase[i % coloresBase.length];
+                return {
+                    background: `${base}, 0.6)`,
+                    border: `${base}, 1)`
+                };
+            });
+        }
+
+    // ----------- Libros por Categoría -----------
+    fetch("/Books/LibrosPorCategoria")
+        .then(res => res.json())
+        .then(data => {
+            const labels = data.map(x => x.categoria);
+            const cantidades = data.map(x => x.cantidad);
+            const colores = generarColores(labels);
+
+            const ctxLibros = document.getElementById("graficaLibrosPorCategoria").getContext("2d");
+            window.graficaLibrosPorCategoria = new Chart(ctxLibros, {
+                type: "bar",
+                data: {
+                    labels: labels,
+                    datasets: [{
+                        label: "Libros por Categoría",
+                        data: cantidades,
+                        backgroundColor: colores.map(c => c.background),
+                        borderColor: colores.map(c => c.border),
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    indexAxis: 'y',             
+                    scales: {
+                        x: {
+                            beginAtZero: true,
+                            ticks: {
+                                stepSize: 1,
+                                precision: 0
+                            },
+                            title: { display: true, text: 'Cantidad de Libros' }
+                        },
+                        y: {
+                            title: { display: true, text: 'Categorías' }
+                        }
+                    },
+                    plugins: {
+                        legend: { display: false },
+                        tooltip: {
+                            callbacks: {
+                                label: function (context) {
+                                    return `${context.dataset.label}: ${context.parsed.x}`;
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+
+            document.getElementById("graficaLibrosPorCategoria").style.display = "block";
+        });
+
+        // ----------- Préstamos por Tipo -----------
+        fetch("/Loans/PrestamosPorTipo")
+            .then(res => res.json())
+            .then(data => {
+                const labels = data.map(x => x.tipo);
+                const valores = data.map(x => x.cantidad);
+                const colores = generarColores(labels);
+
+                const ctxPrestamos = document.getElementById("graficaPorTipo").getContext("2d");
+                window.graficaPrestamosPorTipo = new Chart(ctxPrestamos, {
+                        type: "bar",
+                    data: {
+                        labels: labels,
+                        datasets: [{
+                            label: "Cantidad de Préstamos por Tipo",
+                            data: valores,
+                            backgroundColor: colores.map(c => c.background),
+                            borderColor: colores.map(c => c.border),
+                            borderWidth: 1,
+                            minBarLength: 5
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        scales: {
+                            y: {
+                                beginAtZero: true,
+                                ticks: { stepSize: 2, precision: 1 },
+                                title: { display: true, text: 'Cantidad' }
+                            }
+                        }
+                    }
+                });
+
+                document.getElementById("graficaPorTipo").style.display = "block";
+            });
+
+        // ----------- Préstamos por Semestre -----------
+        fetch("/Loans/PrestamosPorSemestre")
+            .then(res => res.json())
+            .then(data => {
+                const labels = data.map(x => x.ciclo);
+                const valores = data.map(x => x.cantidad);
+                const colores = generarColores(labels);
+
+                const ctxSemestre = document.getElementById("graficaPorSemestre").getContext("2d");
+                window.graficaPrestamosPorSemestre = new Chart(ctxSemestre, {
+                        type: "bar",
+                    data: {
+                        labels: labels,
+                        datasets: [{
+                            label: "Cantidad de Préstamos por Ciclo",
+                            data: valores,
+                            backgroundColor: colores.map(c => c.background),
+                            borderColor: colores.map(c => c.border),
+                            borderWidth: 1,
+                            minBarLength: 5
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        scales: {
+                            y: {
+                                beginAtZero: true,
+                                ticks: { stepSize: 1, precision: 1 },
+                                title: { display: true, text: 'Cantidad de Préstamos' }
+                            }
+                        },
+                        plugins: {
+                            legend: { display: false }
+                        }
+                    }
+                });
+
+                document.getElementById("graficaPorSemestre").style.display = "block";
+            });
+                function exportarExcel(nombreArchivo, nombreHoja, columnas, filas) {
+                const ws_data = [columnas, ...filas];
+                const ws = XLSX.utils.aoa_to_sheet(ws_data);
+                const wb = XLSX.utils.book_new();  
+                XLSX.utils.book_append_sheet(wb, ws, nombreHoja);
+                XLSX.writeFile(wb, `${nombreArchivo}.xlsx`);
+             }
+
+            // JS Préstamos por Mes
+
+            document.addEventListener("DOMContentLoaded", function () {
+            const ctx = document.getElementById("sales-statistics-overview")?.getContext("2d");
+
+            if (ctx) {
+                fetch('/Loans/PrestamosPorMes')
+                .then(response => response.json())
+                .then(data => {
+                    console.log("Datos recibidos:", data); 
+                    const labels = ["Ene", "Feb", "Mar", "Abr", "May", "Jun", "Jul", "Ago", "Sep", "Oct", "Nov", "Dic"];
+                    const cantidades = new Array(12).fill(0);
+
+                    data.forEach(d => {
+                        const mes = d.Mes ?? d.mes;
+                        const cantidad = d.Cantidad ?? d.cantidad ?? 0;
+                        if (mes >= 1 && mes <= 12) {
+                            cantidades[mes - 1] = cantidad;
+                        }
+                    });
+
+                    new Chart(ctx, {
+                        type: 'line',
+                        data: {
+                            labels: labels,
+                            datasets: [{
+                                label: 'Cantidad de Préstamos por Mes',
+                                data: cantidades,
+                                borderColor: '#392c70',
+                                backgroundColor: 'rgba(57, 44, 112, 0.3)',
+                                fill: true,
+                                tension: 0.4
+                            }]
+                        },
+                        options: {
+                            responsive: true,
+                            plugins: {
+                                legend: {
+                                    display: true,
+                                    labels: { color: "#000" }
+                                }
+                            },
+                            scales: {
+                                x: {
+                                    ticks: { color: "#000" },
+                                    grid: { display: false }
+                                },
+                                y: {
+                                    ticks: { color: "#000" },
+                                    grid: { color: "rgba(0,0,0,0.05)" }
+                                }
+                            }
+                        }
+                    });
                 });
             }
         });
-    </script>
-
-    <script src="https://code.jquery.com/jquery-3.1.1.slim.min.js" integrity="sha384-A7FZj7v+d/sdmMqp/nOQwliLvUsJfDHW+k9Omg/a/EheAdgtzNs3hpfag6Ed950n" crossorigin="anonymous"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/tether/1.4.0/js/tether.min.js" integrity="sha384-DztdAPBWPRXSA/3eYEEUWrWCy7G5KFbe8fFjk5JAIxUYHKkDx6Qin1DkWx51bBrb" crossorigin="anonymous"></script>
-    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-alpha.6/js/bootstrap.min.js" integrity="sha384-vBWWzlZJ8ea9aCX4pEW3rVHjgjt7zpkNpZk+02D9phzyeVkE+jo0ieGizqPLForn" crossorigin="anonymous"></script>
-</div>
+</script>
+}

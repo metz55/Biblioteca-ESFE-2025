@@ -7,20 +7,50 @@
     .spacer {
         margin-right: 20px;
     }
-</style>
-<div class="card">
+
+    #contenedor-principal {
+        border-radius: 1rem;
+    }
+
+    #contenedor-principal {
+        border-radius: 1rem;
+    }
+
+    #btn-create {
+        transition: all 0.3s ease;
+        background-color: #10B981;
+    }
+
+        #btn-create:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 6px 15px rgba(0, 0, 0, 0.2);
+        }
+
+    @@media (max-width: 768px) {
+        #btn-create
+
+    {
+        width: 100% !important;
+        margin-bottom: 15px;
+    }
+
+    }</style>
+<div class="card" id="contenedor-principal">
     <div class="card-body">
 
-<h1 class="text-center">Categorías de Blog</h1>
-<p>
-    <button type="button" class="btn btn-success" onclick="openCreateModal()">
-        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-plus-square" viewBox="0 0 16 16">
-            <path d="M14 1a1 1 0 0 1 1 1v12a1 1 0 0 1-1 1H2a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1zM2 0a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V2a2 2 0 0 0-2-2z" />
-            <path d="M8 4a.5.5 0 0 1 .5.5v3h3a.5.5 0 0 1 0 1h-3v3a.5.5 0 0 1-1 0v-3h-3a.5.5 0 0 1 0-1h3v-3A.5.5 0 0 1 8 4" />
-        </svg>
-        Crear Nueva Categoría
-    </button>
-</p>
+    <h1 style="padding:15px; font-family: 'Poppins', sans-serif; font-weight: 600; margin-left: -15px;">Categorías de Blog</h1>
+        <div class="row g-2 mb-3 align-items-center">
+            <div class="col-12 col-md-auto">
+                <button type="button" class="btn btn-success w-100" onclick="openCreateModal()" id="btn-create">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-plus-square" viewBox="0 0 16 16">
+                        <path d="M14 1a1 1 0 0 1 1 1v12a1 1 0 0 1-1 1H2a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1zM2 0a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V2a2 2 0 0 0-2-2z" />
+                        <path d="M8 4a.5.5 0 0 1 .5.5v3h3a.5.5 0 0 1 0 1h-3v3a.5.5 0 0 1-1 0v-3h-3a.5.5 0 0 1 0-1h3v-3A.5.5 0 0 1 8 4" />
+                    </svg>
+                    Crear Nueva Categoría
+                </button>
+            </div>
+        </div>
+
 
 
 <table id="customers" class="table">
@@ -37,7 +67,7 @@
                 <td>@Html.DisplayFor(modelItem => item.Id)</td>
                 <td>@Html.DisplayFor(modelItem => item.Name)</td>
                 <td>
-                    <button class="btn btn-warning" onclick="openEditModal(@item.Id, '@item.Name')">
+                    <button class="btn btn-warning" onclick="openEditModal(@item.Id, '@item.Name')" style="background: #1D4ED8">
                         <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-pencil-square" viewBox="0 0 16 16">
                             <path d="M15.502 1.94a.5.5 0 0 1 0 .706L14.459 3.69l-2-2L13.502.646a.5.5 0 0 1 .707 0l1.293 1.293zm-1.75 2.456-2-2L4.939 9.21a.5.5 0 0 0-.121.196l-.805 2.414a.25.25 0 0 0 .316.316l2.414-.805a.5.5 0 0 0 .196-.12l6.813-6.814z" />
                             <path fill-rule="evenodd" d="M1 13.5A1.5 1.5 0 0 0 2.5 15h11a1.5 1.5 0 0 0 1.5-1.5v-6a.5.5 0 0 0-1 0v6a.5.5 0 0 1-.5.5h-11a.5.5 0 0 1-.5-.5v-11a.5.5 0 0 1 .5-.5H9a.5.5 0 0 0 0-1H2.5A1.5 1.5 0 0 0 1 2.5z" />
@@ -45,15 +75,45 @@
                         Editar
                     </button> |
 
-                    <form asp-action="Delete" method="post" style="display:inline;" onsubmit="return confirm('¿Estás seguro de que quieres eliminar esta categoría?');">
-                        <input type="hidden" name="id" value="@item.Id" />
-                        <button type="submit" class="btn btn-danger">
-                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-trash3" viewBox="0 0 16 16">
-                                <path d="M6.5 1h3a.5.5 0 0 1 .5.5v1H6v-1a.5.5 0 0 1 .5-.5M11 2.5v-1A1.5 1.5 0 0 0 9.5 0h-3A1.5 1.5 0 0 0 5 1.5v1H1.5a.5.5 0 0 0 0 1h.538l.853 10.66A2 2 0 0 0 4.885 16h6.23a2 2 0 0 0 1.994-1.84l.853-10.66h.538a.5.5 0 0 0 0-1zm1.958 1-.846 10.58a1 1 0 0 1-.997.92h-6.23a1 1 0 0 1-.997-.92L3.042 3.5zm-7.487 1a.5.5 0 0 1 .528.47l.5 8.5a.5.5 0 0 1-.998.06L5 5.03a.5.5 0 0 1 .47-.53Zm5.058 0a.5.5 0 0 1 .47.53l-.5 8.5a.5.5 0 1 1-.998-.06l.5-8.5a.5.5 0 0 1 .528-.47M8 4.5a.5.5 0 0 1 .5.5v8.5a.5.5 0 0 1-1 0V5a.5.5 0 0 1 .5-.5" />
-                            </svg>
-                            Eliminar
-                        </button>
-                    </form>
+                    <button type="button" class="btn btn-danger" style="background-color: #EF4444" data-bs-toggle="modal" data-bs-target="#deleteCategoryModal-@item.Id">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-trash3" viewBox="0 0 16 16">
+                            <path d="M6.5 1h3a.5.5 0 0 1 .5.5v1H6v-1a.5.5 0 0 1 .5-.5M11 2.5v-1A1.5 1.5 0 0 0 9.5 0h-3A1.5 1.5 0 0 0 5 1.5v1H1.5a.5.5 0 0 0 0 1h.538l.853 10.66A2 2 0 0 0 4.885 16h6.23a2 2 0 0 0 1.994-1.84l.853-10.66h.538a.5.5 0 0 0 0-1zm1.958 1-.846 10.58a1 1 0 0 1-.997.92h-6.23a1 1 0 0 1-.997-.92L3.042 3.5zm-7.487 1a.5.5 0 0 1 .528.47l.5 8.5a.5.5 0 0 1-.998.06L5 5.03a.5.5 0 0 1 .47-.53Zm5.058 0a.5.5 0 0 1 .47.53l-.5 8.5a.5.5 0 1 1-.998-.06l.5-8.5a.5.5 0 0 1 .528-.47M8 4.5a.5.5 0 0 1 .5.5v8.5a.5.5 0 0 1-1 0V5a.5.5 0 0 1 .5-.5" />
+                        </svg>
+                        Eliminar
+                    </button>
+
+                    <!-- Modal para eliminar categoría -->
+                    <div class="modal fade" id="deleteCategoryModal-@item.Id" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="deleteCategoryModalLabel-@item.Id" aria-hidden="true">
+                        <div class="modal-dialog modal-dialog-centered">
+                            <div class="modal-content shadow rounded-3">
+                                <!-- Header -->
+                                <div class="modal-header bg-danger text-white">
+                                    <h5 class="modal-title fw-bold" id="deleteCategoryModalLabel-@item.Id">
+                                        <i class="bi bi-exclamation-triangle-fill me-2"></i>Confirmar Eliminación
+                                    </h5>
+                                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+                                </div>
+
+                                <!-- Body -->
+                                <div class="modal-body">
+                                    <p class="mb-0">¿Estás seguro de que deseas eliminar la categoría "<strong>@item.Name</strong>"?</p>
+                                </div>
+
+                                <!-- Footer -->
+                                <div class="modal-footer">
+                                    <form asp-action="Delete" method="post">
+                                        <input type="hidden" name="id" value="@item.Id" />
+                                        <button type="submit" class="btn btn-danger">
+                                            <i class="bi bi-trash3 me-1"></i> Eliminar
+                                        </button>
+                                    </form>
+                                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+                                        <i class="bi bi-x-lg me-1"></i> Cancelar
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
 
                 </td>
             </tr>
@@ -61,32 +121,51 @@
     </tbody>
 </table>
 
-<!-- Modal para crear/editar categoría -->
-<div class="modal fade" id="createCategoryModal" tabindex="-1" role="dialog" aria-labelledby="createCategoryModalLabel" aria-hidden="true">
-    <div class="modal-dialog" role="document">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title" id="createCategoryModalLabel">Crear Nueva Categoría</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+ </div> 
+ </div>
+<!-- Modal para crear/editar categoría con estilo mejorado -->
+<div class="modal fade" id="createCategoryModal" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="createCategoryModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg modal-dialog-scrollable">
+        <div class="modal-content shadow rounded-3">
+            <!-- Header -->
+            <div class="modal-header bg-primary text-white">
+                <h5 class="modal-title fw-bold" id="createCategoryModalLabel">
+                    <i class="bi bi-card-text me-2"></i>Crear Nueva Categoría
+                </h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
+
+            <!-- Body -->
             <div class="modal-body">
-                <!-- Formulario para crear/editar categoría -->
-                <form id="categoryForm" asp-action="Save" method="post">
-                    <input type="hidden" id="categoryId" name="Id" />
-                    <div class="form-group m-4">
-                        <label for="categoryName">Nombre de la categoría</label>
-                        <input type="text" class="form-control" id="categoryName" name="Name" required />
+                <form id="categoryForm" asp-action="Save" method="post" class="card shadow-sm mb-4 border">
+                    <div class="card-header text-center fw-bold bg-light border-bottom">
+                        Datos de la Categoría
                     </div>
-                    <button type="submit" class="btn btn-primary m-2">Guardar</button>
+                    <div class="card-body">
+                        <input type="hidden" id="categoryId" name="Id" />
+                        <div class="mb-3">
+                            <label for="categoryName" class="form-label">Nombre de la categoría</label>
+                            <input type="text" class="form-control" id="categoryName" name="Name" required />
+                        </div>
+                        <div class="text-end">
+                            <button type="submit" class="btn btn-primary">
+                                <i class="bi bi-save me-1"></i> Guardar
+                            </button>
+                        </div>
+                    </div>
                 </form>
+            </div>
+
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+                    <i class="bi bi-x-lg me-1"></i> Cancelar
+                </button>
             </div>
         </div>
     </div>
 </div>
-</div>
-</div>
 
-<!-- Scripts necesarios para Bootstrap Modal -->
+
 <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js" crossorigin="anonymous"></script>
 <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js" crossorigin="anonymous"></script>
 

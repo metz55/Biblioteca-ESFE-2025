@@ -58,6 +58,9 @@ namespace Library.DataAccess.Domain
         [NotMapped]
         public int Top_Aux { get; set; }
 
+        // Propiedad de navegación para la relación uno-a-muchos con LoanDates
+        public ICollection<LoanDates> LoanDates { get; set; }
+
     }
     public class Loans2
     {

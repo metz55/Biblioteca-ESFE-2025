@@ -17,22 +17,41 @@ namespace Library.Client.MVC.Controllers
         BLUsers usersBL = new BLUsers();
         BLUsers_Roles rolesBL = new BLUsers_Roles();
         // GET: UserController
-        public async Task<IActionResult> Index(Users pUsers = null)
+        public async Task<IActionResult> Index(string USER_NAME, int page = 1, int pageSize = 5)
         {
-            if(pUsers == null)
-                pUsers = new Users();
-            if (pUsers.Top_Aux == 0)
-                pUsers.Top_Aux = 10;
-            else if (pUsers.Top_Aux == -1)
-                pUsers.Top_Aux = 0;
-            var taskSearch = usersBL.GetIncludeRolesASync(pUsers);
+            var filtro = new Users
+            {
+                USER_NAME = USER_NAME,
+                Top_Aux = -1 // para traer todos y luego paginar en memoria
+            };
+
+            var taskSearch = usersBL.GetIncludeRolesASync(filtro);
             var taskGetRoles = rolesBL.GetAllRolesASync();
-            var user = await taskSearch;
-            ViewBag.Top = pUsers.Top_Aux;
-            ViewBag.Users_Roles = taskGetRoles;
+
+            var allUsers = await taskSearch;
+
+            // Ordenar por USER_ID (puedes cambiar a USER_NAME si quieres alfabético)
+            allUsers = allUsers
+                .OrderBy(u => u.USER_ID)
+                .ToList();
+
+            int totalRegistros = allUsers.Count();
+            int totalPaginas = (int)Math.Ceiling((double)totalRegistros / pageSize);
+
+            var users = allUsers
+                .Skip((page - 1) * pageSize)
+                .Take(pageSize)
+                .ToList();
+
+            ViewBag.Users_Roles = await taskGetRoles;
+            ViewBag.TotalPaginas = totalPaginas;
+            ViewBag.PaginaActual = page;
+            ViewBag.Top = pageSize;
             ViewBag.ShowMenu = true;
-            return View(user);
+
+            return View(users);
         }
+
 
         // GET: UserController/Details/5
         public async  Task<IActionResult> Details(int id)
