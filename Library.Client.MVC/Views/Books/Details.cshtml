@@ -4,52 +4,174 @@
     ViewData["Title"] = "Detalles del Libro";
     Layout = "_LayoutP";
 }
+<link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet">
+
 
 <style>
-    /* Imagen de portada más grande y responsiva */
-    .img-portada {
-        width: 100%;
-        max-width: 300px;
-        height: auto;
-        object-fit: cover;
-        border-radius: 10px;
-        border: 1px solid #ddd;
-    }
-
-    @@media (max-width: 768px) {
-        .img-portada
-
-    {
-        max-width: 100%;
-    }
-
-    .table th,
-    .table td {
-        font-size: 0.9rem;
-    }
-
-    .card-body {
-        padding: 1rem;
-    }
-
+    /* Fuente y colores base */
+    body {
+        font-family: 'Roboto', 'Segoe UI', sans-serif;
     }
 
     #contenedor-principal {
-        border-radius: 1rem;
+        border: none;
+        border-radius: 12px;
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.08);
+        overflow: hidden;
     }
+
+    .card-body {
+        padding: 2.5rem;
+        background-color: #fbfbfb;
+    }
+
+    /* Imagen de portada */
+    .img-portada {
+        width: 100%;
+        max-width: 280px;
+        height: auto;
+        border-radius: 8px;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        margin: 0 auto 2rem;
+        display: block;
+    }
+
+    /* Tabla de detalles */
+    .detail-table {
+        width: 100%;
+        border-collapse: separate;
+        border-spacing: 0 12px;
+        margin-bottom: 0;
+    }
+
+        .detail-table tr {
+            background-color: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+        }
+
+        .detail-table th {
+            width: 35%;
+            padding: 1rem 1.5rem;
+            text-align: left;
+            font-weight: 500;
+            color: #555;
+            border: none;
+            border-bottom: 1px solid #f0f0f0;
+            font-size: 0.95rem;
+        }
+
+        .detail-table td {
+            padding: 1rem 1.5rem;
+            color: #333;
+            border: none;
+            border-bottom: 1px solid #f0f0f0;
+            font-size: 0.95rem;
+        }
+
+    /* Fila de la imagen */
+    .cover-row th,
+    .cover-row td {
+        border-bottom: none;
+        padding: 0.5rem 1.5rem;
+    }
+
+    .cover-row td {
+        text-align: center;
+    }
+
+    /* Mensaje de "Sin portada" */
+    .no-cover {
+        color: #999;
+        font-style: italic;
+        font-size: 0.9rem;
+    }
+
+    /* Botones */
+    .action-buttons {
+        margin-top: 2rem;
+        display: flex;
+        justify-content: center;
+        gap: 1rem;
+    }
+
+    .btn {
+        padding: 0.6rem 1.5rem;
+        font-weight: 500;
+        border-radius: 6px;
+        transition: all 0.2s;
+    }
+
+    .btn-warning {
+        background-color: #ffb74d;
+        border-color: #ffb74d;
+        color: #333;
+    }
+
+        .btn-warning:hover {
+            background-color: #ffa726;
+            color: #333;
+        }
+
+    /* Responsive */
+    @@media (max-width: 768px) {
+        .card-body
+
+    {
+        padding: 1.5rem;
+    }
+
+    .detail-table th, .detail-table td {
+        padding: 0.75rem 1rem;
+        font-size: 0.9rem;
+    }
+
+    }
+
+    /* Animación para las filas de la tabla */
+    .detail-table tr {
+        background-color: white;
+        border-radius: 8px;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+        transition: all 0.25s ease;
+    }
+
+        .detail-table tr:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.1);
+            background-color: #f9f9f9;
+        }
+
+    /* Animación para la imagen de portada */
+    .img-portada {
+        width: 100%;
+        max-width: 280px;
+        height: auto;
+        border-radius: 8px;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        margin: 0 auto 2rem;
+        display: block;
+        transition: all 0.3s ease;
+    }
+
+        .img-portada:hover {
+            transform: scale(1.02);
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
+        }
 </style>
+
 
 <div class="row">
     <div class="col-md-12 grid-margin stretch-card">
         <div class="card" id="contenedor-principal">
             <div class="card-body">
-                <h4 style="padding:15px; font-family: 'Poppins', sans-serif; font-weight: 600; margin-left: -15px; font-size: 2.5rem;">Detalles del Libro</h4>
+                <h4 class="card-title text-center" style="font-family: 'Poppins', sans-serif; font-weight: 600;">Detalles del Libro</h4>
 
                 <div class="table-responsive">
-                    <table class="table table-bordered table-striped">
+                    <table class="detail-table">
                         <tbody>
                             <tr>
-                                <th style="width: 30%;">ID</th>
+                                <th>ID</th>
                                 <td>@Model.BOOK_ID</td>
                             </tr>
                             <tr>
@@ -104,16 +226,16 @@
                                 <th>Existencias</th>
                                 <td>@Model.EXISTENCES</td>
                             </tr>
-                            <tr>
+                            <tr class="cover-row">
                                 <th>Portada</th>
-                                <td class="text-center">
+                                <td>
                                     @if (!string.IsNullOrEmpty(Model.COVER) && Model.COVER != "SinPortada")
                                     {
                                         <img src="@Url.Content(Model.COVER)" alt="Portada" class="img-portada" />
                                     }
                                     else
                                     {
-                                        <span class="text-muted">Sin portada disponible</span>
+                                        <span class="no-cover">Sin portada disponible</span>
                                     }
                                 </td>
                             </tr>
@@ -121,12 +243,12 @@
                     </table>
                 </div>
 
-                <div class="text-center mt-4">
-                    <a href="@Url.Action("Edit", new { id = Model.BOOK_ID })" class="btn btn-warning mr-2">
-                        <i class="mdi mdi-pencil"></i> Editar
+                <div class="action-buttons">
+                    <a href="@Url.Action("Edit", new { id = Model.BOOK_ID })" class="btn btn-info" style="background: #1D4ED8">
+                        <i class="bi bi-pencil-square"></i> Editar
                     </a>
                     <a href="@Url.Action("Index")" class="btn btn-secondary">
-                        <i class="mdi mdi-arrow-left"></i> Regresar
+                        <i class="bi bi-reply-fill"></i> Regresar
                     </a>
                 </div>
             </div>

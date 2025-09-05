@@ -105,7 +105,7 @@
                         <button type="submit" class="btn btn-success me-2">
                             <i class="bi bi-floppy"></i> Crear Préstamo
                         </button>
-                        <a asp-action="Index" class="btn btn-secondary">
+                        <a asp-action="Index" class="btn btn-secondary" id="confirmar">
                             <i class="bi bi-reply-fill"></i> Regresar
                         </a>
                     </div>
@@ -116,7 +116,6 @@
 </div>
 
 
-@* Aquí puedes dejar tus modales y scripts como los tienes *@
 <!-- Modal Buscar Estudiantes -->
 <div class="modal fade" id="mdlBuscarEstudiantes" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="mdlBuscarEstudiantesLabel" aria-hidden="true">
     <div class="modal-dialog modal-lg modal-dialog-scrollable">
@@ -173,7 +172,6 @@
         </div>
     </div>
 </div>
-<!------------------------------------------------------->
 <!-- Esta funcion de JS se agrego para solucionar un error en la modal -Buscar Estudiante -->
 <script>
     $(document).ready(function () {
@@ -247,7 +245,6 @@
         });
     });
 </script>
-<!------------------------------------------------------->
 <!-- Modal Buscar Libros -->
 <div class="modal fade" id="mdlBuscarLibros" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="mdlBuscarLibrosLabel" aria-hidden="true">
     <div class="modal-dialog modal-lg modal-dialog-scrollable">
@@ -330,7 +327,7 @@
                         icon: 'error',
                         title: 'Error',
                         text: '@ViewBag.Alerta',
-                        confirmButtonColor: '#003366'
+                        confirmButtonColor: '#d33'
                     });
                 </text>
         }
@@ -341,7 +338,7 @@
                         icon: 'error',
                         title: 'Error',
                         text: '@ViewBag.Alerta2',
-                        confirmButtonColor: '#003366'
+                        confirmButtonColor: '#d33'
                     });
                 </text>
         }
@@ -352,10 +349,32 @@
                         icon: 'error',
                         title: 'Error',
                         text: '@ViewBag.AlertaPrestamoEx',
-                        confirmButtonColor: '#003366'
+                        confirmButtonColor: '#d33'
                     });
                 </text>
         }
+    });
+</script>
+<script>
+    $(document).ready(function() {
+        // Confirmación al regresar al índice
+        $("#confirmar").on("click", function(e) {
+            e.preventDefault();
+            Swal.fire({
+                icon: 'question',
+                title: '¿Regresar al índice?',
+                text: "Si regresas ahora, tu prestamo no se guardara. ¿Estás seguro?",
+                showCancelButton: true,
+                confirmButtonColor: '#6c757d',
+                cancelButtonColor: '#d33',
+                confirmButtonText: 'Sí, regresar',
+                cancelButtonText: 'Cancelar'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    window.location.href = '@Url.Action("Index", "Loans")';
+                }
+            });
+        });
     });
 </script>
 
@@ -421,5 +440,19 @@
             // Cerrar modal
             $('#mdlBuscarLibros').modal('hide');
         });
+    });
+</script>
+<script>
+    // Establecer la fecha mínima para los inputs de fecha
+    document.addEventListener('DOMContentLoaded', function() {
+        var today = new Date();
+        var dd = String(today.getDate()).padStart(2, '0');
+        var mm = String(today.getMonth() + 1).padStart(2, '0'); // Enero es 0!
+        var yyyy = today.getFullYear();
+
+        today = yyyy + '-' + mm + '-' + dd;
+
+        document.getElementById('fechaInicio').setAttribute('min', today);
+        document.getElementById('fechaCierre').setAttribute('min', today);
     });
 </script>

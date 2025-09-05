@@ -22,7 +22,7 @@
     }
 
     #contenedor-principal {
-        border-radius: 1rem;
+        border-radius: 0.5rem;
     }
 
     #btn-create {
@@ -33,6 +33,16 @@
             transform: translateY(-3px);
             box-shadow: 0 6px 15px rgba(0, 0, 0, 0.2);
         }
+
+    .anchoAccionesLibro .btn {
+        min-width: 80px; 
+        margin-right: 5px; 
+    }
+
+    .anchoAccionesLibro > div {
+        display: flex;
+        gap: 5px; 
+    }
 
     @@media (max-width: 768px) {
         .form-busqueda {
@@ -53,8 +63,15 @@
 
         .anchoAccionesLibro .btn {
             display: block;
-            width: 100%;
-            margin-bottom: 5px;
+            width: 100% !important;
+           margin-bottom: 5px;
+        }
+
+        .anchoAccionesLibro > div {
+            flex-wrap: wrap;
+            gap: 6px;
+            flex-direction: column;
+            align-items: stretch;
         }
 
         table.table td, table.table th {
@@ -166,9 +183,17 @@
                             <td>@item.Users_Roles?.ROLE</td>
                             <td>@item.CREATED_AT.ToString("yyyy-MM-dd")</td>
                             <td class="anchoAccionesLibro">
-                                <a href="@Url.Action("Edit", new { id = item.USER_ID })" class="btn btn-warning" style="background: #1D4ED8">Editar</a>
-                                <a href="@Url.Action("Details", new { id = item.USER_ID })" class="btn btn-info" style="background-color: #64748B">Detalles</a>
-                                <a href="@Url.Action("Delete", new { id = item.USER_ID })" class="btn btn-danger" style="background-color: #EF4444">Eliminar</a>
+                                <div>
+                                    <a href="@Url.Action("Edit", new { id = item.USER_ID })" class="btn btn-info" style="background: #1D4ED8">
+                                        <i class="bi bi-pencil-square"></i>Editar
+                                    </a>
+                                    <a href="@Url.Action("Details", new { id = item.USER_ID })" class="btn btn-secondary" style="background-color: #64748B">
+                                        <i class="bi bi-eye"></i>Detalles
+                                    </a>
+                                    <a href="javascript:void(0)" " onclick="confirmDelete(@item.USER_ID)" class="btn btn-danger" style="background-color: #EF4444">
+                                        <i class="bi bi-trash3"></i>Eliminar
+                                    </a>
+                                </div>
                             </td>
                         </tr>
 
@@ -206,6 +231,9 @@
                 }
             </nav>
         }
+        <form style="display:none;">
+            @Html.AntiForgeryToken()
+        </form>
     </div>
 </div>
 
@@ -225,5 +253,53 @@
         });
     });
 </script>
-
-
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<script>
+    function confirmDelete(userId) {
+        Swal.fire({
+            title: '¿Estás seguro?',
+            text: "¡No podrás revertir esto!",
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#EF4444',
+            cancelButtonColor: '#6c757d',
+            confirmButtonText: 'Sí, eliminar',
+            cancelButtonText: 'Cancelar'
+        }).then((result) => {
+            if (result.isConfirmed) {
+                fetch(`/User/Delete/${userId}`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'RequestVerificationToken': document.querySelector('input[name="__RequestVerificationToken"]').value
+                    }
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        Swal.fire(
+                            '¡Eliminado!',
+                            data.message,
+                            'success'
+                        ).then(() => {
+                            location.reload();
+                        });
+                    } else {
+                        Swal.fire(
+                            'Error',
+                            data.message,
+                            'error'
+                        );
+                    }
+                })
+                .catch(error => {
+                    Swal.fire(
+                        'Error',
+                        'Ocurrió un error al intentar eliminar.',
+                        'error'
+                    );
+                });
+            }
+        });
+    }
+</script>

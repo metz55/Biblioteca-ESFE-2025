@@ -128,27 +128,26 @@ namespace Library.Client.MVC.Controllers
         }
 
         // GET: CategoriesController/Delete/5
-        public async Task<IActionResult> Delete(int id)
-        {
-            var countries = await countriesBL.GetCountriesByIdAsync(new Countries { COUNTRY_ID = id });
-            ViewBag.ShowMenu = true;
-            return View(countries);
-        }
+        //public async Task<IActionResult> Delete(int id)
+        //{
+        //    var countries = await countriesBL.GetCountriesByIdAsync(new Countries { COUNTRY_ID = id });
+        //    ViewBag.ShowMenu = true;
+        //    return View(countries);
+        //}
 
         // POST: CategoriesController/Delete/5
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Delete(int id, Countries pCountries)
+        public async Task<IActionResult> Delete(int id)
         {
             try
             {
                 int result = await countriesBL.DeleteCountriesAsync(new Countries { COUNTRY_ID = id });
-                return RedirectToAction(nameof(Index));
+                return Ok(new { success = true, message = "País eliminado correctamente." });
             }
             catch (Exception ex)
             {
-                ViewBag.Error = ex.Message;
-                return View(pCountries);
+                return BadRequest(new { success = false, message = ex.Message });
             }
         }
 
