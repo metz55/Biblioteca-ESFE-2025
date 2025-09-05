@@ -124,35 +124,35 @@ namespace Library.Client.MVC.Controllers
         }
 
         // GET: UserController/Delete/5
-        public async Task<IActionResult> Delete(int id)
-        {
-            var user = await usersBL.GetUsersByIdAsync(new Users { USER_ID = id });
-            user.Users_Roles = await rolesBL.GetRolesByIdAsync(new Users_Roles {  USER_ROLE_ID = user.ROlE_ID });
-            ViewBag.Error = "";
-            ViewBag.ShowMenu = true;
-            return View(user);
-        }
+        //public async Task<IActionResult> Delete(int id)
+        //{
+        //    var user = await usersBL.GetUsersByIdAsync(new Users { USER_ID = id });
+        //    user.Users_Roles = await rolesBL.GetRolesByIdAsync(new Users_Roles {  USER_ROLE_ID = user.ROlE_ID });
+        //    ViewBag.Error = "";
+        //    ViewBag.ShowMenu = true;
+        //    return View(user);
+        //}
 
         // POST: UserController/Delete/5
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Delete(int id, Users pUsers)
+        public async Task<IActionResult> Delete(int id)
         {
             try
             {
-                int result = await usersBL.DeleteUsersAsync(pUsers);
-                return RedirectToAction(nameof(Index));
+                var user = await usersBL.GetUsersByIdAsync(new Users { USER_ID = id });
+                int result = await usersBL.DeleteUsersAsync(user);
+                return Ok(new { success = true, message = "Usuario eliminado correctamente." });
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
-                ViewBag.Error = ex.Message;
-                return View(pUsers);
+                return BadRequest(new { success = false, message = ex.Message });
             }
         }
 
         // GET: UsuarioController/CambiarPassword
-        
 
-        
+
+
     }
 }

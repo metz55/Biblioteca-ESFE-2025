@@ -1,73 +1,57 @@
 ﻿@model Library.DataAccess.Domain.Categories
-
 @{
     ViewData["Title"] = "Editar Categoría";
 }
-
+<link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet">
 <style>
-    .edit-card {
-        max-width: 600px;
-        margin: 50px auto;
-        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
-        border-radius: 20px;
-        overflow: hidden;
-        background: #ffffff;
+    #contenedor-principal {
+        border-radius: 0.5rem;
+    }
+    @@media (max-width: 768px) {
+        .margenEdit
+
+    {
+        padding: 0 10px;
     }
 
-    .edit-header {
-        background: linear-gradient(135deg, #4f46e5, #8b5cf6);
-        padding: 20px;
-        color: white;
-        text-align: center;
+    .btn-group-responsive .btn {
+        margin-bottom: 10px;
     }
 
-        .edit-header h2 {
-            margin: 0;
-            font-weight: bold;
-            font-size: 1.8rem;
-        }
-
-    .edit-body {
-        padding: 30px;
     }
 
-    .btn i, .btn svg {
-        margin-right: 8px;
+    .form-label {
+        font-weight: 500;
     }
 </style>
 
-<div class="edit-card">
-    <div class="edit-header">
-        <h2>📁 Editar Categoría</h2>
-    </div>
-    <div class="edit-body">
-        <form asp-action="Edit">
-            <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
-            <input asp-for="CATEGORY_ID" type="hidden" />
-
-            <div class="form-group mb-4">
-                <label asp-for="CATEGORY_NAME" class="form-label fw-semibold">Nombre de la Categoría</label>
-                <input asp-for="CATEGORY_NAME" class="form-control" placeholder="Ej. Novela, Ciencia, Historia..." />
-                <span asp-validation-for="CATEGORY_NAME" class="text-danger"></span>
+<div class="card" id="contenedor-principal">
+    <div class="card-body">
+        <div class="container-fluid">
+            <h1 class="card-title text-center" style="font-family: 'Poppins', sans-serif; font-weight: 600;">Editar Categoría</h1>
+            <hr />
+            <div class="row justify-content-center">
+                <div class="col-12 col-md-8 col-lg-6 margenEdit">
+                    <form asp-action="Edit">
+                        <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
+                        <input asp-for="CATEGORY_ID" type="hidden" />
+                        <div class="form-group mb-3">
+                            <label asp-for="CATEGORY_NAME" class="form-label">Nombre de la Categoría</label>
+                            <input asp-for="CATEGORY_NAME" class="form-control" placeholder="Ej. Novela, Ciencia, Historia..." />
+                            <span asp-validation-for="CATEGORY_NAME" class="text-danger"></span>
+                        </div>
+                        <div class="d-flex justify-content-center mt-4">
+                            <button type="submit" class="btn btn-success me-2">
+                                <i class="bi bi-floppy"></i> Guardar
+                            </button>
+                            <a asp-action="Index" class="btn btn-secondary">
+                                <i class="bi bi-reply-fill"></i> Regresar
+                            </a>
+                        </div>
+                    </form>
+                </div>
             </div>
-
-            <div class="d-flex justify-content-center gap-4">
-                <button type="submit" class="btn btn-success d-flex align-items-center px-4">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" fill="currentColor" class="bi bi-floppy" viewBox="0 0 16 16">
-                        <path d="M11 2H9v3h2z" />
-                        <path d="M1.5 0h11.586a1.5 1.5 0 0 1 1.06.44l1.415 1.414A1.5 1.5 0 0 1 16 2.914V14.5a1.5 1.5 0 0 1-1.5 1.5h-13A1.5 1.5 0 0 1 0 14.5v-13A1.5.5 0 0 1 1.5 0M1 1.5v13a.5.5 0 0 0 .5.5H2v-4.5A1.5 1.5 0 0 1 3.5 9h9a1.5 1.5 0 0 1 1.5 1.5V15h.5a.5.5 0 0 0 .5-.5V2.914a.5.5 0 0 0-.146-.353l-1.415-1.415A.5.5 0 0 0 13.086 1H13v4.5A1.5 1.5 0 0 1 11.5 7h-7A1.5 1.5 0 0 1 3 5.5V1H1.5a.5.5 0 0 0-.5.5m3 4a.5.5 0 0 0 .5.5h7a.5.5 0 0 0 .5-.5V1H4zM3 15h10v-4.5a.5.5 0 0 0-.5-.5h-9a.5.5 0 0 0-.5.5z" />
-                    </svg>
-                    Guardar
-                </button>
-
-                <a asp-action="Index" class="btn btn-secondary d-flex align-items-center px-4">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" fill="currentColor" class="bi bi-reply-fill" viewBox="0 0 16 16">
-                        <path d="M5.921 11.9 1.353 8.62a.72.72 0 0 1 0-1.238L5.921 4.1A.716.716 0 0 1 7 4.719V6c1.5 0 6 0 7 8-2.5-4.5-7-4-7-4v1.281c0 .56-.606.898-1.079.62z" />
-                    </svg>
-                    Regresar
-                </a>
-            </div>
-        </form>
+        </div>
     </div>
 </div>
 
@@ -75,12 +59,10 @@
     @{
         await Html.RenderPartialAsync("_ValidationScriptsPartial");
     }
-
     <script>
         $(function () {
             $("form input[name]").trigger("blur");
         });
-
         document.querySelector('.main-content')?.classList.remove('with-menu');
         document.querySelector('.main-content')?.classList.add('full-width');
     </script>

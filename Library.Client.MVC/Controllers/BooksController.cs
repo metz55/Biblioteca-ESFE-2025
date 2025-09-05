@@ -322,6 +322,18 @@ namespace Library.Client.MVC.Controllers
             return Json(resultado);
         }
 
+        [HttpGet]
+        public async Task<IActionResult> GetBookSuggestions(string query)
+        {
+            var books = await DALBooks.GetBooksByTitleAsync(query);
+            var suggestions = books
+                .Select(b => b.TITLE)
+                .Distinct()
+                .Take(10)
+                .ToList();
+
+            return Json(suggestions);
+        }
 
     }
 }

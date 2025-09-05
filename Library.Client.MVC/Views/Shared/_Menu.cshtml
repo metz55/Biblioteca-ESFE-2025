@@ -1,110 +1,4 @@
-﻿@*
-<head>
-     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0"> *@
-
-    @* <link rel="stylesheet" href="~/css/StyleLayout.css" />
-
-    <style>
-        /* Estilos para centrar la imagen */
-        .centered-image {
-            text-align: center;
-            margin-top: 150px;
-            padding-left: 150px;
-        }
-
-            .centered-image img {
-                display: inline-block;
-                max-width: 100%;
-                height: auto;
-            }
-    </style>
-
-    @* <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no"> 
-    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-alpha.6/css/bootstrap.min.css" integrity="sha384-rwoIResjU2yc3z8GV/NPeZWAv56rSmLldC3R/AZzGRnGxQQKnKkoFVhFQhNUwEyJ" crossorigin="anonymous">
-    <script src="https://use.fontawesome.com/f225000782.js"></script>
-</head>
-<body>
-
-    <div class="container-fluid">
-        <nav class="sidebar d-flex flex-column">
-            <ul class="nav">
-                <li class="nav-profile">
-                    <div class="image">
-                        <a href="javascript:;"><img src="/img/esfe.png" width="60" height="60" class="align-top" alt=""></a>
-                    </div>
-                    <div class="info" style="margin-top: 20px;">Administrador</div>
-                </li>
-            </ul>
-
-            <ul class="nav flex-column">
-                
-                <li class="nav-item">
-                    <a class="nav-link" href="#" id="redireccionBooks" style="color: white;"><i class="fa fa-book"></i>Libros</a>
-                </li>
-                <li class="nav-item has-sub">
-                    <a class="nav-link" data-toggle="collapse" href="#sub4" aria-expanded="false" aria-controls="sub1" style="color: white;">
-                        <i class="fa fa-book"></i>Gestion de Libro
-                    </a>
-                    <ul class="sub collapse" id="sub4">
-                        <li class="nav-item"><a class="nav-link" href="#" id="redireccionCiudad" style="color: white;">Ciudades</a></li>
-                        <li class="nav-item"><a class="nav-link" href="#" id="redireccionAutor" style="color: white;">Autores</a></li>
-                        <li class="nav-item"><a class="nav-link" href="#" id="redireccionEditorial" style="color: white;">Editoriales</a></li>
-                        <li class="nav-item has-sub">
-                            <a class="nav-link" data-toggle="collapse" href="#sub5" aria-expanded="false" aria-controls="sub2" style="color: white;">Más</a>
-                            <ul class="sub collapse" id="sub5">
-                                <li class="nav-item"><a class="nav-link" href="#" id="redireccionEdicion" style="color: white;">Ediciones</a></li>
-                                <li class="nav-item"><a class="nav-link" href="#" id="redirecionCatalogo" style="color: white;">Catalogo</a></li>
-                                <li class="nav-item"><a class="nav-link" href="#" id="redirecionCategoria" style="color: white;">Categoria</a></li>
-                                <li class="nav-item"><a class="nav-link" href="#" id="redirecionTipoAd" style="color: white;">Tipo adquisición</a></li>
-                            </ul>
-                        </li>
-                    </ul>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link" href="#" id="redireccionListaLoans" style="color: white;"><i class="fa fa-american-sign-language-interpreting"></i>Préstamo</a>
-                </li>
-                <li class="nav-item has-sub">
-                    <a class="nav-link" data-toggle="collapse" href="#sub1" aria-expanded="false" aria-controls="sub1" style="color: white;">
-                        <i class="fa fa-american-sign-language-interpreting"></i>Gestion de Préstamo
-                    </a>
-                    <ul class="sub collapse" id="sub1">
-                        <li class="nav-item"><a class="nav-link" href="#" id="redireccionTipoLoan" style="color: white;">Tipo de Prestamo</a></li>
-                        <li class="nav-item"><a class="nav-link" href="#" id="redireccionEsLoan" style="color: white;">Estado del Prestamo</a></li>
-                    </ul>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link" href="#" id="redireccionUser" style="color: white;"><i class="fa fa-user"></i>Usuarios</a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link" href="#" id="redireccionBlog" style="color: white;"><i class="fa fa-newspaper-o"></i>Blog</a>
-                </li>
-                <li class="nav-item has-sub">
-                    <a class="nav-link" data-toggle="collapse" href="#sub7" aria-expanded="false" aria-controls="sub1" style="color: white;">
-                        <i class="fa fa-newspaper-o"></i>Gestión de Blog
-                    </a>
-                    <ul class="sub collapse" id="sub7">
-                        <li class="nav-item"><a class="nav-link" href="#" id="redireccionBlogCategories" style="color: white;">Categorías</a></li>
-                    </ul>
-                </li>
-            </ul>
-
-
-            <div class="mt-auto">
-                <form asp-controller="Auth" asp-action="LogoutAdmin" method="post" class="w-100">
-                    <button type="submit" class="btn btn-danger btn-block" style="cursor: pointer;">
-                        <i class="fa fa-sign-out"></i> Cerrar Sesión
-                    </button>
-                </form>
-            </div>
-        </nav>
-
-
-    </div>
-
-  *@
-
+﻿
 <link rel="stylesheet" href="~/css/SideBar.css" />
 
 <!-- partial:../../partials/_sidebar.html -->
@@ -209,11 +103,6 @@
                              Estado del Préstamo
                         </a>
                     </li>
-                    @*<li class="nav-item">
-                        <a class="nav-link" href="#" id="redireccionStatusLoan">
-                            Prestamos Finalizados
-                        </a>
-                    </li>*@
                     <li class="nav-item">
                         <a class="nav-link" href="#" id="redireccionLDelite">
                             Prestamos Eliminados
@@ -258,13 +147,6 @@
             </a>
         </li>
 
-        @*<div class="mt-auto p-3">
-            <form asp-controller="Auth" asp-action="LogoutAdmin" method="post" class="w-100">
-                <button type="submit" class="btn btn-outline-danger btn-block d-flex align-items-center justify-content-center gap-2" style="font-weight: 600; border-width: 2px;">
-                    <span>Salir del Sistema</span>
-                </button>
-            </form>
-        </div>*@
     </ul>
 </nav>
 
@@ -293,7 +175,8 @@
             redirectionStudent: '/Auth/Student',
             redireccionUser: '/User/Index',
             redireccionLDelite: '/Loans/LoansDelite',
-            redirectionRLoans: '/Loans/AllLoans'
+            redirectionRLoans: '/Loans/AllLoans',
+            redirectionOverdue: '/Loans/LoansOverdue'
         };
 
         Object.keys(redirectionMap).forEach(id => {
@@ -312,8 +195,7 @@
     <script src="https://code.jquery.com/jquery-3.1.1.slim.min.js" integrity="sha384-A7FZj7v+d/sdmMqp/nOQwliLvUsJfDHW+k9Omg/a/EheAdgtzNs3hpfag6Ed950n" crossorigin="anonymous"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/tether/1.4.0/js/tether.min.js" integrity="sha384-DztdAPBWPRXSA/3eYEEUWrWCy7G5KFbe8fFjk5JAIxUYHKkDx6Qin1DkWx51bBrb" crossorigin="anonymous"></script>
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-alpha.6/js/bootstrap.min.js" integrity="sha384-vBWWzlZJ8ea9aCX4pEW3rVHjgjt7zpkNpZk+02D9phzyeVkE+jo0ieGizqPLForn" crossorigin="anonymous"></script>
+   <script src="https://use.fontawesome.com/f225000782.js"></script>
 
-    @*
-</body> *@
 
 

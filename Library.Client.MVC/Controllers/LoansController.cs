@@ -25,16 +25,12 @@ namespace Library.Client.MVC.Controllers
             _loanService = loanService;
         }
 
-        public async Task<IActionResult> Index(Books pBooks, Loans pLoans = null, string studentCode = "")
+        public async Task<IActionResult> Index(Loans pLoans = null, string studentCode = "", int page = 1, int pageSize = 5)
         {
             if (pLoans == null)
                 pLoans = new Loans();
-            if (pLoans.Top_Aux == 0)
-                pLoans.Top_Aux = 10;
-            else if (pLoans.Top_Aux == -1)
-                pLoans.Top_Aux = 0;
 
-            // Si se ingresó un código de estudiante, buscar su ID_LENDER
+            // Lógica para buscar el ID_LENDER por código de estudiante
             if (!string.IsNullOrEmpty(studentCode))
             {
                 using (var httpClient = new HttpClient())
@@ -46,29 +42,38 @@ namespace Library.Client.MVC.Controllers
                         var student = JsonSerializer.Deserialize<Student>(apiResponse, new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
                         if (student != null)
                         {
-                            pLoans.ID_LENDER = student.Id; // Asigna el ID del estudiante encontrado
+                            pLoans.ID_LENDER = student.Id;
                         }
                     }
                     catch (Exception ex)
                     {
-                        // Manejo de error (opcional: mostrar mensaje en ViewBag)
                         ViewBag.Error = "No se pudo buscar el estudiante: " + ex.Message;
                     }
                 }
             }
 
             var loans = await loansBL.GetIncludePropertiesAsync(pLoans);
-            ViewBag.Categories = await categoriesBL.GetAllCategoriesAsync();
-            ViewBag.Loans = await loansBL.GetAllLoansAsync();
+            loans = loans.Where(l => l.ID_RESERVATION != 2 && l.ID_RESERVATION != 5 && l.STATUS == true).ToList();
+            loans = loans.OrderBy(l => l.LOAN_ID).ToList();
+
+            // Aplicar paginación
+            int totalRegistros = loans.Count();
+            int totalPaginas = (int)Math.Ceiling((double)totalRegistros / pageSize);
+            var loansPaginados = loans
+                .Skip((page - 1) * pageSize)
+                .Take(pageSize)
+                .ToList();
+
+            ViewBag.TotalPaginas = totalPaginas;
+            ViewBag.PaginaActual = page;
+            ViewBag.Top = pageSize;
             ViewBag.LoansTypes = await loansTypesBL.GetAllLoanTypesAsync();
             ViewBag.ReservationStatus = await reservationStatusBL.GetAllReservationStatusAsync();
-            ViewBag.Books = await booksBL.GetIncludePropertiesAsync(pBooks);
+            ViewData["studentCode"] = studentCode;
 
-            ViewBag.Top = pLoans.Top_Aux;
-            ViewBag.ShowMenu = true;
-            ViewData["studentCode"] = studentCode; // Para que el campo no se borre al recargar
-            return View(loans);
+            return View(loansPaginados);
         }
+
 
         // Resto de los métodos del controlador se mantienen igual
         public async Task<IActionResult> Status2Loans(Books pBooks, Loans pLoans = null)
@@ -467,6 +472,69 @@ namespace Library.Client.MVC.Controllers
                 }).ToList();
             return Json(datos);
         }
+
+
+        public async Task<IActionResult> LoansOverdue(Books pBooks, Loans pLoans = null, string studentCode = "")
+        {
+            if (pLoans == null)
+                pLoans = new Loans();
+            if (pLoans.Top_Aux == 0)
+                pLoans.Top_Aux = 20;
+            else if (pLoans.Top_Aux == -1)
+                pLoans.Top_Aux = 0;
+
+            if (!string.IsNullOrEmpty(studentCode))
+            {
+                using (var httpClient = new HttpClient())
+                {
+                    try
+                    {
+                        var response = await httpClient.GetAsync($"http://190.242.151.49/esfeapi/ra/student/code/{studentCode}");
+                        string apiResponse = await response.Content.ReadAsStringAsync();
+                        var student = JsonSerializer.Deserialize<Student>(apiResponse, new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
+                        if (student != null)
+                        {
+                            pLoans.ID_LENDER = student.Id;
+                        }
+                    }
+                    catch (Exception ex)
+                    {
+                        ViewBag.Error = "No se pudo buscar el estudiante: " + ex.Message;
+                    }
+                }
+            }
+
+            var allLoans = await loansBL.GetIncludePropertiesAsync(pLoans);
+            var overdueLoans = new List<Loans>();
+
+            foreach (var loan in allLoans)
+            {
+                // Obtener la lista de fechas para este préstamo
+                var loanDatesList = await loanDatesBL.GetLoanDatesByIdLoanAsync(new LoanDates { ID_LOAN = loan.LOAN_ID });
+
+                // Si hay fechas registradas, tomar la más reciente (o la primera)
+                if (loanDatesList.Any())
+                {
+                    var loanDates = loanDatesList.OrderByDescending(ld => ld.END_DATE).First();
+                    if (loanDates.END_DATE < DateTime.Now && loan.ID_RESERVATION != 2 && loan.ID_RESERVATION != 5)
+                    {
+                        overdueLoans.Add(loan);
+                    }
+                }
+            }
+
+            ViewBag.Categories = await categoriesBL.GetAllCategoriesAsync();
+            ViewBag.Loans = overdueLoans;
+            ViewBag.LoansTypes = await loansTypesBL.GetAllLoanTypesAsync();
+            ViewBag.ReservationStatus = await reservationStatusBL.GetAllReservationStatusAsync();
+            ViewBag.Books = await booksBL.GetIncludePropertiesAsync(pBooks);
+            ViewBag.Top = pLoans.Top_Aux;
+            ViewData["studentCode"] = studentCode;
+            ViewBag.ShowMenu = true;
+
+            return View(overdueLoans);
+        }
+
     }
 }
 

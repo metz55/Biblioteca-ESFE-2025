@@ -393,7 +393,30 @@
     </div>
 </div>
 
+
+
 @section Scripts {
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+           // Mostrar alertas de éxito o error usando SweetAlert
+            @if (TempData["Alerta"] != null)
+           {
+                <text>
+                    Swal.fire({
+                    icon: 'success',
+                    title: 'Éxito',
+                    text: '@TempData["Alerta"]',
+                    confirmButtonColor: '#003366'
+                    }).then((result) => {
+                    if (result.isConfirmed) {
+                    window.location.href = '@Url.Action("Index", "Books")';
+                    }
+                    });
+                </text>
+           }
+        });
+    </script>
     <script>
         $(document).ready(function () {
 

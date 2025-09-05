@@ -239,7 +239,7 @@
                         <i class="mdi mdi-menu" style="color: #003C8F; font-size: 20px;"></i>
                     </button>
 
-                    <a class="navbar-brand d-flex align-items-center text-white" href="#" style="font-weight: bold; margin-left: 25px;">
+                    <a class="navbar-brand d-flex align-items-center text-white" href="~/Library/Index" style="font-weight: bold; margin-left: 25px;">
                         <img src="~/assets/images/logo.svg" alt="Logo" style="height: 32px; margin-right: 10px;">
                     </a>
                 </div>
@@ -260,7 +260,7 @@
 
                         <!-- Usuario y logout -->
                         <div class="d-flex align-items-center">
-                            <img src="~/assets/images/faces/face1.jpg" alt="User" class="rounded-circle" style="height:32px; width:32px; object-fit:cover; margin-right:10px;">
+                            <img src="~/assets/images/faces/face2.png" alt="User" class="rounded-circle" style="height:32px; width:32px; object-fit:cover; margin-right:10px;">
                             <span class="text-dark me-4">@User.Identity.Name</span>
                             <form id="logoutForm" asp-controller="Auth" asp-action="LogoutAdmin" method="post" class="m-0">
                                 <button type="submit" id="btnLogoutDesktop" class="btn btn-outline-primary btn-sm" style="margin-left: 20px;">
@@ -293,9 +293,9 @@
 
                 <!-- Usuario y logout móvil -->
                 <div class="d-flex align-items-center">
-                    <img src="~/assets/images/faces/face1.jpg" alt="User" class="rounded-circle" style="height:32px; width:32px; object-fit:cover; margin-right:10px;">
+                    <img src="~/assets/images/faces/face2.png" alt="User" class="rounded-circle" style="height:32px; width:32px; object-fit:cover; margin-right:10px;">
                     <span class="text-dark me-3">@User.Identity.Name</span>
-                    <form id="logoutFormMobile" asp-controller="Auth" asp-action="Logout" method="post" class="m-0">
+                    <form id="logoutFormMobile" asp-controller="Auth" asp-action="LogoutAdmin" method="post" class="m-0">
                         <button type="submit" class="btn btn-outline-primary btn-sm">
                             Cerrar sesión
                         </button>
@@ -365,7 +365,8 @@
                       "tipos de prestamos": "/LoanTypes/Index",
                       "autores": "/Authors/Index",
                       "todos los prestamos": "/Loans/AllLoans",
-                      "usuarios": "/User/Index"
+                      "usuarios": "/User/Index",
+                      "prestamos eliminados": "/Loans/LoansDelite"
             };
 
             if (views[view]) {
@@ -437,6 +438,26 @@
 
             // Botón de cerrar sesión en móvil
             $('#btnLogoutMobile').click(function(e) {
+                e.preventDefault();
+                Swal.fire({
+                    title: '¿Cerrar sesión?',
+                    text: "¿Estás seguro de que deseas cerrar sesión?",
+                    icon: 'warning',
+                    showCancelButton: true,
+                    confirmButtonColor: '#d33',
+                    cancelButtonColor: '#3085d6',
+                    confirmButtonText: 'Sí, cerrar sesión',
+                    cancelButtonText: 'Cancelar'
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        // Redirigir al controlador de logout
+                        window.location.href = '@Url.Action("LoginAdmin", "Auth")';
+                    }
+                });
+            });
+
+            // Botón de cerrar sesión en móvil
+            $('#logoutFormMobile').click(function(e) {
                 e.preventDefault();
                 Swal.fire({
                     title: '¿Cerrar sesión?',

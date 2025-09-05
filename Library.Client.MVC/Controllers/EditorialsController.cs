@@ -115,27 +115,26 @@ namespace Library.Client.MVC.Controllers
         }
 
         // GET: CategoriesController/Delete/5
-        public async Task<IActionResult> Delete(int id)
-        {
-            var editions = await editorialsBL.GetEditorialsByIdAsync(new Editorials { EDITORIAL_ID = id });
-            ViewBag.ShowMenu = true;
-            return View(editions);
-        }
+        //public async Task<IActionResult> Delete(int id)
+        //{
+        //    var editions = await editorialsBL.GetEditorialsByIdAsync(new Editorials { EDITORIAL_ID = id });
+        //    ViewBag.ShowMenu = true;
+        //    return View(editions);
+        //}
 
         // POST: CategoriesController/Delete/5
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Delete(int id, Editorials pEditorials)
+        public async Task<IActionResult> Delete(int id)
         {
             try
             {
                 int result = await editorialsBL.DeleteEditorialsAsync(new Editorials { EDITORIAL_ID = id });
-                return RedirectToAction(nameof(Index));
+                return Ok(new { success = true, message = "Editorial eliminada correctamente." });
             }
             catch (Exception ex)
             {
-                ViewBag.Error = ex.Message;
-                return View(pEditorials);
+                return BadRequest(new { success = false, message = ex.Message });
             }
         }
 
