@@ -72,11 +72,11 @@
                             </form>
                         </div>
                         <ul class="auth-footer">
-                            <li><a href="#">Condiciones</a></li>
-                            <li><a href="#">Ayuda</a></li>
-                            <li><a href="#">Términos</a></li>
+                            <li><a href="#" id="linkCondiciones">Condiciones</a></li>
+                            <li><a href="#" id="linkAyuda">Ayuda</a></li>
+                            <li><a href="#" id="linkTerminos">Términos</a></li>
                         </ul>
-                        <p class="footer-text text-center">© 2025 ESFE/AGAPE | Todos los derechos reservados.</p>
+                        <p class="footer-text text-center">©2025 ESFE/AGAPE | Todos los derechos reservados.</p>
                     </div>
                 </div>
             </div>
@@ -128,6 +128,41 @@
                 form.submit();
             });
         });
+
+                document.addEventListener('DOMContentLoaded', function() {
+            // ... (tu código existente)
+
+            // Manejar clic en "Condiciones"
+            document.getElementById('linkCondiciones').addEventListener('click', function(e) {
+                e.preventDefault();
+                Swal.fire({
+                    icon: 'info',
+                    title: 'Sección en construcción',
+                    text: 'La sección de Condiciones aún no está disponible. Estamos trabajando en ello.',
+                });
+            });
+
+            // Manejar clic en "Ayuda"
+            document.getElementById('linkAyuda').addEventListener('click', function(e) {
+                e.preventDefault();
+                Swal.fire({
+                    icon: 'info',
+                    title: 'Sección en construcción',
+                    text: 'La sección de Ayuda aún no está disponible. Estamos trabajando en ello.',
+                });
+            });
+
+            // Manejar clic en "Términos"
+            document.getElementById('linkTerminos').addEventListener('click', function(e) {
+                e.preventDefault();
+                Swal.fire({
+                    icon: 'info',
+                    title: 'Sección en construcción',
+                    text: 'La sección de Términos aún no está disponible. Estamos trabajando en ello.',
+                });
+            });
+        });
+
     </script>
 </body>
 </html>

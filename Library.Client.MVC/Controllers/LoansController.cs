@@ -56,6 +56,16 @@ namespace Library.Client.MVC.Controllers
             loans = loans.Where(l => l.ID_RESERVATION != 2 && l.ID_RESERVATION != 5 && l.STATUS == true).ToList();
             loans = loans.OrderBy(l => l.LOAN_ID).ToList();
 
+            var loanDatesList = new Dictionary<long, (DateTime? LatestEndDate, bool IsOverdue)>();
+            foreach (var loan in loans)
+            {
+                var dates = await loanDatesBL.GetLoanDatesByIdLoanAsync(new LoanDates { ID_LOAN = loan.LOAN_ID });
+                var latestDate = dates?.OrderByDescending(ld => ld.END_DATE).FirstOrDefault();
+                var isOverdue = latestDate != null && latestDate.END_DATE.Date < DateTime.Now.Date; // Cambio aquí
+                loanDatesList[loan.LOAN_ID] = (latestDate?.END_DATE, isOverdue);
+            }
+            ViewBag.LoanDatesList = loanDatesList;
+
             // Aplicar paginación
             int totalRegistros = loans.Count();
             int totalPaginas = (int)Math.Ceiling((double)totalRegistros / pageSize);
@@ -73,6 +83,7 @@ namespace Library.Client.MVC.Controllers
 
             return View(loansPaginados);
         }
+
 
 
         // Resto de los métodos del controlador se mantienen igual
@@ -97,14 +108,10 @@ namespace Library.Client.MVC.Controllers
             return View(loans);
         }
 
-        public async Task<IActionResult> LoansDelite(Books pBooks, Loans pLoans = null, string studentCode = "")
+        public async Task<IActionResult> LoansDelite(Books pBooks, Loans pLoans = null, string studentCode = "", int page = 1, int pageSize = 10)
         {
             if (pLoans == null)
                 pLoans = new Loans();
-            if (pLoans.Top_Aux == 0)
-                pLoans.Top_Aux = 20;
-            else if (pLoans.Top_Aux == -1)
-                pLoans.Top_Aux = 0;
 
             // Si se ingresó un código de estudiante, buscar su ID_LENDER
             if (!string.IsNullOrEmpty(studentCode))
@@ -129,17 +136,27 @@ namespace Library.Client.MVC.Controllers
             }
 
             var loans = await loansBL.GetIncludePropertiesAsync(pLoans);
-            ViewBag.Categories = await categoriesBL.GetAllCategoriesAsync();
-            ViewBag.Loans = await loansBL.GetAllLoansAsync();
+            loans = loans.Where(l => l.STATUS == false).ToList(); // Solo préstamos eliminados
+            loans = loans.OrderBy(l => l.LOAN_ID).ToList();
+
+            // Aplicar paginación
+            int totalRegistros = loans.Count();
+            int totalPaginas = (int)Math.Ceiling((double)totalRegistros / pageSize);
+            var loansPaginados = loans
+                .Skip((page - 1) * pageSize)
+                .Take(pageSize)
+                .ToList();
+
+            ViewBag.TotalPaginas = totalPaginas;
+            ViewBag.PaginaActual = page;
+            ViewBag.Top = pageSize;
             ViewBag.LoansTypes = await loansTypesBL.GetAllLoanTypesAsync();
             ViewBag.ReservationStatus = await reservationStatusBL.GetAllReservationStatusAsync();
             ViewBag.Books = await booksBL.GetIncludePropertiesAsync(pBooks);
-
-            ViewBag.Top = pLoans.Top_Aux;
             ViewData["studentCode"] = studentCode; // Para que el campo no se borre al recargar
-            return View(loans);
-        }
 
+            return View(loansPaginados);
+        }
 
         // GET: BooksController/Details/5
         public async Task<IActionResult> Details(int id)
@@ -270,46 +287,51 @@ namespace Library.Client.MVC.Controllers
         {
             try
             {
+                // Actualizar existencias si aplica
                 if (pLoans.ID_RESERVATION == 2 || pLoans.ID_RESERVATION == 5)
                 {
                     var books = await booksBL.GetBooksByIdAsync(new Books { BOOK_ID = pLoans.ID_BOOK });
                     pBooks.BOOK_ID = pLoans.ID_BOOK;
                     pBooks.EXISTENCES = books.EXISTENCES + 1;
-                    int resultUpdate = await booksBL.UpdateExistencesBooksAsync(pBooks);
+                    await booksBL.UpdateExistencesBooksAsync(pBooks);
                 }
 
-                if (pLoans.STATUS == false && pLoans.ID_RESERVATION == 2 || pLoans.ID_RESERVATION == 5 && pLoans.STATUS == false)
-                {
-                    pLoans.STATUS = false;
-                }
-                else
-                {
-                    pLoans.STATUS = true;
-                }
+                // Actualizar estado del préstamo
+                pLoans.STATUS = !(pLoans.STATUS == false && (pLoans.ID_RESERVATION == 2 || pLoans.ID_RESERVATION == 5));
 
                 if (fechaInicio != DateTime.MinValue && fechaCierre != DateTime.MinValue && pLoans.ID_RESERVATION != 2)
                 {
+                    // Obtener la fecha mínima registrada (última fecha agregada)
+                    var existingDates = await loanDatesBL.GetLoanDatesByIdLoanAsync(new LoanDates { ID_LOAN = id });
+                    var maxEndDate = existingDates?.Max(d => d.END_DATE);
+
+                    // Validar que la nueva fecha de cierre sea mayor que la fecha máxima actual
+                    if (maxEndDate.HasValue && fechaCierre <= maxEndDate.Value)
+                    {
+                        TempData["ErrorMessage"] = $"La fecha de cierre debe ser mayor que la fecha maxima registrada: {maxEndDate.Value.ToShortDateString()}";
+                        return RedirectToAction(nameof(Edit), new { id = id });
+                    }
+
+                    // Crear nueva fecha
                     pLoanDates.ID_LOAN = id;
                     pLoanDates.START_DATE = fechaInicio;
                     pLoanDates.END_DATE = fechaCierre;
                     pLoanDates.STATUS = 1;
 
-                    if (pLoans.ID_RESERVATION == 1)
-                    {
-                        pLoans.ID_RESERVATION = 4;
-                    }
-                    else if (pLoans.ID_RESERVATION == 3)
-                    {
-                        pLoans.ID_RESERVATION = 1;
-                    }
-                    int resultt = await loanDatesBL.CreateLoanDatesAsync(pLoanDates);
-                    int result = await loansBL.UpdateLoansAsync(pLoans);
+                    // Actualizar estado de reserva según la lógica
+                    if (pLoans.ID_RESERVATION == 1) pLoans.ID_RESERVATION = 4;
+                    else if (pLoans.ID_RESERVATION == 3) pLoans.ID_RESERVATION = 1;
+
+                    await loanDatesBL.CreateLoanDatesAsync(pLoanDates);
+                    await loansBL.UpdateLoansAsync(pLoans);
+                    TempData["SuccessMessage"] = "El prestamo se ha modificado correctamente.";
                 }
                 else
                 {
-                    int result = await loansBL.UpdateLoansAsync(pLoans);
-                    return RedirectToAction(nameof(Index));
+                    await loansBL.UpdateLoansAsync(pLoans);
+                    TempData["SuccessMessage"] = "El prestamo se ha modificado correctamente.";
                 }
+
                 return RedirectToAction(nameof(Index));
             }
             catch (Exception ex)
@@ -319,6 +341,8 @@ namespace Library.Client.MVC.Controllers
                 return View(pLoans);
             }
         }
+
+
 
         public async Task<JsonResult> BuscarLibros(Books pBooks)
         {
@@ -437,25 +461,35 @@ namespace Library.Client.MVC.Controllers
             return Json(resultado);
         }
 
-        public async Task<IActionResult> AllLoans(Books pBooks, Loans pLoans = null)
+        public async Task<IActionResult> AllLoans(Books pBooks, Loans pLoans = null, int page = 1, int pageSize = 15)
         {
             if (pLoans == null)
                 pLoans = new Loans();
-            if (pLoans.Top_Aux == 0)
-                pLoans.Top_Aux = 20;
-            else if (pLoans.Top_Aux == -1)
-                pLoans.Top_Aux = 0;
 
             var loans = await loansBL.GetIncludePropertiesAsync(pLoans);
+            loans = loans.OrderBy(l => l.LOAN_ID).ToList();
+
+            // Aplicar paginación
+            int totalRegistros = loans.Count();
+            int totalPaginas = (int)Math.Ceiling((double)totalRegistros / pageSize);
+            var loansPaginados = loans
+                .Skip((page - 1) * pageSize)
+                .Take(pageSize)
+                .ToList();
+
+            ViewBag.TotalPaginas = totalPaginas;
+            ViewBag.PaginaActual = page;
+            ViewBag.Top = pageSize;
             ViewBag.Categories = await categoriesBL.GetAllCategoriesAsync();
             ViewBag.Loans = await loansBL.GetAllLoansAsync();
             ViewBag.LoansTypes = await loansTypesBL.GetAllLoanTypesAsync();
             ViewBag.ReservationStatus = await reservationStatusBL.GetAllReservationStatusAsync();
             ViewBag.Books = await booksBL.GetIncludePropertiesAsync(pBooks);
-            ViewBag.Top = pLoans.Top_Aux;
             ViewBag.ShowMenu = true;
-            return View(loans);
+
+            return View(loansPaginados);
         }
+
 
         [HttpGet]
         public async Task<JsonResult> PrestamosPorMes()

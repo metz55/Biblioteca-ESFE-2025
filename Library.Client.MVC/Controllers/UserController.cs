@@ -71,7 +71,6 @@ namespace Library.Client.MVC.Controllers
             return View();
         }
 
-        // POST: UserController/Create
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create(Users pUsers)
@@ -79,19 +78,23 @@ namespace Library.Client.MVC.Controllers
             try
             {
                 var date = DateTime.Now;
-                var roleId = 1; //Este ID es para Administrador, es momentaneo y en caso de usar un CRUD para los roles, se debe validar desde la vista
+                var roleId = 1;
                 pUsers.CREATED_AT = date;
                 pUsers.ROlE_ID = roleId;
+
                 int result = await usersBL.CreateUsersAsync(pUsers);
+
+                TempData["Success"] = "Usuario creado correctamente";
                 return RedirectToAction(nameof(Index));
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
                 ViewBag.Error = ex.Message;
                 ViewBag.Users_Roles = await rolesBL.GetAllRolesASync();
                 return View(pUsers);
             }
         }
+
 
         // GET: UserController/Edit/5
         public async Task<ActionResult> Edit(int id)

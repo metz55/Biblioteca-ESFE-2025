@@ -154,7 +154,7 @@
                 {
                     @foreach (var loan in Model)
                     {
-                        var loanDateInfo = loanDate?.FirstOrDefault(d => d.ID_LOAN == loan.LOAN_ID);
+                        var loanDateInfo = loanDate?.Where(d => d.ID_LOAN == loan.LOAN_ID).OrderByDescending(d => d.END_DATE).FirstOrDefault();
                         int diasRestantes = 0;
                         int horasRestantes = 0;
 

@@ -1,12 +1,10 @@
 ﻿@model IEnumerable<Library.DataAccess.Domain.Loans>
-
 @using System.Text.Json
 @{
     ViewData["Title"] = "Todos los Préstamos";
     Layout = "_LayoutP";
     var loanIds = new List<long>();
 }
-
 <style>
     body {
         overflow-x: hidden;
@@ -16,11 +14,22 @@
         border-radius: 0.5rem;
     }
 
-    #btn-create {
+    #contenedor-principal {
+        border-radius: 0.5rem;
         transition: all 0.3s ease;
     }
 
-        #btn-create:hover {
+        #contenedor-principal:hover {
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+            transform: translateY(-2px);
+            border: 1px solid #e5e7eb;
+        }
+
+    #btn-create, #btnExportarExcel {
+        transition: all 0.3s ease;
+    }
+
+        #btn-create:hover, #btnExportarExcel:hover {
             transform: translateY(-3px);
             box-shadow: 0 6px 15px rgba(0, 0, 0, 0.2);
         }
@@ -48,30 +57,57 @@
         }
     }
 
-    #btnExportarExcel {
-        transition: all 0.3s ease;
+    .pagination-container {
+        display: flex;
+        justify-content: center;
+        margin-top: 15px;
+        gap: 5px;
     }
 
-        #btnExportarExcel:hover {
-            transform: translateY(-3px);
-            box-shadow: 0 6px 15px rgba(0, 0, 0, 0.2);
+    .page-btn {
+        display: inline-block;
+        padding: 6px 12px;
+        border: 1px solid #d1d5db;
+        background-color: #f9fafb;
+        color: #374151;
+        text-decoration: none;
+        border-radius: 5px;
+        font-size: 14px;
+        transition: all 0.2s ease;
+    }
+
+        .page-btn:hover {
+            background-color: #e5e7eb;
+            color: #111827;
+        }
+
+        .page-btn.active {
+            background-color: #d1d5db;
+            color: #111827;
+            font-weight: bold;
+            border-color: #9ca3af;
+        }
+
+    .fade-page {
+        opacity: 0;
+        transition: opacity 0.5s ease;
+    }
+
+        .fade-page.show {
+            opacity: 1;
         }
 </style>
 
 <div class="card" id="contenedor-principal">
     <div class="card-body">
         <h1 style="font-family: 'Poppins', sans-serif; font-weight: 600;">Registro de Préstamos</h1>
-
         <div class="spacer">
             <button type="button" id="btnExportarExcel" class="btn btn-success" style="background-color: #1E7940;">
                 <i class="bi bi-file-earmark-excel"></i> Exportar a Excel
             </button>
         </div>
-
-
         <hr />
-
-        <div class="table-responsive">
+        <div class="table-responsive fade-page show" id="tableContainer">
             <table id="customers" class="table">
                 <thead>
                     <tr>
@@ -107,6 +143,23 @@
                 </tbody>
             </table>
         </div>
+        @if (ViewBag.TotalPaginas > 1)
+        {
+            <nav class="pagination-container">
+                @if (ViewBag.PaginaActual > 1)
+                {
+                    <a class="page-btn" href="@Url.Action("AllLoans", new { page = ViewBag.PaginaActual - 1, pageSize = ViewBag.Top })">Anterior</a>
+                }
+                @for (int i = 1; i <= ViewBag.TotalPaginas; i++)
+                {
+                    <a class="page-btn @(i == ViewBag.PaginaActual ? "active" : "")" href="@Url.Action("AllLoans", new { page = i, pageSize = ViewBag.Top })">@i</a>
+                }
+                @if (ViewBag.PaginaActual < ViewBag.TotalPaginas)
+                {
+                    <a class="page-btn" href="@Url.Action("AllLoans", new { page = ViewBag.PaginaActual + 1, pageSize = ViewBag.Top })">Siguiente</a>
+                }
+            </nav>
+        }
     </div>
 </div>
 
@@ -137,14 +190,13 @@
         });
     }
 </script>
+
 <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
 <script>
     document.getElementById('btnExportarExcel').addEventListener('click', function () {
         const tabla = document.getElementById('customers');
-
         // Clonar la tabla sin modificar la original
         const tablaClonada = tabla.cloneNode(true);
-
         // Reemplazar "Cargando..." por "No disponible"
         const filas = tablaClonada.querySelectorAll('tr');
         filas.forEach(fila => {
@@ -154,15 +206,30 @@
                 }
             });
         });
-
         // Convertir a hoja de Excel
         const ws = XLSX.utils.table_to_sheet(tablaClonada);
         const wb = XLSX.utils.book_new();
         XLSX.utils.book_append_sheet(wb, ws, "Prestamos");
-
         // Exportar
         XLSX.writeFile(wb, "prestamos.xlsx");
     });
 </script>
 
+<!-- Script para la animación de transición al cambiar de página -->
+<script>
+    document.addEventListener("DOMContentLoaded", () => {
+        const container = document.getElementById("tableContainer");
+        setTimeout(() => container.classList.add("show"), 50);
+
+        document.querySelectorAll(".page-btn").forEach(link => {
+            link.addEventListener("click", function (e) {
+                e.preventDefault();
+                container.classList.remove("show");
+                setTimeout(() => {
+                    window.location.href = this.href;
+                }, 500);
+            });
+        });
+    });
+</script>
 

@@ -288,5 +288,36 @@
         document.querySelector('.main-content')?.classList.add('full-width');
     });
 </script>
+<script>
+    $(document).ready(function() {
+        @if (TempData["SuccessMessage"] != null)
+        {
+                <text>
+                    Swal.fire({
+                        icon: 'success',
+                        title: '¡Éxito!',
+                        text: '@TempData["SuccessMessage"]',
+                        confirmButtonColor: '#198754'
+                    });
+                </text>
+        }
+    });
+</script>
+<script>
+    $(document).ready(function() {
+        @if (TempData["ErrorMessage"] != null)
+        {
+                <text>
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Error',
+                    text: '@TempData["ErrorMessage"]',
+                    confirmButtonColor: '#d33'
+                });
+                </text>
+        }
+    });
+</script>
+
 
 
