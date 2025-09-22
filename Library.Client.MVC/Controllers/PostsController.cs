@@ -12,7 +12,6 @@ using Library.Client.MVC.Models.DTO;
 
 namespace Library.Client.MVC.Controllers
 {
-    [Authorize(AuthenticationSchemes = "AdminScheme")]
     public class PostsController : Controller
     {
         BLPostsCategories blCategories = new BLPostsCategories();
