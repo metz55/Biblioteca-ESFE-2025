@@ -43,5 +43,12 @@ namespace Library.BusinessRules
         {
             return await DALBooks.GetIncludePropertiesAsync(pBooks);
         }
+
+        public async Task<List<Books>> BuscarPorTituloAsync(string pTitulo)
+        {
+            // Llama al método DAL que busca libros por título (o parte del título)
+            return await DALBooks.GetBooksByTitleAsync(pTitulo);
+        }
+
     }
 }

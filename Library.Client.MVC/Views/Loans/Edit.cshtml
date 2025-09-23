@@ -6,188 +6,242 @@
     List<Library.DataAccess.Domain.ReservationStatus> reservationStatus = ViewBag.ReservationStatus as List<Library.DataAccess.Domain.ReservationStatus>;
     List<Library.DataAccess.Domain.LoanDates2> loanDate = ViewBag.LoanDates as List<Library.DataAccess.Domain.LoanDates2>;
 }
-<div class="card">
+
+
+<style>
+    #contenedor-principal {
+        border-radius: 0.5rem;
+    }
+
+    @@media (max-width: 768px) {
+        .anchodeImagen2
+
+    {
+        width: 100% !important;
+        height: auto !important;
+        margin-top: 20px;
+    }
+
+    .margenEdit {
+        padding: 0 10px;
+    }
+
+    .margenfechas table {
+        font-size: 14px;
+    }
+
+    .accordion-button {
+        font-size: 14px;
+    }
+
+    }
+    
+    @@media (max-width: 768px) {
+        .accordion-button
+
+    {
+        font-size: 14px;
+        padding: 10px;
+    }
+
+    }
+
+    .anchodeImagen2 {
+        max-width: 100%;
+        height: auto;
+        display: block;
+        margin: 0 auto;
+        object-fit: contain;
+    }
+
+    @@media (max-width: 768px) {
+        .anchodeImagen2
+
+    {
+        max-width: 50%;
+        height: auto;
+    }
+
+    }
+
+    @@media (min-width: 1200px) {
+        .anchodeImagen2
+
+    {
+        max-width: 315px;
+    }
+
+    }
+
+    .margenfechas {
+        margin-left: -0px;
+        padding-right: 15px;
+    }
+
+    @@media (max-width: 768px) {
+        .anchodeImagen2
+
+    {
+        max-width: 50%;
+        height: auto;
+        margin-top: 1.5rem; /* separación extra */
+    }
+
+    }</style>
+
+<div class="card" id="contenedor-principal">
     <div class="card-body">
-<div class="container">
-    <h1 class="text-center">EDITAR PRESTAMO</h1>
-    <hr />
-    <div class="d-flex justify-content-center form-group">
-        <div class="col-7 margenEdit ">
-            @if (TempData["AlertaEliminar"] != null)
-            {
-                <div class="alert alert-success anchoalert">
-                    @TempData["AlertaEliminar"]
-                </div>
-            }
-            <form asp-action="Edit">
-                <div asp-validation-summary="ModelOnly" class="text-danger"></div>
-                <div class="form-group">
-                    <input asp-for="LOAN_ID" class="form-control" hidden />
-                </div>
-                <div class="row">
-                    <div class="col-6">
-                        <div class="form-group">
-                            <label asp-for="ID_TYPE" class="control-label"></label>
-                            <select asp-for="ID_TYPE" class="form-control">
-                                @foreach (var item in loanTypes)
-                                {
-                                    if (Model.ID_TYPE == item.TYPES_ID)
+        <div class="container-fluid">
+            <h1 class="card-title text-center" style="font-family: 'Poppins', sans-serif; font-weight: 600;">Editar Préstamo</h1>
+            <hr />
+            <div class="row">
+                <div class="col-12 col-lg-7">
+                    @if (TempData["AlertaEliminar"] != null)
+                    {
+                        <div class="alert alert-success">
+                            @TempData["AlertaEliminar"]
+                        </div>
+                    }
+
+                    <form asp-action="Edit">
+                        <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+                        <input asp-for="LOAN_ID" hidden />
+
+                        <div class="row g-3">
+                            <div class="col-12 col-md-6">
+                                <label asp-for="ID_TYPE" class="form-label"></label>
+                                <select asp-for="ID_TYPE" class="form-control">
+                                    @foreach (var item in loanTypes)
                                     {
-                                        <option selected value="@item.TYPES_ID">@item.TYPES_NAME</option>
+                                        <option value="@item.TYPES_ID" selected="@(Model.ID_TYPE == item.TYPES_ID)">
+                                            @item.TYPES_NAME
+                                        </option>
                                     }
-                                    else
+                                </select>
+                                <span asp-validation-for="ID_TYPE" class="text-danger"></span>
+                            </div>
+                            <div class="col-12 col-md-6">
+                                <label asp-for="ID_RESERVATION" class="form-label"></label>
+                                <select asp-for="ID_RESERVATION" class="form-control">
+                                    @foreach (var item in reservationStatus)
                                     {
-                                        <option value="@item.TYPES_ID">@item.TYPES_NAME</option>
+                                        <option value="@item.RESERVATION_ID" selected="@(Model.ID_RESERVATION == item.RESERVATION_ID)">
+                                            @item.STATUS_NAME
+                                        </option>
                                     }
-                                }
-                            </select>
-                            <span asp-validation-for="ID_TYPE" class="text-danger"></span>
-                        </div>
-                        <div class="form-group">
-                            <label asp-for="ID_RESERVATION" class="control-label"></label>
-                            <select asp-for="ID_RESERVATION" class="form-control">
-                                @foreach (var item in reservationStatus)
-                                {
-                                    if (Model.ID_RESERVATION == item.RESERVATION_ID)
-                                    {
-                                        <option selected value="@item.RESERVATION_ID">@item.STATUS_NAME</option>
-                                    }
-                                    else
-                                    {
-                                        <option value="@item.RESERVATION_ID">@item.STATUS_NAME</option>
-                                    }
-                                }
-                            </select>
-                            <span asp-validation-for="ID_RESERVATION" class="text-danger"></span>
-                        </div>
-                        <div class="form-group">
-                            <label asp-for="FEE" class="control-label">Tarifa</label>
-                            <input asp-for="FEE" class="form-control" />
-                            <span asp-validation-for="FEE" class="text-danger"></span>
-                        </div>
-                        <div class="form-group">
-                            <label asp-for="LENDER_CONTACT" class="control-label">Contacto</label>
-                            <input asp-for="LENDER_CONTACT" class="form-control" />
-                            <span asp-validation-for="LENDER_CONTACT" class="text-danger"></span>
-                        </div>
-                        <br />
-                    </div>
-                    <div class="col-6">
-                        <div class="form-group">
-                            <label class="control-label">Libro</label>
-                            <input type="text" class="form-control" id="tituloB" name="titulo" disabled="disabled" value="@ViewBag.TituloB" />
-                            <input asp-for="ID_BOOK" class="form-control" hidden />
-                            <span asp-validation-for="ID_BOOK" class="text-danger"></span>
-                        </div>
-                        <div class="form-group">
-                            <label asp-for="COPY" class="control-label">Copias</label>
-                            <input asp-for="COPY" class="form-control" disabled="disabled" />
-                            <input asp-for="COPY" class="form-control" hidden />
-                            <span asp-validation-for="COPY" class="text-danger"></span>
-                        </div>
-                        <div class="form-group">
-                            <label asp-for="ID_LENDER" class="control-label"></label>
-                            <input asp-for="ID_LENDER" class="form-control" disabled="disabled" />
-                            <span asp-validation-for="ID_LENDER" class="text-danger"></span>
-                        </div>
-                        <br />
-                    </div>
-                    <div class="col-12">
-                        <div class="accordion margenAcordeon" id="accordionExample">
-                            <div class="accordion-item">
-                                <h2 class="accordion-header text-center">
-                                    <button class="accordion-button centrarTextoAcordion" type="button" data-bs-toggle="collapse" data-bs-target="#collapseOne" aria-expanded="true" aria-controls="collapseOne">
-                                        ASIGNAR FECHA A PRESTAMO
-                                    </button>
-                                </h2>
-                                <div id="collapseOne" class="accordion-collapse collapse" data-bs-parent="#accordionExample">
-                                    <div class="accordion-body">
-                                        <div class="row">
-                                            <div class="col-6">
-                                                <label>FECHA DE INICIO</label>
-                                                <input type="date" class="form-control" id="IdfechaInicio" name="fechaInicio" />
-                                            </div>
-                                            <div class=" col-6">
-                                                <label>FECHA DE CIERRE</label>
-                                                <input type="date" class=" form-control" id="IdfechaCierre" name="fechaCierre" />
-                                            </div>
-                                        </div>
+                                </select>
+                                <span asp-validation-for="ID_RESERVATION" class="text-danger"></span>
+                            </div>
+                            <div class="col-12 col-md-6">
+                                <label asp-for="FEE" class="form-label">Tarifa</label>
+                                <input asp-for="FEE" class="form-control" />
+                                <span asp-validation-for="FEE" class="text-danger"></span>
+                            </div>
+                            <div class="col-12 col-md-6">
+                                <label asp-for="LENDER_CONTACT" class="form-label">Contacto</label>
+                                <input asp-for="LENDER_CONTACT" class="form-control" />
+                                <span asp-validation-for="LENDER_CONTACT" class="text-danger"></span>
+                            </div>
+                            <div class="col-12 col-md-6">
+                                <label class="form-label">Libro</label>
+                                <input type="text" class="form-control" disabled value="@ViewBag.TituloB" />
+                                <input asp-for="ID_BOOK" hidden />
+                                <span asp-validation-for="ID_BOOK" class="text-danger"></span>
+                            </div>
+                            <div class="col-12 col-md-6">
+                                <label asp-for="COPY" class="form-label">Copias</label>
+                                <input asp-for="COPY" class="form-control" disabled />
+                                <input asp-for="COPY" hidden />
+                                <span asp-validation-for="COPY" class="text-danger"></span>
+                            </div>
+                            @*<div class="col-12 col-md-6">
+                                <label asp-for="ID_LENDER" class="form-label"></label>
+                                <input asp-for="ID_LENDER" class="form-control" disabled />
+                                <span asp-validation-for="ID_LENDER" class="text-danger"></span>
+                            </div>*@
+
+                            <div class="col-12 mt-3 mb-3">
+                                <button type="button" class="btn btn-primary w-100" id="mostrarFechas">
+                                    Asignar Fecha a Préstamo
+                                </button>
+                            </div>
+
+                            <div class="col-12" id="bloqueFechas" style="display: none;">
+                                <div class="row g-3">
+                                    <div class="col-12 col-md-6">
+                                        <label for="IdfechaInicio" class="form-label">Fecha de Inicio</label>
+                                        <input type="date" class="form-control" id="IdfechaInicio" name="fechaInicio" />
+                                    </div>
+                                    <div class="col-12 col-md-6">
+                                        <label for="IdfechaCierre" class="form-label">Fecha de Cierre</label>
+                                        <input type="date" class="form-control" id="IdfechaCierre" name="fechaCierre" />
                                     </div>
                                 </div>
                             </div>
-                        </div>
-                    </div>
-                    <div class="form-group col-6">
-                        <input type="submit" value="Guardar" class="btn btn-primary" /> |
-                        <a asp-action="Index" class="btn btn-secondary" id="confirmar">Regresar</a>
-                    </div>
-                    <div class="form-group col-6">
-                        <div class="row">
-                            <div class="col-5">
-                                <label class="Horz">Eliminar Prestamo:</label>
+
+                            <div class="col-12 col-md-6 mb-2">
+                                <input type="submit" value="Guardar" class="btn w-100" style="background-color:#198754; border-color:#198754; color:white;" />
                             </div>
-                            <div class="col-6">
-                                <select asp-for="STATUS" class="form-control col-6">
-                                    <option value="@true">Activo</option>
-                                    <option value="@false">Eliminar</option>
+                            <div class="col-12 col-md-6 mb-2">
+                                <a asp-action="Index" class="btn btn-secondary w-100" id="confirmar">Regresar</a>
+                            </div>
+
+
+                            <div class="col-12">
+                                <label asp-for="STATUS" class="form-label">Estado del Préstamo</label>
+                                <select asp-for="STATUS" class="form-control">
+                                    <option value="true">Activo</option>
+                                    <option value="false">Eliminar</option>
                                 </select>
                                 <span asp-validation-for="STATUS" class="text-danger"></span>
                             </div>
+
                         </div>
+                    </form>
+                </div>
+
+                <div class="col-12 col-lg-5">
+                    <img src="@ViewBag.Portada" alt="Portada del libro" class="img-fluid rounded shadow-sm anchodeImagen2" />
+                </div>
+            </div>
+            <!-- Tabla que muestra las fechas guardadas, fuera del bloque ocultable -->
+            <div class="form-group margenfechas mt-4">
+                <div class="row">
+                    <div class="col-12">
+                        <table class="table table-bordered table-sm">
+                            <thead>
+                                <tr>
+                                    <th>Fecha Inicio</th>
+                                    <th>Fecha Cierre</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach (var item in loanDate)
+                                {
+                                    <tr>
+                                        <td><input type="date" asp-for="@item.START_DATE" class="form-control" disabled /></td>
+                                        <td><input type="date" asp-for="@item.END_DATE" class="form-control" disabled /></td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
                     </div>
                 </div>
-                <br />
-            </form>
-        </div>
-        <div class="col-5">
-            <img src="@ViewBag.Portada" class="anchodeImagen2" />
-        </div>
-    </div>
-    <div class="form-group margenfechas">
-        <table class="table" disabled="disabled">
-            <thead>
-                <tr>
-                    <th class="borIz">
-                        FECHA INICIO
-                    </th>
-                    <th class="borDer">
-                        FECHA CIERRE
-                    </th>
-                </tr>
-            </thead>
-            <tbody>
-                @foreach (var item in loanDate)
-                {
-                    <tr>
-                        <td>
-                            <input type="date" asp-for="@item.START_DATE" class="form-control" disabled="disabled" />
-                        </td>
-                        <td>
-                            <input type="date" asp-for="@item.END_DATE" class="form-control"  disabled="disabled"/>
-                        </td>
-                    </tr>
-                }
-            </tbody>
-        </table>
-    </div>
-</div>
-</div>
-</div>
+            </div>
 
+
+        </div>
+    </div>
+</div>
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-
 <script>
-
     $(document).ready(function () {
-        // Escuchar cambios en los campos de fecha
         $("#IdfechaInicio, #IdfechaCierre").on("change", function () {
-            // Obtener los valores de los campos de fecha
             var fechaInicio = $("#IdfechaInicio").val();
             var fechaCierre = $("#IdfechaCierre").val();
 
-            // solicitud AJAX para enviar los valores al controlador
             $.ajax({
-                url: "/Loans/Edit", //URL de controlador y acción
+                url: "/Loans/Edit",
                 type: "POST",
                 data: {
                     fechaInicio: fechaInicio,
@@ -195,9 +249,76 @@
                 }
             });
         });
+
+        document.querySelector('.main-content')?.classList.remove('with-menu');
+        document.querySelector('.main-content')?.classList.add('full-width');
+    });
+        $("#mostrarFechas").on("click", function () {
+        $("#bloqueFechas").slideToggle("fast");
+        let btn = $(this);
+        if (btn.text().includes("Asignar")) {
+            btn.text("Ocultar Fecha de Préstamo");
+        } else {
+            btn.text("Asignar Fecha a Préstamo");
+        }
+    });
+
+</script>
+<script>
+    $(document).ready(function() {
+        // Confirmación al regresar al índice
+        $("#confirmar").on("click", function(e) {
+            e.preventDefault();
+            Swal.fire({
+                icon: 'question',
+                title: '¿Regresar al índice?',
+                text: "Si regresas ahora, los cambios no guardados se perderán. ¿Estás seguro?",
+                showCancelButton: true,
+                confirmButtonColor: '#6c757d',
+                cancelButtonColor: '#d33',
+                confirmButtonText: 'Sí, regresar',
+                cancelButtonText: 'Cancelar'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    window.location.href = '@Url.Action("Index", "Loans")';
+                }
+            });
+        });
+
+        document.querySelector('.main-content')?.classList.remove('with-menu');
+        document.querySelector('.main-content')?.classList.add('full-width');
     });
 </script>
 <script>
-    document.querySelector('.main-content').classList.remove('with-menu');
-    document.querySelector('.main-content').classList.add('full-width');
+    $(document).ready(function() {
+        @if (TempData["SuccessMessage"] != null)
+        {
+                <text>
+                    Swal.fire({
+                        icon: 'success',
+                        title: '¡Éxito!',
+                        text: '@TempData["SuccessMessage"]',
+                        confirmButtonColor: '#198754'
+                    });
+                </text>
+        }
+    });
 </script>
+<script>
+    $(document).ready(function() {
+        @if (TempData["ErrorMessage"] != null)
+        {
+                <text>
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Error',
+                    text: '@TempData["ErrorMessage"]',
+                    confirmButtonColor: '#d33'
+                });
+                </text>
+        }
+    });
+</script>
+
+
+

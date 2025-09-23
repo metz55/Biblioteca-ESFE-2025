@@ -67,8 +67,14 @@ public class EmailService
         return body;
     }
 
-    public async Task SendEmailAsync(EmailDTO emailDto)
+    public async Task<bool> SendEmailAsync(EmailDTO emailDto)
     {
+        if (string.IsNullOrWhiteSpace(emailDto.ReceptorEmail))
+        {
+            Console.WriteLine("Email receptor es inválido o está vacío.");
+            return false;
+        }
+
         try
         {
             var Host = _config.GetSection("Email:Host").Value;
@@ -81,7 +87,6 @@ public class EmailService
             email.From.Add(new MailboxAddress(UserName, Account));
             email.To.Add(MailboxAddress.Parse(emailDto.ReceptorEmail));
             email.Subject = emailDto.Subject;
-            
 
             var htmlBody = emailDto.IsLoanReminder ? GetReminderEmailBody(emailDto) : GetEmailBody(emailDto);
 
@@ -91,15 +96,19 @@ public class EmailService
             };
 
             using var smtp = new SmtpClient();
-            smtp.Connect(Host, Port, SecureSocketOptions.StartTls);
-            smtp.Authenticate(Account, Password);
+            await smtp.ConnectAsync(Host, Port, SecureSocketOptions.StartTls);
+            await smtp.AuthenticateAsync(Account, Password);
             await smtp.SendAsync(email);
-            smtp.Disconnect(true);
+            await smtp.DisconnectAsync(true);
+
+            return true;
         }
-        catch(Exception e)
+        catch (Exception e)
         {
-            Console.WriteLine("Error trying to send email: "+e);
+            Console.WriteLine("Error trying to send email: " + e);
+            return false;
         }
     }
+
 
 }

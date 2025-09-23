@@ -2,7 +2,7 @@
 @using System.Security.Claims
 
 @{
-    ViewData["Title"] = User.Identity.Name ?? "Perfil de Estudiante";
+    ViewData["Title"] = User.Identity.Name ?? "Student";
 
     // Obtener los datos del usuario a partir de las claims
     var userClaims = User.Identity as ClaimsIdentity;
@@ -86,7 +86,6 @@
             font-weight: bold;
             margin-left: 5px;
             margin-top: 0px
-            margin-bottom: 0px;
             
         }
         .text-loan-date{
@@ -155,7 +154,7 @@
                 {
                     @foreach (var loan in Model)
                     {
-                        var loanDateInfo = loanDate?.FirstOrDefault(d => d.ID_LOAN == loan.LOAN_ID);
+                        var loanDateInfo = loanDate?.Where(d => d.ID_LOAN == loan.LOAN_ID).OrderByDescending(d => d.END_DATE).FirstOrDefault();
                         int diasRestantes = 0;
                         int horasRestantes = 0;
 
@@ -174,9 +173,9 @@
                                 @loan.Books.TITLE
                             </p>
                             <hr class="m-2">
-                            @* <p class="book-category">
+                             <p class="book-category">
                                 @loan.Books.Categories.CATEGORY_NAME
-                            </p> *@
+                            </p> 
 
 
                             <p class="text-loan-date">

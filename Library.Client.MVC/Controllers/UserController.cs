@@ -17,22 +17,41 @@ namespace Library.Client.MVC.Controllers
         BLUsers usersBL = new BLUsers();
         BLUsers_Roles rolesBL = new BLUsers_Roles();
         // GET: UserController
-        public async Task<IActionResult> Index(Users pUsers = null)
+        public async Task<IActionResult> Index(string USER_NAME, int page = 1, int pageSize = 5)
         {
-            if(pUsers == null)
-                pUsers = new Users();
-            if (pUsers.Top_Aux == 0)
-                pUsers.Top_Aux = 10;
-            else if (pUsers.Top_Aux == -1)
-                pUsers.Top_Aux = 0;
-            var taskSearch = usersBL.GetIncludeRolesASync(pUsers);
+            var filtro = new Users
+            {
+                USER_NAME = USER_NAME,
+                Top_Aux = -1 // para traer todos y luego paginar en memoria
+            };
+
+            var taskSearch = usersBL.GetIncludeRolesASync(filtro);
             var taskGetRoles = rolesBL.GetAllRolesASync();
-            var user = await taskSearch;
-            ViewBag.Top = pUsers.Top_Aux;
-            ViewBag.Users_Roles = taskGetRoles;
+
+            var allUsers = await taskSearch;
+
+            // Ordenar por USER_ID (puedes cambiar a USER_NAME si quieres alfabético)
+            allUsers = allUsers
+                .OrderBy(u => u.USER_ID)
+                .ToList();
+
+            int totalRegistros = allUsers.Count();
+            int totalPaginas = (int)Math.Ceiling((double)totalRegistros / pageSize);
+
+            var users = allUsers
+                .Skip((page - 1) * pageSize)
+                .Take(pageSize)
+                .ToList();
+
+            ViewBag.Users_Roles = await taskGetRoles;
+            ViewBag.TotalPaginas = totalPaginas;
+            ViewBag.PaginaActual = page;
+            ViewBag.Top = pageSize;
             ViewBag.ShowMenu = true;
-            return View(user);
+
+            return View(users);
         }
+
 
         // GET: UserController/Details/5
         public async  Task<IActionResult> Details(int id)
@@ -52,7 +71,6 @@ namespace Library.Client.MVC.Controllers
             return View();
         }
 
-        // POST: UserController/Create
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create(Users pUsers)
@@ -60,19 +78,23 @@ namespace Library.Client.MVC.Controllers
             try
             {
                 var date = DateTime.Now;
-                var roleId = 1; //Este ID es para Administrador, es momentaneo y en caso de usar un CRUD para los roles, se debe validar desde la vista
+                var roleId = 1;
                 pUsers.CREATED_AT = date;
                 pUsers.ROlE_ID = roleId;
+
                 int result = await usersBL.CreateUsersAsync(pUsers);
+
+                TempData["Success"] = "Usuario creado correctamente";
                 return RedirectToAction(nameof(Index));
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
                 ViewBag.Error = ex.Message;
                 ViewBag.Users_Roles = await rolesBL.GetAllRolesASync();
                 return View(pUsers);
             }
         }
+
 
         // GET: UserController/Edit/5
         public async Task<ActionResult> Edit(int id)
@@ -105,35 +127,35 @@ namespace Library.Client.MVC.Controllers
         }
 
         // GET: UserController/Delete/5
-        public async Task<IActionResult> Delete(int id)
-        {
-            var user = await usersBL.GetUsersByIdAsync(new Users { USER_ID = id });
-            user.Users_Roles = await rolesBL.GetRolesByIdAsync(new Users_Roles {  USER_ROLE_ID = user.ROlE_ID });
-            ViewBag.Error = "";
-            ViewBag.ShowMenu = true;
-            return View(user);
-        }
+        //public async Task<IActionResult> Delete(int id)
+        //{
+        //    var user = await usersBL.GetUsersByIdAsync(new Users { USER_ID = id });
+        //    user.Users_Roles = await rolesBL.GetRolesByIdAsync(new Users_Roles {  USER_ROLE_ID = user.ROlE_ID });
+        //    ViewBag.Error = "";
+        //    ViewBag.ShowMenu = true;
+        //    return View(user);
+        //}
 
         // POST: UserController/Delete/5
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Delete(int id, Users pUsers)
+        public async Task<IActionResult> Delete(int id)
         {
             try
             {
-                int result = await usersBL.DeleteUsersAsync(pUsers);
-                return RedirectToAction(nameof(Index));
+                var user = await usersBL.GetUsersByIdAsync(new Users { USER_ID = id });
+                int result = await usersBL.DeleteUsersAsync(user);
+                return Ok(new { success = true, message = "Usuario eliminado correctamente." });
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
-                ViewBag.Error = ex.Message;
-                return View(pUsers);
+                return BadRequest(new { success = false, message = ex.Message });
             }
         }
 
         // GET: UsuarioController/CambiarPassword
-        
 
-        
+
+
     }
 }
