@@ -283,7 +283,7 @@ namespace Library.Client.MVC.Controllers
         // POST: BooksController/Edit/5
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, int Maestro, Loans pLoans, DateTime fechaInicio, DateTime fechaCierre, LoanDates pLoanDates, Books2 pBooks)
+        public async Task<IActionResult> Edit(int id, Loans pLoans, DateTime? fechaInicio, DateTime? fechaCierre, LoanDates pLoanDates, Books2 pBooks)
         {
             try
             {
@@ -299,49 +299,84 @@ namespace Library.Client.MVC.Controllers
                 // Actualizar estado del préstamo
                 pLoans.STATUS = !(pLoans.STATUS == false && (pLoans.ID_RESERVATION == 2 || pLoans.ID_RESERVATION == 5));
 
-                if (fechaInicio != DateTime.MinValue && fechaCierre != DateTime.MinValue && pLoans.ID_RESERVATION != 2)
+                // Validar si se asignaron fechas incompletas
+                if (fechaInicio.HasValue != fechaCierre.HasValue)
                 {
-                    // Obtener la fecha mínima registrada (última fecha agregada)
-                    var existingDates = await loanDatesBL.GetLoanDatesByIdLoanAsync(new LoanDates { ID_LOAN = id });
-                    var maxEndDate = existingDates?.Max(d => d.END_DATE);
+                    TempData["ErrorMessage"] = "Debes asignar tanto la fecha de inicio como la de cierre.";
+                    return RedirectToAction(nameof(Edit), new { id = id });
+                }
 
-                    // Validar que la nueva fecha de cierre sea mayor que la fecha máxima actual
-                    if (maxEndDate.HasValue && fechaCierre <= maxEndDate.Value)
+                // Si se asignaron fechas, validar que sean correctas
+                if (fechaInicio.HasValue && fechaCierre.HasValue)
+                {
+                    if (fechaInicio.Value.Date >= fechaCierre.Value.Date)
                     {
-                        TempData["ErrorMessage"] = $"La fecha de cierre debe ser mayor que la fecha maxima registrada: {maxEndDate.Value.ToShortDateString()}";
+                        TempData["ErrorMessage"] = "La fecha de inicio debe ser menor que la fecha de cierre.";
                         return RedirectToAction(nameof(Edit), new { id = id });
                     }
 
-                    // Crear nueva fecha
+                    // Validar contra la fecha máxima registrada
+                    var existingDates = await loanDatesBL.GetLoanDatesByIdLoanAsync(new LoanDates { ID_LOAN = id });
+                    if (existingDates != null && existingDates.Any())
+                    {
+                        var maxEndDate = existingDates.Max(d => d.END_DATE);
+                        if (fechaCierre.Value.Date <= maxEndDate.Date)
+                        {
+                            TempData["ErrorMessage"] = $"La fecha de cierre debe ser mayor que la fecha maxima registrada: {maxEndDate.ToShortDateString()}";
+                            return RedirectToAction(nameof(Edit), new { id = id });
+                        }
+                    }
+
+                    // Asignar fechas al préstamo
                     pLoanDates.ID_LOAN = id;
-                    pLoanDates.START_DATE = fechaInicio;
-                    pLoanDates.END_DATE = fechaCierre;
+                    pLoanDates.START_DATE = fechaInicio.Value;
+                    pLoanDates.END_DATE = fechaCierre.Value;
                     pLoanDates.STATUS = 1;
 
-                    // Actualizar estado de reserva según la lógica
-                    if (pLoans.ID_RESERVATION == 1) pLoans.ID_RESERVATION = 4;
-                    else if (pLoans.ID_RESERVATION == 3) pLoans.ID_RESERVATION = 1;
+                    // Ajustar estado de la reserva si aplica
+                    if (pLoans.ID_RESERVATION == 1)
+                        pLoans.ID_RESERVATION = 4;
+                    else if (pLoans.ID_RESERVATION == 3)
+                        pLoans.ID_RESERVATION = 1;
 
                     await loanDatesBL.CreateLoanDatesAsync(pLoanDates);
-                    await loansBL.UpdateLoansAsync(pLoans);
-                    TempData["SuccessMessage"] = "El prestamo se ha modificado correctamente.";
                 }
                 else
                 {
-                    await loansBL.UpdateLoansAsync(pLoans);
-                    TempData["SuccessMessage"] = "El prestamo se ha modificado correctamente.";
+                    // No se asignaron fechas -> revisar si ya existen
+                    var existingDates = await loanDatesBL.GetLoanDatesByIdLoanAsync(new LoanDates { ID_LOAN = id });
+
+                    if (existingDates == null || !existingDates.Any())
+                    {
+                        // Si no hay fechas registradas, validar según el tipo de préstamo
+                        if (pLoans.ID_RESERVATION != 2 && pLoans.ID_RESERVATION != 5)
+                        {
+                            TempData["ErrorMessage"] = "Debes asignar fechas para este tipo de prestamo.";
+                            return RedirectToAction(nameof(Edit), new { id = id });
+                        }
+                    }
+                    // Si ya existen fechas, se permite cambiar solo el estado
                 }
 
+                // Actualizar el préstamo
+                await loansBL.UpdateLoansAsync(pLoans);
+                TempData["SuccessMessage"] = "El prestamo se ha modificado correctamente.";
                 return RedirectToAction(nameof(Index));
             }
             catch (Exception ex)
             {
                 ViewBag.Error = ex.Message;
                 ViewBag.ShowMenu = true;
+                // Repoblar los ViewBag
+                ViewBag.LoanTypes = await loansTypesBL.GetAllLoanTypesAsync();
+                ViewBag.ReservationStatus = await reservationStatusBL.GetAllReservationStatusAsync();
+                ViewBag.LoanDates = await loanDatesBL.GetLoanDatesByIdLoanAsync(new LoanDates { ID_LOAN = pLoans.LOAN_ID });
+                var titulo = await booksBL.GetBooksByIdAsync(new Books { BOOK_ID = pLoans.ID_BOOK });
+                ViewBag.TituloB = titulo?.TITLE;
+                ViewBag.Portada = titulo?.COVER;
                 return View(pLoans);
             }
         }
-
 
 
         public async Task<JsonResult> BuscarLibros(Books pBooks)

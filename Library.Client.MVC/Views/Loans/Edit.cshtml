@@ -188,13 +188,14 @@
 
 
                             <div class="col-12">
-                                <label>Eliminar Préstamo:</label>
+                                <label asp-for="STATUS" class="form-label">Estado del Préstamo</label>
                                 <select asp-for="STATUS" class="form-control">
-                                    <option value="@true">Activo</option>
-                                    <option value="@false">Eliminar</option>
+                                    <option value="true">Activo</option>
+                                    <option value="false">Eliminar</option>
                                 </select>
                                 <span asp-validation-for="STATUS" class="text-danger"></span>
                             </div>
+
                         </div>
                     </form>
                 </div>
