@@ -269,12 +269,16 @@ namespace Library.Client.MVC.Controllers
 
             return Json(lista);
         }
-        public async Task<JsonResult> BuscarCiudad(Countries pCountries)
+        public async Task<JsonResult> BuscarCiudad(Countries pCountries, int page = 1, int pageSize = 10)
         {
-            List<Countries> lista = await countriesBL.GetCountriesAsync(pCountries);
-
-            return Json(lista);
+            List<Countries> listaCompleta = await countriesBL.GetCountriesAsync(pCountries);
+            var listaPaginada = listaCompleta
+                .Skip((page - 1) * pageSize)
+                .Take(pageSize)
+                .ToList();
+            return Json(new { Data = listaPaginada, TotalRecords = listaCompleta.Count });
         }
+
         public async Task<JsonResult> BuscarEdicion(Editions pEditions)
         {
             List<Editions> lista = await editionsBL.GetEditionsAsync(pEditions);

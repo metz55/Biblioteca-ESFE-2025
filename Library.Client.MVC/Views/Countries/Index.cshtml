@@ -18,6 +18,17 @@
         border-radius: 0.5rem;
     }
 
+    #contenedor-principal {
+        border-radius: 0.5rem;
+        transition: all 0.3s ease;
+    }
+
+        #contenedor-principal:hover {
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+            transform: translateY(-2px);
+            border: 1px solid #e5e7eb;
+        }
+
     #btn-create {
         transition: all 0.3s ease;
     }
@@ -173,7 +184,7 @@
                                 <a href="@Url.Action("Edit", new { id = item.COUNTRY_ID })" class="btn btn-info" style="background: #1D4ED8">
                                     <i class="bi bi-pencil-square"></i>Editar
                                 </a>
-                                <a href="javascript:void(0)" onclick="confirmDelete(@item.COUNTRY_ID)" class="btn btn-danger" style="background-color: #EF4444">
+                                <a href="javascript:void(0)" onclick="confirmDelete(@item.COUNTRY_ID)" class="btn btn-danger" style="background-color: #cc2649">
                                     <i class="bi bi-trash3"></i>Eliminar
                                 </a>
                             </td>
@@ -198,7 +209,7 @@
             <nav class="pagination-container">
                 @if (ViewBag.PaginaActual > 1)
                 {
-                    <a class="page-btn" asp-action="Index" asp-route-page="@(ViewBag.PaginaActual - 1)">&lt;</a>
+                    <a class="page-btn" asp-action="Index" asp-route-page="@(ViewBag.PaginaActual - 1)">Anterior</a>
                 }
 
                 @for (int i = 1; i <= ViewBag.TotalPaginas; i++)
@@ -208,7 +219,7 @@
 
                 @if (ViewBag.PaginaActual < ViewBag.TotalPaginas)
                 {
-                    <a class="page-btn" asp-action="Index" asp-route-page="@(ViewBag.PaginaActual + 1)">&gt;</a>
+                    <a class="page-btn" asp-action="Index" asp-route-page="@(ViewBag.PaginaActual + 1)">Siguiente</a>
                 }
             </nav>
           }
@@ -244,7 +255,7 @@
             showCancelButton: true,
             confirmButtonColor: '#EF4444',
             cancelButtonColor: '#6c757d',
-            confirmButtonText: 'Sí, eliminar',
+            confirmButtonText: 'Sí, eliminar Ciudad',
             cancelButtonText: 'Cancelar'
         }).then((result) => {
             if (result.isConfirmed) {
@@ -259,7 +270,7 @@
                 .then(data => {
                     if (data.success) {
                         Swal.fire(
-                            '¡Eliminado!',
+                            '¡Ciudad Eliminada!',
                             data.message,
                             'success'
                         ).then(() => {
@@ -276,7 +287,7 @@
                 .catch(error => {
                     Swal.fire(
                         'Error',
-                        'Ocurrió un error al intentar eliminar.',
+                        'Ocurrió un error al intentar eliminar la Ciudad.',
                         'error'
                     );
                 });

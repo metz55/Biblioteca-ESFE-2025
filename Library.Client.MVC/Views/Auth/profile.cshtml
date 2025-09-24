@@ -15,7 +15,6 @@
 
 <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 
-
 <!-- Header Start -->
 <div class="jumbotron jumbotron-fluid page-header position-relative overlay-bottom" style="margin-bottom: 90px;">
     <div class="container text-center py-5">
@@ -25,6 +24,7 @@
     </div>
 </div>
 <!-- Header End -->
+
 <!-- Mis Préstamos Start -->
 <div class="container-fluid py-1">
     <div class="container py-1">
@@ -52,7 +52,11 @@
             <div class="row">
                 @foreach (var loan in Model)
                 {
-                    var loanDateInfo = loanDate?.FirstOrDefault(d => d.ID_LOAN == loan.LOAN_ID);
+                    var loanDateInfo = loanDate?
+                        .Where(d => d.ID_LOAN == loan.LOAN_ID)
+                        .OrderByDescending(d => d.END_DATE)
+                        .FirstOrDefault();
+
                     int diasRestantes = 0;
                     int horasRestantes = 0;
                     string statusClass = "text-white";
@@ -110,7 +114,6 @@
                         </div>
                     </div>
                 }
-
             </div>
 
             <!-- Paginación -->

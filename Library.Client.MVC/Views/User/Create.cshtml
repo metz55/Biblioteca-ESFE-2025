@@ -96,9 +96,22 @@
     @{
         await Html.RenderPartialAsync("_ValidationScriptsPartial");
     }
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script>
         document.querySelector('.main-content')?.classList.remove('with-menu');
         document.querySelector('.main-content')?.classList.add('full-width');
+
+        // Mostrar error si existe
+        @if (!string.IsNullOrEmpty(ViewBag.Error as string))
+        {
+                <text>
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Error',
+                        text: 'Error, El nombre de Usuario ya existe',
+                        confirmButtonText: 'Aceptar'
+                    });
+                </text>
+        }
     </script>
 }
-

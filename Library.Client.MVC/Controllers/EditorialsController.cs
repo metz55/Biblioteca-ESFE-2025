@@ -15,23 +15,35 @@ namespace Library.Client.MVC.Controllers
         BLCategories categoriesBL = new BLCategories();
         BLCatalogs catalogsBL = new BLCatalogs();
 
-        // GET: AcquisitionTypesController
-        public async Task<IActionResult> Index(Editorials pEditorials = null)
+        public async Task<IActionResult> Index(Editorials pEditorials = null, int page = 1, int pageSize = 10)
         {
             if (pEditorials == null)
                 pEditorials = new Editorials();
             if (pEditorials.Top_Aux == -1)
-                pEditorials.Top_Aux = 10;
-            else
-               if (pEditorials.Top_Aux == 1)
                 pEditorials.Top_Aux = 0;
-            var editorials = await editorialsBL.GetEditorialsAsync(pEditorials);
-            ViewBag.Categories = await categoriesBL.GetAllCategoriesAsync();
-            ViewBag.Catalogs = await catalogsBL.GetAllCatalogsAsync();
-            ViewBag.Top = pEditorials.Top_Aux;
+            else if (pEditorials.Top_Aux == 1)
+                pEditorials.Top_Aux = 0;
+
+            var allEditorials = await editorialsBL.GetEditorialsAsync(pEditorials);
+            allEditorials = allEditorials.OrderBy(e => e.EDITORIAL_ID).ToList();
+
+            // Aplicar paginación
+            int totalRegistros = allEditorials.Count();
+            int totalPaginas = totalRegistros > 0 ? (int)Math.Ceiling((double)totalRegistros / pageSize) : 1;
+            ViewBag.TotalPaginas = totalPaginas;
+            var editorials = allEditorials
+                .Skip((page - 1) * pageSize)
+                .Take(pageSize)
+                .ToList();
+
+            ViewBag.TotalPaginas = totalPaginas;
+            ViewBag.PaginaActual = page;
+            ViewBag.Top = pageSize;
             ViewBag.ShowMenu = true;
+
             return View(editorials);
         }
+
 
         // GET: AcquisitionTypesController/Details/5
         public async Task<ActionResult> Details(int id)

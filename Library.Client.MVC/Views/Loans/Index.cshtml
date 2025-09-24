@@ -24,6 +24,17 @@
         border-radius: 0.5rem;
     }
 
+    #contenedor-principal {
+        border-radius: 0.5rem;
+        transition: all 0.3s ease;
+    }
+
+        #contenedor-principal:hover {
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+            transform: translateY(-2px);
+            border: 1px solid #e5e7eb;
+        }
+
     #btn-create {
         transition: all 0.3s ease;
     }
@@ -100,7 +111,6 @@
         .fade-page.show {
             opacity: 1;
         }
-
 </style>
 
 <div class="card" id="contenedor-principal">
@@ -199,10 +209,20 @@
                         {
                             hasResults = true;
                             loanIds.Add(item.ID_LENDER);
+
+                            var loanInfo = ViewBag.LoanDatesList[item.LOAN_ID];
+                            var isOverdue = loanInfo.Item2;
+
                             <tr>
-                                <td>@item.LOAN_ID</td>
+                                <td>@item.LOAN_ID</td>  
                                 <td>@item.LoanTypes?.TYPES_NAME</td>
-                                <td>@item.ReservationStatus?.STATUS_NAME</td>
+                                <td style="@(isOverdue ? "color: red; font-weight: bold;" : "")">
+                                    @item.ReservationStatus?.STATUS_NAME
+                                    @if (isOverdue)
+                                    {
+                                        <span class="tooltiptext">/ No Devuelto</span>
+                                    }
+                                </td>
                                 <td class="tdStudentCode_@item.ID_LENDER">Cargando...</td>
                                 <td class="tdStudentName_@item.ID_LENDER">Cargando...</td>
                                 <td class="tdStudentCareer_@item.ID_LENDER">Cargando...</td>
@@ -309,3 +329,19 @@
         });
     });
 </script>
+<script>
+    $(document).ready(function() {
+        @if (TempData["SuccessMessage"] != null)
+        {
+                <text>
+                    Swal.fire({
+                        icon: 'success',
+                        title: '¡Éxito!',
+                        text: '@TempData["SuccessMessage"]',
+                        confirmButtonColor: '#198754'
+                    });
+                </text>
+        }
+    });
+</script>
+

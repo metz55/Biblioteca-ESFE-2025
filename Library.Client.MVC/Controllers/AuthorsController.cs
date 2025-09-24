@@ -13,21 +13,36 @@ namespace Library.Client.MVC.Controllers
         BLAuthors authorsBL = new BLAuthors();
 
         // GET: CategoriesController
-        public async Task<IActionResult> Index(Authors pAuthors = null)
+        public async Task<IActionResult> Index(Authors pAuthors = null, int page = 1, int pageSize = 10)
         {
             if (pAuthors == null)
                 pAuthors = new Authors();
-            if (pAuthors.Top_Aux == -1)
-                pAuthors.Top_Aux = 10;
-            else
-               if (pAuthors.Top_Aux == 1)
-                pAuthors.Top_Aux = 0;
-            var authors = await authorsBL.GetAuthorsAsync(pAuthors);
-            ViewBag.Top = pAuthors.Top_Aux;
 
+            if (pAuthors.Top_Aux == -1)
+                pAuthors.Top_Aux = 0; 
+
+            var allAuthors = await authorsBL.GetAuthorsAsync(pAuthors);
+            allAuthors = allAuthors.OrderBy(a => a.AUTHOR_ID).ToList();
+
+            // Aplica la paginación manualmente
+            int totalRegistros = allAuthors.Count();
+            int totalPaginas = totalRegistros > 0 ? (int)Math.Ceiling((double)totalRegistros / pageSize) : 1;
+            ViewBag.TotalPaginas = totalPaginas;
+
+
+            var authors = allAuthors
+                .Skip((page - 1) * pageSize)
+                .Take(pageSize)
+                .ToList();
+
+            ViewBag.TotalPaginas = totalPaginas;
+            ViewBag.PaginaActual = page;
+            ViewBag.Top = pageSize;
             ViewBag.ShowMenu = true;
+
             return View(authors);
         }
+
 
         // GET: CategoriesController/Details/5
         public async Task<ActionResult> Details(int id)

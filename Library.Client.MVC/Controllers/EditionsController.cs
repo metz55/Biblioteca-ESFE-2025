@@ -12,21 +12,35 @@ namespace Library.Client.MVC.Controllers
     {
         BLEditions editionsBL = new BLEditions();
 
-        // GET: AcquisitionTypesController
-        public async Task<IActionResult> Index(Editions pEditions = null)
+        public async Task<IActionResult> Index(Editions pEditions = null, int page = 1, int pageSize = 10)
         {
             if (pEditions == null)
                 pEditions = new Editions();
             if (pEditions.Top_Aux == -1)
-                pEditions.Top_Aux = 10;
-            else
-               if (pEditions.Top_Aux == 1)
                 pEditions.Top_Aux = 0;
-            var editions = await editionsBL.GetEditionsAsync(pEditions);
-            ViewBag.Top = pEditions.Top_Aux;
+            else if (pEditions.Top_Aux == 1)
+                pEditions.Top_Aux = 0;
+
+            var allEditions = await editionsBL.GetEditionsAsync(pEditions);
+            allEditions = allEditions.OrderBy(e => e.EDITION_ID).ToList();
+
+            // Aplicar paginación
+            int totalRegistros = allEditions.Count();
+            int totalPaginas = totalRegistros > 0 ? (int)Math.Ceiling((double)totalRegistros / pageSize) : 1;
+            ViewBag.TotalPaginas = totalPaginas;
+            var editions = allEditions
+                .Skip((page - 1) * pageSize)
+                .Take(pageSize)
+                .ToList();
+
+            ViewBag.TotalPaginas = totalPaginas;
+            ViewBag.PaginaActual = page;
+            ViewBag.Top = pageSize;
             ViewBag.ShowMenu = true;
+
             return View(editions);
         }
+
 
         // GET: AcquisitionTypesController/Details/5
         public async Task<ActionResult> Details(int id)

@@ -24,6 +24,17 @@
         border-radius: 0.5rem;
     }
 
+    #contenedor-principal {
+        border-radius: 0.5rem;
+        transition: all 0.3s ease;
+    }
+
+        #contenedor-principal:hover {
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+            transform: translateY(-2px);
+            border: 1px solid #e5e7eb;
+        }
+
     #btn-create {
         transition: all 0.3s ease;
     }
@@ -223,7 +234,7 @@
                                     <a href="@Url.Action("Details", new { id = item.BOOK_ID })" class="btn btn-secondary" style="background-color: #64748B">
                                         <i class="bi bi-eye"></i> Detalles
                                     </a>
-                                    <a href="@Url.Action("Delete", new { id = item.BOOK_ID })" class="btn btn-danger" style="background-color: #db4648">
+                                    <a href="@Url.Action("Delete", new { id = item.BOOK_ID })" class="btn btn-danger" style="background-color: #cc2649">
                                         <i class="bi bi-trash3"></i> Eliminar
                                     </a>
                                 </div>

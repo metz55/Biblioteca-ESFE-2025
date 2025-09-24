@@ -34,9 +34,6 @@
 @*     <script src="https://kit.fontawesome.com/a2e0b2f1bc.js" crossorigin="anonymous"></script>
  *@    <script src="https://cdnjs.cloudflare.com/ajax/libs/exceljs/4.3.0/exceljs.min.js"></script>
 
-
-
-
    <style>
         html, body {
             height: 100%;
@@ -217,6 +214,33 @@
                 color: #264DFF;
                 font-size: 24px; /* Asegura que el ícono sea proporcional */
             }
+
+        /* Estilos para el contenedor de sugerencias del buscador de vistas */
+        #suggestionsContainerView,
+        #suggestionsContainerViewMobile {
+            position: absolute;
+            top: 100%;
+            left: 0;
+            right: 0;
+            background: white;
+            border: 1px solid #ddd;
+            border-top: none;
+            z-index: 1000;
+            max-height: 200px;
+            overflow-y: auto;
+            margin-top: 2px;
+        }
+
+            #suggestionsContainerView .suggestion-item,
+            #suggestionsContainerViewMobile .suggestion-item {
+                padding: 8px;
+                cursor: pointer;
+            }
+
+                #suggestionsContainerView .suggestion-item:hover,
+                #suggestionsContainerViewMobile .suggestion-item:hover {
+                    background-color: #f0f0f0;
+                }
 </style>
 </head>
 
@@ -249,13 +273,21 @@
                     <!-- CONTENIDO EN ESCRITORIO -->
                     <div class="d-none d-md-flex align-items-center w-100 justify-content-between">
                         <!-- Buscador -->
-                        <form id="navbarSearch" class="mx-4 flex-grow-1" style="max-width: 400px;" onsubmit="return goToView(event)">
+                        <!-- En el formulario de búsqueda del navbar (escritorio) -->
+                        <form id="navbarSearch" class="mx-4 flex-grow-1" style="max-width: 400px; position: relative;" onsubmit="return goToView(event)">
                             <div class="input-group input-group-sm">
-                                <input type="text" class="form-control" id="searchView" placeholder="Buscar vista..." aria-label="Buscar vista">
+                                <input type="text"
+                                       class="form-control"
+                                       id="searchView"
+                                       placeholder="Buscar vista..."
+                                       aria-label="Buscar vista"
+                                       autocomplete="off">
                                 <button class="btn btn-outline-primary" type="submit">
                                     <i class="mdi mdi-magnify"></i>
                                 </button>
                             </div>
+                            <!-- Contenedor para sugerencias (sin estilos adicionales) -->
+                            <div id="suggestionsContainerView" style="display: none;"></div>
                         </form>
 
                         <!-- Usuario y logout -->
@@ -325,7 +357,7 @@
                     <footer class="footer">
                         <div class="container-fluid clearfix">
                             <span class="text-muted d-block text-center text-sm-left d-sm-inline-block">
-                                © 2025 - Escuela Superior Franciscana Especializada/Agape
+                                © 2025 | Escuela Superior Franciscana Especializada/Agape
                             </span>
                             <span class="float-none float-sm-right d-block mt-1 mt-sm-0 text-center">
                                 
@@ -352,21 +384,31 @@
     <script src="https://cdn.jsdelivr.net/npm/jquery-validation-unobtrusive@3.2.13/dist/jquery.validate.unobtrusive.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script>
-        function goToView(event) {
+                function goToView(event) {
             event.preventDefault();
-            var view = document.getElementById('searchView').value.trim().toLowerCase();
+
+            // Detectar si es móvil o escritorio
+            var view = "";
+            if (event.target.id === "navbarSearchMobile") {
+                view = document.getElementById('searchViewMobile').value.trim().toLowerCase();
+            } else {
+                view = document.getElementById('searchView').value.trim().toLowerCase();
+            }
 
             var views = {
-                      "ediciones": "/Editions/Index",
-                      "editoriales": "/Editorials/Index",
-                      "libros": "/Books/Index",
-                      "categorias de blog": "/Postscategories/Index",
-                      "prestamos": "/Loans/Index",
-                      "tipos de prestamos": "/LoanTypes/Index",
-                      "autores": "/Authors/Index",
-                      "todos los prestamos": "/Loans/AllLoans",
-                      "usuarios": "/User/Index",
-                      "prestamos eliminados": "/Loans/LoansDelite"
+                "ediciones": "/Editions/Index",
+                "editoriales": "/Editorials/Index",
+                "libros": "/Books/Index",
+                "categorias de blog": "/Postscategories/Index",
+                "prestamos": "/Loans/Index",
+                "tipos de prestamos": "/LoanTypes/Index",
+                "autores": "/Authors/Index",
+                "registro de prestamos": "/Loans/AllLoans",
+                "usuarios": "/User/Index",
+                "prestamos eliminados": "/Loans/LoansDelite",
+                "catalogo": "/Catalogs/Index",
+                "ciudades": "/Countries/Index",
+                "tipos de adquisicion": "/AcquisitionTypes/Index"
             };
 
             if (views[view]) {
@@ -485,7 +527,7 @@
                 Swal.fire({
                     icon: 'warning',
                     title: 'Atención',
-                    text: 'Solo se pueden buscar vistas por nombre exacto y en minúsculas',
+                    text: 'Por favor, Rellenar el campo de busqueda en minusculas',
                     confirmButtonColor: '#3085d6'
                 });
                 return false;
@@ -498,7 +540,108 @@
 
             return true;
         });
+
+                // Validar búsqueda en la barra de MÓVIL
+        $('#navbarSearchMobile').on('submit', function(e) {
+            e.preventDefault();
+            const input = $('#searchViewMobile').val().trim();
+
+            if (input === "" || input !== input.toLowerCase()) {
+                Swal.fire({
+                    icon: 'warning',
+                    title: 'Atención',
+                    text: 'Por favor, Rellenar el campo de búsqueda en minúsculas',
+                    confirmButtonColor: '#3085d6'
+                });
+                return false;
+            }
+
+            console.log("Buscar vista (móvil):", input);
+            return true;
         });
+        });
+    </script>
+    <script>
+        document.addEventListener("DOMContentLoaded", () => {
+            const searchViewInput = document.getElementById("searchView");
+            const searchViewMobileInput = document.getElementById("searchViewMobile");
+            const suggestionsContainerView = document.getElementById("suggestionsContainerView");
+            const suggestionsContainerViewMobile = document.getElementById("suggestionsContainerViewMobile");
+
+            // Lista de vistas disponibles (puedes cargarlas dinámicamente si lo prefieres)
+            const views = {
+                "ediciones": "/Editions/Index",
+                "editoriales": "/Editorials/Index",
+                "libros": "/Books/Index",
+                "categorias de blog": "/Postscategories/Index",
+                "prestamos": "/Loans/Index",
+                "tipos de prestamos": "/LoanTypes/Index",
+                "autores": "/Authors/Index",
+                "registro de prestamos": "/Loans/AllLoans",
+                "usuarios": "/User/Index",
+                "prestamos eliminados": "/Loans/LoansDelite",
+                "catalogo": "/Catalogs/Index",
+                "ciudades": "/Countries/Index",
+                "tipos de adquisicion": "/AcquisitionTypes/Index"
+            };
+
+            // Función para configurar el autocompletado
+            function setupAutocomplete(input, suggestionsContainer) {
+                input.addEventListener("input", () => {
+                    const query = input.value.trim().toLowerCase();
+                    if (query.length < 1) {
+                        suggestionsContainer.style.display = "none";
+                        return;
+                    }
+                    // Filtra las vistas según la entrada del usuario
+                    const filteredViews = Object.keys(views).filter(view =>
+                        view.includes(query)
+                    );
+                    if (filteredViews.length > 0) {
+                        suggestionsContainer.innerHTML = filteredViews
+                            .map(view => `
+                                <div
+                                    class="suggestion-item"
+                                    onclick="selectSuggestionView('${view}', '${views[view]}')"
+                                >
+                                    ${view}
+                                </div>
+                            `)
+                            .join("");
+                        suggestionsContainer.style.display = "block";
+                    } else {
+                        suggestionsContainer.style.display = "none";
+                    }
+                });
+            }
+
+            // Ocultar sugerencias si se hace clic fuera del campo
+            document.addEventListener("click", (e) => {
+                if (e.target !== searchViewInput && e.target !== searchViewMobileInput) {
+                    suggestionsContainerView.style.display = "none";
+                    if (suggestionsContainerViewMobile) {
+                        suggestionsContainerViewMobile.style.display = "none";
+                    }
+                }
+            });
+
+            // Configurar autocompletado para escritorio y móvil
+            setupAutocomplete(searchViewInput, suggestionsContainerView);
+            if (searchViewMobileInput && suggestionsContainerViewMobile) {
+                setupAutocomplete(searchViewMobileInput, suggestionsContainerViewMobile);
+            }
+        });
+
+        // Función para seleccionar una sugerencia
+        function selectSuggestionView(view, url) {
+            document.getElementById("searchView").value = view;
+            document.getElementById("suggestionsContainerView").style.display = "none";
+            if (document.getElementById("searchViewMobile")) {
+                document.getElementById("searchViewMobile").value = view;
+                document.getElementById("suggestionsContainerViewMobile").style.display = "none";
+            }
+            window.location.href = url;
+        }
     </script>
 
 
