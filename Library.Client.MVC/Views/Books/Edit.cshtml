@@ -362,9 +362,6 @@
             </div>
             <div class="modal-body">
                 <form id="frmBuscarPais" class="card shadow-sm mb-4 border">
-                    <div class="card-header text-center fw-bold bg-light border-bottom">
-                        Listado de Ciudades
-                    </div>
                     <div class="card-body">
                         <div class="row align-items-end">
                             <div class="col-md-6">
@@ -373,7 +370,7 @@
                             </div>
                             <div class="col-md-6 text-end">
                                 <button type="button" id="btnBuscarCiudades" class="btn btn-primary btn-icon-text mt-3">
-                                    <i class="bi bi-search me-1"></i> Buscar Todos o en Específico
+                                    <i class="bi bi-search me-1"></i> Buscar Todos o en Especifico
                                 </button>
                             </div>
                         </div>
@@ -402,55 +399,59 @@
 <script>
         $(document).ready(function () {
 
-             // AUTORES
-             // Limpiar tabla al abrir modal
-             $('#ModalAutor').on('show.bs.modal', function () {
-                 $("#tbDatosAutores > tbody").empty();
-             });
+        // AUTORES
+        // Limpiar tabla al abrir modal
+        $('#ModalAutor').on('show.bs.modal', function() {
+            $("#tbDatosAutores > tbody").empty();
+        });
 
-             $("#btnBuscarAutores").click(function () {
-                 fnBuscarAutores();
-             });
+        $("#btnBuscarAutores").click(function() {
+            fnBuscarAutores();
+        });
 
-             function fnBuscarAutores() {
-                 $.ajax({
-                     method: 'POST',
-                     url: '@Url.Action("BuscarAutor", "Books")',
-                     data: $("#frmBuscarAutores").serialize(),
-                     dataType: 'json',
-                     success: function (lista) {
-                         var tbody = $("#tbDatosAutores > tbody");
-                         tbody.empty();
+                function fnBuscarAutores() {
+            $.ajax({
+                method: 'POST',
+                url: '@Url.Action("BuscarAutor", "Books")',
+                data: $("#frmBuscarAutores").serialize(),
+                dataType: 'json',
+                success: function(lista) {
+                    var tbody = $("#tbDatosAutores > tbody");
+                    tbody.empty();
+                    if (lista.length === 0) {
+                        tbody.append("<tr><td colspan='2'>No se encontraron autores</td></tr>");
+                        return;
+                    }
+                    for (var i = 0; i < lista.length; i++) {
+                        var fila = `<tr>
+                            <td>${lista[i].authoR_NAME || ""}</td>
+                            <td>
+                                <button type='button' class='btn btn-success btn-sm seleccionar-autor'
+                                    data-id="${lista[i].authoR_ID}"
+                                    data-nombre="${lista[i].authoR_NAME}">
+                                    Seleccionar
+                                </button>
+                            </td>
+                        </tr>`;
+                        tbody.append(fila);
+                    }
+                },
+                error: function(error) {
+                    alert("Error: " + error.statusText);
+                }
+            });
+        }
 
-                         if (lista.length === 0) {
-                             tbody.append("<tr><td colspan='2'>No se encontraron autores</td></tr>");
-                             return;
-                         }
+        // Evento para seleccionar autor desde la tabla
+        $(document).on('click', '.seleccionar-autor', function() {
+            var id = $(this).data('id');
+            var nombre = $(this).data('nombre');
+            console.log("Autor seleccionado:", id, nombre); // Depuración
+            $("#txtIdAuthor").val(id);
+            $("#txtNombreAutor").val(nombre);
+            $("#ModalAutor").modal('hide');
+        });
 
-                         for (var i = 0; i < lista.length; i++) {
-                             var fila = `<tr>
-                                 <td>${lista[i].AUTHOR_NAME ?? ""}</td>
-                                 <td>
-                                     <button type='button' class='btn btn-info'
-                                         onclick="setAuthor(${lista[i].AUTHOR_ID}, '${lista[i].AUTHOR_NAME}')">
-                                         Seleccionar
-                                     </button>
-                                 </td>
-                             </tr>`;
-                             tbody.append(fila);
-                         }
-                     },
-                     error: function (error) {
-                         alert("Error: " + error.statusText);
-                     }
-                 });
-             }
-
-             function setAuthor(id, nombre) {
-                 $("#txtIdAuthor").val(id);
-                 $("#txtNombreAutor").val(nombre);
-                 $("#ModalAutor").modal('hide');
-             }
 
          // EDITORIALES: Limpiar tabla al abrir modal
          $('#ModalEditorial').on('show.bs.modal', function () {
@@ -567,39 +568,37 @@
          });
 
          function fnBuscarCiudades() {
-             $.ajax({
-                 method: 'POST',
-                 url: '@Url.Action("BuscarCiudad", "Books")',
-                 data: $("#frmBuscarPais").serialize(),
-                 dataType: 'json',
-                 success: function (lista) {
-                     var tbody = $("#tbDatosCiudades > tbody");
-                     tbody.empty();
-                     if (lista.length === 0) {
-                         tbody.append("<tr><td colspan='2'>No se encontraron países/ciudades</td></tr>");
-                         return;
-                     }
-                     for (var i = 0; i < lista.length; i++) {
-                         // Usa los nombres exactos del JSON: countrY_ID y countrY_NAME
-                         var nombre = lista[i].countrY_NAME ? lista[i].countrY_NAME : "";
-                         var id = lista[i].countrY_ID ? lista[i].countrY_ID : 0;
-                         var fila = `<tr>
-                             <td>${nombre}</td>
-                             <td>
-                                 <button type='button' class='btn btn-success btn-sm'
-                                     onclick="window.setPais(${id}, '${nombre.replace(/'/g, "\\'")}')">
-                                     Seleccionar
-                                 </button>
-                             </td>
-                         </tr>`;
-                         tbody.append(fila);
-                     }
-                 },
-                 error: function (error) {
-                     alert("Error: " + error.statusText);
-                 }
-             });
-         }
+            $.ajax({
+                method: 'POST',
+                url: '@Url.Action("BuscarCiudad", "Books")',
+                data: $("#frmBuscarPais").serialize(),
+                dataType: 'json',
+                success: function(response) {
+                    var tbody = $("#tbDatosCiudades > tbody");
+                    tbody.empty();
+                    if (!response.data || response.data.length === 0) {
+                        tbody.append("<tr><td colspan='2'>No se encontraron países/ciudades</td></tr>");
+                        return;
+                    }
+                    response.data.forEach(function(item) {
+                        var fila = `<tr>
+                            <td>${item.countrY_NAME || ""}</td>
+                            <td>
+                                <button type='button' class='btn btn-success btn-sm'
+                                    onclick="window.setPais(${item.countrY_ID}, '${item.countrY_NAME.replace(/'/g, "\\'")}')">
+                                    Seleccionar
+                                </button>
+                            </td>
+                        </tr>`;
+                        tbody.append(fila);
+                    });
+                },
+                error: function(error) {
+                    console.error("Error en la solicitud:", error);
+                    alert("Error: " + error.statusText);
+                }
+            });
+        }
 
          window.setPais = function(id, nombre) {
              $("#txtIdPais").val(id);

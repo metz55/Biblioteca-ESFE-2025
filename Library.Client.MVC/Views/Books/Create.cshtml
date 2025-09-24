@@ -355,9 +355,6 @@
 
             <div class="modal-body">
                 <form id="frmBuscarPais" class="card shadow-sm mb-4 border">
-                    <div class="card-header text-center fw-bold bg-light border-bottom">
-                        Listado de Ciudades
-                    </div>
                     <div class="card-body">
                         <div class="row align-items-end">
                             <div class="col-md-6">
@@ -584,40 +581,39 @@
             fnBuscarCiudades();
         });
 
-        function fnBuscarCiudades() {
+            function fnBuscarCiudades() {
             $.ajax({
                 method: 'POST',
                 url: '@Url.Action("BuscarCiudad", "Books")',
                 data: $("#frmBuscarPais").serialize(),
                 dataType: 'json',
-                success: function (lista) {
+                success: function(response) {
                     var tbody = $("#tbDatosCiudades > tbody");
                     tbody.empty();
-                    if (lista.length === 0) {
+                    if (!response.data || response.data.length === 0) {
                         tbody.append("<tr><td colspan='2'>No se encontraron países/ciudades</td></tr>");
                         return;
                     }
-                    for (var i = 0; i < lista.length; i++) {
-                        // Usa los nombres exactos del JSON: countrY_ID y countrY_NAME
-                        var nombre = lista[i].countrY_NAME ? lista[i].countrY_NAME : "";
-                        var id = lista[i].countrY_ID ? lista[i].countrY_ID : 0;
+                    response.data.forEach(function(item) {
                         var fila = `<tr>
-                            <td>${nombre}</td>
+                            <td>${item.countrY_NAME || ""}</td>
                             <td>
                                 <button type='button' class='btn btn-success btn-sm'
-                                    onclick="window.setPais(${id}, '${nombre.replace(/'/g, "\\'")}')">
+                                    onclick="window.setPais(${item.countrY_ID}, '${item.countrY_NAME.replace(/'/g, "\\'")}')">
                                     Seleccionar
                                 </button>
                             </td>
                         </tr>`;
                         tbody.append(fila);
-                    }
+                    });
                 },
-                error: function (error) {
+                error: function(error) {
+                    console.error("Error en la solicitud:", error);
                     alert("Error: " + error.statusText);
                 }
             });
         }
+
 
         window.setPais = function(id, nombre) {
             $("#txtIdPais").val(id);

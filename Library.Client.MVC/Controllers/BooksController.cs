@@ -269,6 +269,8 @@ namespace Library.Client.MVC.Controllers
 
             return Json(lista);
         }
+
+        [HttpPost]
         public async Task<JsonResult> BuscarCiudad(Countries pCountries, int page = 1, int pageSize = 10)
         {
             List<Countries> listaCompleta = await countriesBL.GetCountriesAsync(pCountries);
@@ -278,6 +280,7 @@ namespace Library.Client.MVC.Controllers
                 .ToList();
             return Json(new { Data = listaPaginada, TotalRecords = listaCompleta.Count });
         }
+
 
         public async Task<JsonResult> BuscarEdicion(Editions pEditions)
         {
