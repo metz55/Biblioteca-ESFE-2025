@@ -360,7 +360,7 @@ namespace Library.Client.MVC.Controllers
 
                 // Actualizar el préstamo
                 await loansBL.UpdateLoansAsync(pLoans);
-                TempData["SuccessMessage"] = "El prestamo se ha modificado correctamente.";
+                TempData["Alerta"] = "El prestamo se ha modificado correctamente.";
                 return RedirectToAction(nameof(Index));
             }
             catch (Exception ex)

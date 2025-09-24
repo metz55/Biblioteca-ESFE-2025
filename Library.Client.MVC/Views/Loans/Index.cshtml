@@ -331,17 +331,18 @@
 </script>
 <script>
     $(document).ready(function() {
-        @if (TempData["SuccessMessage"] != null)
+        @if (TempData["Alerta"] != null)
         {
-                <text>
-                    Swal.fire({
-                        icon: 'success',
-                        title: '¡Éxito!',
-                        text: '@TempData["SuccessMessage"]',
-                        confirmButtonColor: '#198754'
-                    });
-                </text>
+            <text>
+                Swal.fire({
+                    icon: 'success',
+                    title: '¡Éxito!',
+                    text: '@TempData["Alerta"]',
+                    confirmButtonColor: '#198754'
+                });
+            </text>
         }
     });
 </script>
+
 

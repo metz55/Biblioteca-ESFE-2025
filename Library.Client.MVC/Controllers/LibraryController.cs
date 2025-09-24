@@ -59,11 +59,11 @@ namespace Library.Client.MVC.Controllers
 
             if (cantidadPrestamos < books.EJEMPLARS && books.EXISTENCES > 1)
             {
-                ViewBag.AlertaLibro = "Disponible para Reservación";
+                ViewBag.AlertaLibro = "Disponible para Reservacion";
             }
             else
             {
-                ViewBag.AlertaLibro2 = "No hay suficientes ejemplares para realizar la reservación";
+                ViewBag.AlertaLibro2 = "No hay suficientes ejemplares para realizar la reservacion";
             }
 
             ViewBag.LoanTypes = await loanTypesBL.GetAllLoanTypesAsync();
@@ -106,7 +106,7 @@ namespace Library.Client.MVC.Controllers
 
                 if (prestamoActivoEstudiante.Count > 0)
                 {
-                    ViewBag.AlertaPrestamoEx = "Ya tienes un préstamo activo. No puedes realizar otro préstamo hasta devolver el actual.";
+                    ViewBag.AlertaPrestamoEx = "Ya tienes un prestamo activo. No puedes realizar otro prestamo hasta devolver el actual.";
                     // Cargar datos comunes para vista
                     ViewBag.LoanTypes = await loanTypesBL.GetAllLoanTypesAsync();
                     ViewBag.Editorial = editorial.EDITORIAL_NAME;
@@ -151,7 +151,7 @@ namespace Library.Client.MVC.Controllers
                 }
                 else
                 {
-                    ViewBag.Alerta = "Por favor ingrese los datos del Préstamo";
+                    ViewBag.Alerta = "Por favor ingrese los datos del Prestamo";
                 }
 
                 // Cargar datos comunes para vista en cualquier caso
@@ -165,7 +165,7 @@ namespace Library.Client.MVC.Controllers
 
                 if (result > 0)
                 {
-                    TempData["Alerta"] = "La reservación se registró exitosamente!!";
+                    TempData["Alerta"] = "La reservacion se registro exitosamente!!";
                 }
                 return View();
             }

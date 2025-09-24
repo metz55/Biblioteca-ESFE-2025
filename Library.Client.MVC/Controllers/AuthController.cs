@@ -146,7 +146,7 @@ public class AuthController : Controller
 
                     ViewBag.isStudent = true;
                     ViewBag.studentCodeLogin = codigoEstudiante;
-                    TempData["SuccessMessage"] = "Has iniciado sesión exitosamente!";
+                    TempData["SuccessMessage"] = "Has iniciado sesion exitosamente!";
                     
                     // var claimsIdentity = new ClaimsIdentity(claims, CookieAuthenticationDefaults.AuthenticationScheme);
                     var claimsIdentity = new ClaimsIdentity(claims, "UserScheme");
@@ -179,6 +179,7 @@ public class AuthController : Controller
     {
         // Cerrar la sesión del usuario
         await HttpContext.SignOutAsync("UserScheme");
+        TempData["LogoutMessage"] = "Has cerrado sesion exitosamente.";
         return RedirectToAction("Index", "Library");
     }
     [HttpPost]

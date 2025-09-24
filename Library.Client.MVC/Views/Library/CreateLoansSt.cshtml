@@ -5,8 +5,8 @@
     ViewData["Title"] = "CreateLoansSt";
     var studentCode = User.FindFirst("CodigoEstudiante")?.Value ?? "";
     Layout = "~/Views/Shared/_LayoutUsers.cshtml";
-    ViewBag.ShowHeader = true;          // Para que aparezca
-    ViewBag.HeaderTitle = "Crear prestamo"; // Título dinámico
+    ViewBag.ShowHeader = true;          
+    ViewBag.HeaderTitle = "Crear prestamo"; 
 }
 
 <style>
@@ -221,26 +221,92 @@
 </div>
 
 @section Scripts {
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script>
-        $(document).ready(function (){
-            loadStudentData()
-        })
+        $(document).ready(function () {
+            loadStudentData();
 
-        function loadStudentData(){
-                var studentCode = "@studentCode";
-                $.ajax({
-                    method: 'GET',
-                    url: '@Url.Action("BuscarEstudiante", "Loans")',
-                    contentType: 'application/x-www-form-urlencoded',
-                    data: { codigo: studentCode },
-                    datatype: 'json',
-                    success: function(response){
-                        response.map(student=>{
-                           $("#telefono").val(student.cellPhone);
-                           $("#idLender").val(student.id);
-                        })
-                    }
-                });
+            // Alertas con SweetAlert
+            @* Mensaje de éxito desde TempData *@
+            @if (TempData["Alerta"] != null)
+            {
+                    <text>
+                        Swal.fire({
+                            icon: 'success',
+                            title: '¡Éxito!',
+                            text: '@TempData["Alerta"]',
+                            confirmButtonColor: '#198754'
+                        });
+                    </text>
             }
+            @* Mensaje de libro no disponible *@
+            @if (!string.IsNullOrEmpty(ViewBag.AlertaLibro2))
+            {
+                    <text>
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Sin ejemplares',
+                            text: '@ViewBag.AlertaLibro2',
+                            confirmButtonColor: '#d33'
+                        });
+                    </text>
+            }
+
+            @* Mensaje de datos faltantes *@
+            @if (!string.IsNullOrEmpty(ViewBag.Alerta))
+            {
+                    <text>
+                        Swal.fire({
+                            icon: 'warning',
+                            title: 'Atención',
+                            text: '@ViewBag.Alerta',
+                            confirmButtonColor: '#ffc107'
+                        });
+                    </text>
+            }
+
+            @* Mensaje de no suficientes ejemplares *@
+            @if (!string.IsNullOrEmpty(ViewBag.Alerta2))
+            {
+                    <text>
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'No disponible',
+                            text: '@ViewBag.Alerta2',
+                            confirmButtonColor: '#d33'
+                        });
+                    </text>
+            }
+
+            @* Mensaje de préstamo existente *@
+            @if (!string.IsNullOrEmpty(ViewBag.AlertaPrestamoEx))
+            {
+                    <text>
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Préstamo existente',
+                            text: '@ViewBag.AlertaPrestamoEx',
+                            confirmButtonColor: '#d33'
+                        });
+                    </text>
+            }
+        });
+
+        function loadStudentData() {
+            var studentCode = "@studentCode";
+            $.ajax({
+                method: 'GET',
+                url: '@Url.Action("BuscarEstudiante", "Loans")',
+                contentType: 'application/x-www-form-urlencoded',
+                data: { codigo: studentCode },
+                datatype: 'json',
+                success: function (response) {
+                    response.map(student => {
+                        $("#telefono").val(student.cellPhone);
+                        $("#idLender").val(student.id);
+                    })
+                }
+            });
+        }
     </script>
 }
