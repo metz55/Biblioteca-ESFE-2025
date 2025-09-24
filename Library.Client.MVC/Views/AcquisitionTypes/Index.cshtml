@@ -10,199 +10,223 @@
 }
 
 <style>
-  /* Contenedor para scroll horizontal si es necesario */
-  .table-responsive {
-    width: 100%;
-    overflow-x: auto;
-    -webkit-overflow-scrolling: touch;
-  }
-
-  /* Tabla estilo striped */
-  table.striped-table {
-    width: 100%;
-    border-collapse: collapse;
-    font-family: Arial, sans-serif;
-  }
-
-  /* Encabezados */
-  table.striped-table thead tr {
-    background-color: #4CAF50;
-    color: white;
-  }
-
-  /* Bordes y padding para celdas */
-  table.striped-table th,
-  table.striped-table td {
-    border: 1px solid #ddd;
-    padding: 10px;
-    text-align: left;
-    vertical-align: middle;
-  }
-
-  /* Filas alternadas */
-  table.striped-table tbody tr:nth-child(odd) {
-    background-color: #f9f9f9;
-  }
-
-  /* Hover */
-  table.striped-table tbody tr:hover {
-    background-color: #d1e7dd;
-  }
-
-  /* Botones */
-  .btn {
-    display: inline-flex;
-    align-items: center;
-    gap: 4px;
-    padding: 6px 10px;
-    font-size: 0.9rem;
-    border-radius: 4px;
-    text-decoration: none;
-    cursor: pointer;
-  }
-
-  .btn-success { background-color: #198754; color: white; border: none; }
-  .btn-warning { background-color: #ffc107; color: black; border: none; }
-  .btn-info    { background-color: #0dcaf0; color: white; border: none; }
-  .btn-danger  { background-color: #dc3545; color: white; border: none; }
-
-  .btn svg {
-    fill: currentColor;
-  }
-
-  /* Responsive: tabla en móvil en bloques */
-  @@media (max-width: 600px) {
-    table.striped-table, thead, tbody, th, td, tr {
-      display: block;
-      width: 100%;
+    body {
+        overflow-x: hidden;
     }
 
-    thead tr {
-      position: absolute;
-      top: -9999px;
-      left: -9999px;
+    .spacer {
+        margin-right: 20px;
     }
 
-    tbody tr {
-      margin-bottom: 1rem;
-      border: 1px solid #ccc;
-      padding: 10px;
-      border-radius: 6px;
-      background-color: #fff;
-      box-shadow: 0 0 5px rgba(0,0,0,0.1);
+    #contenedor-principal {
+        border-radius: 0.5rem;
     }
 
-    tbody tr:nth-child(odd) {
-      background-color: #fff;
+    #contenedor-principal {
+        border-radius: 0.5rem;
+        transition: all 0.3s ease;
     }
 
-    tbody td {
-      border: none;
-      padding-left: 50%;
-      position: relative;
-      text-align: left;
-      white-space: normal;
+        #contenedor-principal:hover {
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+            transform: translateY(-2px);
+            border: 1px solid #e5e7eb;
+        }
+
+    #btn-create {
+        transition: all 0.3s ease;
     }
 
-    tbody td:before {
-      position: absolute;
-      top: 10px;
-      left: 10px;
-      width: 45%;
-      padding-right: 10px;
-      white-space: nowrap;
-      font-weight: bold;
-      content: attr(data-label);
+        #btn-create:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 6px 15px rgba(0, 0, 0, 0.2);
+        }
+
+    .anchoAccionesLibro .btn {
+        min-width: 80px;
+        margin-right: 5px;
     }
-  }
+
+    .anchoAccionesLibro > div {
+        display: flex;
+        gap: 5px;
+    }
+
+    @@media (max-width: 768px) {
+        .form-busqueda
+
+    {
+        flex-direction: column !important;
+        align-items: stretch !important;
+    }
+
+    .spacer {
+        margin-right: 0 !important;
+        margin-bottom: 10px !important;
+    }
+
+    #btn-create {
+        width: 100% !important;
+        margin-bottom: 15px;
+            background-color: #10B981;
+    }
+
+    .anchoAccionesLibro .btn {
+        display: block;
+        width: 100%;
+        margin-bottom: 5px;
+    }
+
+    table.table td,
+    table.table th {
+        font-size: 14px;
+        white-space: nowrap;
+    }
+
+    .table-responsive {
+        overflow-x: auto;
+    }
+
+    }
 </style>
 
-<div class="card">
-  <div class="card-body">
-    <h1>TIPOS DE ADQUISICIÓN</h1>
+<div class="card" id="contenedor-principal">
+    <div class="card-body">
+        <h1 style="padding:15px; font-family: 'Poppins', sans-serif; font-weight: 600; margin-left: -15px;">Tipos de Adquisición</h1>
 
-    <p>
-      <a asp-action="Create" class="btn btn-success">
-        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-plus-square" viewBox="0 0 16 16">
-          <path d="M14 1a1 1 0 0 1 1 1v12a1 1 0 0 1-1 1H2a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1zM2 0a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V2a2 2 0 0 0-2-2z"/>
-          <path d="M8 4a.5.5 0 0 1 .5.5v3h3a.5.5 0 0 1 0 1h-3v3a.5.5 0 0 1-1 0v-3h-3a.5.5 0 0 1 0-1h3v-3A.5.5 0 0 1 8 4"/>
-        </svg>
-        Crear Nuevo
-      </a>
-    </p>
-
-    <div class="table-responsive">
-      <table id="customers" class="striped-table">
-        <thead>
-          <tr>
-            <th class="borIz">@Html.DisplayNameFor(model => model.ACQUISITION_ID)</th>
-            <th>@Html.DisplayNameFor(model => model.ACQUISITION_TYPE)</th>
-            <th class="borDer">Acciones</th>
-          </tr>
-        </thead>
-        <tbody>
-          @foreach (var item in Model)
-          {
-            <tr>
-              <td data-label="ID">@Html.DisplayFor(modelItem => item.ACQUISITION_ID)</td>
-              <td data-label="Tipo">@Html.DisplayFor(modelItem => item.ACQUISITION_TYPE)</td>
-              <td data-label="Acciones">
-                <a href="@Url.Action("Edit", new { id = item.ACQUISITION_ID })" class="btn btn-warning">
-                  <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-pencil-square" viewBox="0 0 16 16">
-                    <path d="M15.502 1.94a.5.5 0 0 1 0 .706L14.459 3.69l-2-2L13.502.646a.5.5 0 0 1 .707 0l1.293 1.293zm-1.75 2.456-2-2L4.939 9.21a.5.5 0 0 0-.121.196l-.805 2.414a.25.25 0 0 0 .316.316l2.414-.805a.5.5 0 0 0 .196-.12l6.813-6.814z"/>
-                    <path fill-rule="evenodd" d="M1 13.5A1.5 1.5 0 0 0 2.5 15h11a1.5 1.5 0 0 0 1.5-1.5v-6a.5.5 0 0 0-1 0v6a.5.5 0 0 1-.5.5h-11a.5.5 0 0 1-.5-.5v-11a.5.5 0 0 1 .5-.5H9a.5.5 0 0 0 0-1H2.5A1.5 1.5 0 0 0 1 2.5z"/>
-                  </svg>
-                  Editar
+        <div class="row g-2 mb-3 align-items-center">
+            <div class="col-12 col-md-auto">
+                <a asp-action="Create" class="btn btn-success w-100" id="btn-create">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-plus-square" viewBox="0 0 16 16">
+                        <path d="M14 1a1 1 0 0 1 1 1v12a1 1 0 0 1-1 1H2a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1zM2 0a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V2a2 2 0 0 0-2-2z" />
+                        <path d="M8 4a.5.5 0 0 1 .5.5v3h3a.5.5 0 0 1 0 1h-3v3a.5.5 0 0 1-1 0v-3h-3a.5.5 0 0 1 0-1h3v-3A.5.5 0 0 1 8 4" />
+                    </svg>
+                    <i class="bi bi-plus-square"></i> Crear Nuevo
                 </a>
-                <a href="@Url.Action("Details", new { id = item.ACQUISITION_ID })" class="btn btn-info">
-                  <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-eye" viewBox="0 0 16 16">
-                    <path d="M16 8s-3-5.5-8-5.5S0 8 0 8s3 5.5 8 5.5S16 8 16 8M1.173 8a13 13 0 0 1 1.66-2.043C4.12 4.668 5.88 3.5 8 3.5s3.879 1.168 5.168 2.457A13 13 0 0 1 14.828 8q-.086.13-.195.288c-.335.48-.83 1.12-1.465 1.755C11.879 11.332 10.119 12.5 8 12.5s-3.879-1.168-5.168-2.457A13 13 0 0 1 1.172 8z"/>
-                    <path d="M8 5.5a2.5 2.5 0 1 0 0 5 2.5 2.5 0 0 0 0-5M4.5 8a3.5 3.5 0 1 1 7 0 3.5 3.5 0 0 1-7 0"/>
-                  </svg>
-                  Detalles
-                </a>
-                <a href="@Url.Action("Delete", new { id = item.ACQUISITION_ID })" class="btn btn-danger">
-                  <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-trash3" viewBox="0 0 16 16">
-                    <path d="M6.5 1h3a.5.5 0 0 1 .5.5v1H6v-1a.5.5 0 0 1 .5-.5M11 2.5v-1A1.5 1.5 0 0 0 9.5 0h-3A1.5 1.5 0 0 0 5 1.5v1H1.5a.5.5 0 0 0 0 1h.538l.853 10.66A2 2 0 0 0 4.885 16h6.23a2 2 0 0 0 1.994-1.84l.853-10.66h.538a.5.5 0 0 0 0-1zm1.958 1-.846 10.58a1 1 0 0 1-.997.92h-6.23a1 1 0 0 1-.997-.92L3.042 3.5zm-7.487 1a.5.5 0 0 1 .528.47l.5 8.5a.5.5 0 0 1-.998.06L5 5.03a.5.5 0 0 1 .47-.53Zm5.058 0a.5.5 0 0 1 .47.53l-.5 8.5a.5.5 0 1 1-.998-.06l.5-8.5a.5.5 0 0 1 .528-.47M8 4.5a.5.5 0 0 1 .5.5v8.5a.5.5 0 0 1-1 0V5a.5.5 0 0 1 .5-.5"/>
-                  </svg>
-                  Eliminar
-                </a>
-              </td>
-            </tr>
-
-            {
-              numRegistros++;
-              if (numRegistros == numRegistrosPorPage)
-              {
-                numPage++;
-                numRegistros = 0;
-              }
-            }
-          }
-          @{
-            if (numRegistros == 0)
-            {
-              numPage--;
-            }
-          }
-        </tbody>
-      </table>
-    </div>
-
-    @if (numPage > 1)
-    {
-      <div class="row" style="overflow:auto">
-        <div class="col-md-12">
-          <ul class="pagination paginationjs" data-numpage="@numPage" data-pageactive="1">
-            <li class="page-item" data-typepage="Previous"><a class="page-link" href="#">Previous</a></li>
-            @for (var i = 1; i <= numPage; i++)
-            {
-              <li class="page-item" data-page="@i" data-typepage="Item"><a class="page-link" href="#">@i</a></li>
-            }
-            <li class="page-item" data-typepage="Next"><a class="page-link" href="#">Next</a></li>
-          </ul>
+            </div>
         </div>
-      </div>
-    }
-  </div>
+
+        <hr />
+
+        <div class="table-responsive">
+            <table id="customers" class="table">
+                <thead>
+                    <tr>
+                        <th class="borIz">@Html.DisplayNameFor(model => model.ACQUISITION_ID)</th>
+                        <th>@Html.DisplayNameFor(model => model.ACQUISITION_TYPE)</th>
+                        <th class="borDer">Acciones</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var item in Model)
+                    {
+                        <tr>
+                            <td>@Html.DisplayFor(modelItem => item.ACQUISITION_ID)</td>
+                            <td>@Html.DisplayFor(modelItem => item.ACQUISITION_TYPE)</td>
+                            <td>
+                                <a href="@Url.Action("Edit", new { id = item.ACQUISITION_ID })" class="btn btn-info" style="background: #1D4ED8">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-pencil-square" viewBox="0 0 16 16">
+                                        <path d="M15.502 1.94a.5.5 0 0 1 0 .706L14.459 3.69l-2-2L13.502.646a.5.5 0 0 1 .707 0l1.293 1.293zm-1.75 2.456-2-2L4.939 9.21a.5.5 0 0 0-.121.196l-.805 2.414a.25.25 0 0 0 .316.316l2.414-.805a.5.5 0 0 0 .196-.12l6.813-6.814z" />
+                                        <path fill-rule="evenodd" d="M1 13.5A1.5 1.5 0 0 0 2.5 15h11a1.5 1.5 0 0 0 1.5-1.5v-6a.5.5 0 0 0-1 0v6a.5.5 0 0 1-.5.5h-11a.5.5 0 0 1-.5-.5v-11a.5.5 0 0 1 .5-.5H9a.5.5 0 0 0 0-1H2.5A1.5 1.5 0 0 0 1 2.5z" />
+                                    </svg>
+                                    Editar
+                                </a>
+                                <a href="javascript:void(0)" onclick="confirmDelete(@item.ACQUISITION_ID)" class="btn btn-danger" style="background-color: #cc2649">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-trash3" viewBox="0 0 16 16">
+                                        <path d="M6.5 1h3a.5.5 0 0 1 .5.5v1H6v-1a.5.5 0 0 1 .5-.5M11 2.5v-1A1.5 1.5 0 0 0 9.5 0h-3A1.5 1.5 0 0 0 5 1.5v1H1.5a.5.5 0 0 0 0 1h.538l.853 10.66A2 2 0 0 0 4.885 16h6.23a2 2 0 0 0 1.994-1.84l.853-10.66h.538a.5.5 0 0 0 0-1zm1.958 1-.846 10.58a1 1 0 0 1-.997.92h-6.23a1 1 0 0 1-.997-.92L3.042 3.5zm-7.487 1a.5.5 0 0 1 .528.47l.5 8.5a.5.5 0 0 1-.998.06L5 5.03a.5.5 0 0 1 .47-.53Zm5.058 0a.5.5 0 0 1 .47.53l-.5 8.5a.5.5 0 1 1-.998-.06l.5-8.5a.5.5 0 0 1 .528-.47M8 4.5a.5.5 0 0 1 .5.5v8.5a.5.5 0 0 1-1 0V5a.5.5 0 0 1 .5-.5" />
+                                    </svg>
+                                    Eliminar
+                                </a>
+                            </td>
+                        </tr>
+                        numRegistros++;
+                        if (numRegistros == numRegistrosPorPage)
+                        {
+                            numPage++;
+                            numRegistros = 0;
+                        }
+                    }
+                    @if (numRegistros == 0)
+                    {
+                        numPage--;
+                    }
+                </tbody>
+            </table>
+        </div>
+
+        @if (numPage > 1)
+        {
+            <div class="row" style="overflow:auto">
+                <div class="col-md-12">
+                    <ul class="pagination paginationjs" data-numpage="@numPage" data-pageactive="1">
+                        <li class="page-item" data-typepage="Previous"><a class="page-link" href="#">Previous</a></li>
+                        @for (var i = 1; i <= numPage; i++)
+                        {
+                            <li class="page-item" data-page="@i" data-typepage="Item"><a class="page-link" href="#">@i</a></li>
+                        }
+                        <li class="page-item" data-typepage="Next"><a class="page-link" href="#">Next</a></li>
+                    </ul>
+                </div>
+            </div>
+        }
+        <form style="display:none;">
+            @Html.AntiForgeryToken()
+        </form>
+    </div>
 </div>
+@section Scripts {
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script>
+        function confirmDelete(acquisitionId) {
+            Swal.fire({
+                title: '¿Estás seguro?',
+                text: "¡No podrás revertir esto!",
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#EF4444', 
+                cancelButtonColor: '#6c757d',
+                confirmButtonText: 'Sí, eliminar adquisicion',
+                cancelButtonText: 'Cancelar'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    // Hacer la petición AJAX para eliminar
+                    fetch(`/AcquisitionTypes/Delete/${acquisitionId}`, {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'RequestVerificationToken': document.querySelector('input[name="__RequestVerificationToken"]').value
+                        }
+                    })
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.success) {
+                            Swal.fire(
+                                '¡Adquisicion Eliminada!',
+                                data.message,
+                                'success'
+                            ).then(() => {
+                                // Recargar la página para reflejar los cambios
+                                location.reload();
+                            });
+                        } else {
+                            Swal.fire(
+                                'Error',
+                                data.message,
+                                'error'
+                            );
+                        }
+                    })
+                    .catch(error => {
+                        Swal.fire(
+                            'Error',
+                            'Ocurrió un error al intentar eliminar la Adquisicion.',
+                            'error'
+                        );
+                    });
+                }
+            });
+        }
+    </script>
+}
+
+

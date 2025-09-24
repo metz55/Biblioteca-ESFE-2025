@@ -54,12 +54,25 @@ namespace Library.Client.MVC.Controllers
             var result = await blPostsCategories.UpdatePostCategeoryAsync(posts);
             return RedirectToAction(nameof(Index));
         }
+
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Delete(long id)
         {
-            var result = await blPostsCategories.DeletePostCategoryAsync(new PostsCategories(){Id = id});
-            return RedirectToAction(nameof(Index));
+            try
+            {
+                var result = await blPostsCategories.DeletePostCategoryAsync(new PostsCategories() { Id = id });
+                if (result == 1) 
+                {
+                    return Json(new { success = true, message = "Categoría eliminada correctamente." });
+                }
+                return Json(new { success = false, message = "No se pudo eliminar la categoría." });
+            }
+            catch (Exception ex)
+            {
+                return Json(new { success = false, message = ex.Message });
+            }
         }
+
     }
 }

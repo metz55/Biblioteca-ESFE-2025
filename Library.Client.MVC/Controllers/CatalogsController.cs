@@ -90,27 +90,26 @@ namespace Library.Client.MVC.Controllers
         }
 
         // GET: CategoriesController/Delete/5
-        public async Task<IActionResult> Delete(int id)
-        {
-            var catalogs = await catalogsBL.GetCatalogsByIdAsync(new Catalogs { CATALOG_ID = id });
-            ViewBag.ShowMenu = true;
-            return View(catalogs);
-        }
+        //public async Task<IActionResult> Delete(int id)
+        //{
+        //    var catalogs = await catalogsBL.GetCatalogsByIdAsync(new Catalogs { CATALOG_ID = id });
+        //    ViewBag.ShowMenu = true;
+        //    return View(catalogs);
+        //}
 
         // POST: CategoriesController/Delete/5
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Delete(int id, Catalogs pCatalogs)
+        public async Task<IActionResult> Delete(int id)
         {
             try
             {
                 int result = await catalogsBL.DeleteCatalogsAsync(new Catalogs { CATALOG_ID = id });
-                return RedirectToAction(nameof(Index));
+                return Ok(new { success = true, message = "Catálogo eliminado correctamente." });
             }
             catch (Exception ex)
             {
-                ViewBag.Error = ex.Message;
-                return View(pCatalogs);
+                return BadRequest(new { success = false, message = ex.Message });
             }
         }
     }
