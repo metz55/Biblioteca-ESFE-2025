@@ -1,0 +1,125 @@
+﻿.card {
+    width: 100%;
+    border-radius: 10px;
+    height: 100%;
+    /* Permite que las tarjetas tengan la misma altura */
+
+    align-items: center;
+    justify-content: center;
+}
+
+.card-img-top {
+    margin: 25px 0px 10px 0px;
+    max-height: 200px;
+    max-width: 200px;
+    border-radius: 10px;
+}
+
+.card-title {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.zoom-image {
+    width: 200px;
+    height: 200px;
+    transition: transform 0.3s ease;
+}
+
+    .zoom-image:hover {
+        transform: scale(1.2);
+    }
+
+.btn-clo:hover {
+    background-color: #154360;
+    color: white;
+}
+.btn-su {
+    background-color:#17A589;
+    color:white;
+}
+.btn-pri {
+    background-color:#154360;
+    color:white;
+}
+
+
+.modal-content {
+    border-radius: 20px; /* Agrega el valor de border-radius deseado */
+}
+
+/* Estilos para el botón de cierre del modal */
+/* Estilos para el ícono de cierre */
+.cer {
+    font-size: 1.5rem;
+    position: absolute;
+    top: 15px;
+    right: 15px;
+    background: transparent;
+    border: none !important; /* Agrega !important para asegurarte de que se aplique este estilo */
+    cursor: pointer;
+    color: #000;
+    outline: none;
+}
+
+
+    /* Estilos para el ícono de cierre */
+    .cer span {
+        font-size: 2rem; /* Ajusta el tamaño del ícono según tus preferencias */
+       
+        
+    }
+
+.cerrar-modal {
+    width: 25px; /* Ajusta el ancho de la imagen */
+    height: 25px; /* Ajusta la altura de la imagen */
+    cursor: pointer;
+}
+
+/* Personaliza el estilo de la lista ordenada para utilizar puntos en lugar de números */
+.list-group-dot {
+    list-style-type: none; /* Elimina los números */
+}
+
+    /* Estilo para los elementos de la lista con puntos */
+    .list-group-dot li::before {
+        content: '\2022'; /* Utiliza un punto como marcador (Unicode) */
+        margin-right: 5px; /* Espacio entre el punto y el texto */
+    }
+
+/* Cambiar el color de fondo del navbar */
+.navbar-custom {
+    background-color: #3498db; /* Cambia el color de fondo a azul */
+}
+
+    /* Cambiar el color del texto en el navbar */
+    .navbar-custom .navbar-nav .nav-link {
+        color: #ffffff; /* Cambia el color del texto a blanco */
+    }
+
+        /* Cambiar el color del enlace cuando está activo o al pasar el cursor sobre él */
+        .navbar-custom .navbar-nav .nav-link:hover,
+        .navbar-custom .navbar-nav .nav-item.active .nav-link {
+            color: #ffcc00; /* Cambia el color del texto a amarillo al pasar el cursor o cuando está activo */
+        }
+
+    /* Cambiar el color del botón del navbar-toggler (el botón de menú en dispositivos móviles) */
+    .navbar-custom .navbar-toggler-icon {
+        background-color: #ffffff; /* Cambia el color del botón del menú a blanco */
+    }
+
+
+
+/* Agregar una línea horizontal (borde inferior) debajo del navbar */
+.navbar::after {
+    content: "";
+    display: block;
+    height: 2px; /* Grosor de la línea */
+    background-color: #3498db; /* Cambia el color de la línea según tus preferencias */
+    width: 100%; /* Ancho de la línea (100% del ancho del navbar) */
+    position: absolute;
+    bottom: 0; /* Posicionar la línea en la parte inferior del navbar */
+    left: 0;
+}
+
