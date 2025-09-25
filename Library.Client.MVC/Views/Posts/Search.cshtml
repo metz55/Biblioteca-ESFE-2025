@@ -1,98 +1,113 @@
 @using Library.DataAccess.Domain
 @using Newtonsoft.Json
-@model IEnumerable<Library.DataAccess.Domain.Posts>;
+@model IEnumerable<Library.DataAccess.Domain.Posts>
+
 @{
     ViewData["Title"] = "Buscar";
-    var groupedPostsCount = 0;
+    Layout = "~/Views/Shared/_LayoutUsers.cshtml";
+    ViewBag.ShowNavbar = false;
     var defaultImage = "/img/esfelogo-expanded.png";
     var postImage = "";
 }
-<head>
-    <link href="https://fonts.googleapis.com/css?family=Inria+Sans&display=swap" rel="stylesheet" />
-    <link rel="stylesheet" href="~/css/PostsFeed.css" asp-append-version="true" />
-</head>
+<!-- Header Start -->
+<div class="jumbotron jumbotron-fluid page-header position-relative overlay-bottom" style="margin-bottom: 90px;">
+    <div class="container text-center py-5">
+        <h1 class="text-white display-1">Blog</h1>
+        <div class="mx-auto mb-5" style="width: 100%; max-width: 600px;">
+            <!-- Buscador estilo barra unificada -->
+            <div class="card mb-5 shadow-sm">
+                <div class="card-body">
+                    <form asp-action="Search" method="get">
+                        <div class="input-group input-group-lg">
 
-<body>
-    <div class="card">
-        <div class="card-body">
-    <div style="text-align: center; padding: 8px;">
-        @*Buscador*@
-        <div>
-            <form asp-action="Search" method="get" class="d-flex flex-column flex-md-row align-items-center justify-content-center p-4">
-                <!-- Input de búsqueda -->
-                <div class="m-2 w-100">
-                    <input type="text" name="Query" class="form-control" id="Query" placeholder="Buscar..." />
-                </div>
+                            <!-- Input de búsqueda -->
+                            <input type="text" name="Query" id="Query"
+                                   class="form-control" placeholder="Buscar..." />
 
-                <!-- Contenedor para los otros elementos -->
-                <div class="d-flex flex-column flex-md-row w-100 justify-content-between">
-                    <!-- Input de categoría -->
-                    <div class="mb-2 mb-md-0 w-100 me-md-2">
-                        <select class="form-select" id="CategoryId" name="CategoryId">
-                            <option value="0">Categoría</option>
-                            @foreach (PostsCategories item in ViewBag.Categories)
-                            {
-                                <option value="@item.Id">@item.Name</option>
-                            }
-                        </select>
-                    </div>
+                            <!-- Categoría -->
+                            <select class="form-select" id="CategoryId" name="CategoryId">
+                                <option value="0">Categoría</option>
+                                @foreach (PostsCategories item in ViewBag.Categories)
+                                {
+                                    <option value="@item.Id">@item.Name</option>
+                                }
+                            </select>
 
-                    <!-- Input de fecha -->
-                    <div class="mb-2 mb-md-0 w-100 me-md-2">
-                        <input type="date" class="form-control" id="Date" name="Date" />
-                    </div>
+                            <!-- Fecha -->
+                            <input type="date" class="form-control" id="Date" name="Date" />
 
-                    <!-- Botón de búsqueda -->
-                    <div class="w-100">
-                        <button type="submit" class="btn btn-primary w-100">
-                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-search" viewBox="0 0 16 16">
-                                <path d="M11.742 10.344a6.5 6.5 0 1 0-1.397 1.398h-.001q.044.06.098.115l3.85 3.85a1 1 0 0 0 1.415-1.414l-3.85-3.85a1 1 0 0 0-.115-.1zM12 6.5a5.5 5.5 0 1 1-11 0 5.5 5.5 0 0 1 11 0" />
-                            </svg>
-                            Buscar
-                        </button>
-                    </div>
-                </div>
-            </form>
-
-            @if(Model.Count() > 0)
-            {
-                <h2 class="" style="font-weight: bold;">@Model.Count() Resultados</h2>  
-            }
-            <div class="p-2 m-2">
-                <div class="">
-                    <div class="row lastposts justify-content-center">
-                        @foreach (var post in Model)
-                        {
-                            {
-                                postImage = post.IMAGES.Take(1).FirstOrDefault()?.PATH ?? defaultImage ;
-                            }
-                            
-                                <div class="postcard-2 col-md-2">
-                                    <a href="/Posts/Details/@post.ID" style="text-decoration: none;">
-                                        <img class="postimage-2" src="@postImage" />
-                                        <p class="postcategoryname-2">@post.CATEGORY.Name</p>
-                                        <p class="posttitle-2">@post.TITLE</p>
-                                        <p class="postcontent-2">@post.CONTENT</p>
-                                    </a>
-                                </div>
-                        }
-                    </div>
+                            <!-- Botón -->
+                            <button type="submit" class="btn btn-primary">
+                                <i class="bi bi-search"></i> Buscar
+                            </button>
+                        </div>
+                    </form>
                 </div>
             </div>
-            
+
         </div>
-        @if(Model.Count() == 0)
+    </div>
+</div>
+<!-- Header End -->
+<div class="container-fluid py-1">
+    <div class="container py-1">
+
+
+
+        <!-- Resultados -->
+        @if (Model.Any())
         {
-            <h2 class="mt-3" style="font-weight: bold;">No hay ninguna coincidencia</h2>
+            <div class="section-title text-center position-relative mb-5">
+                <h6 class="d-inline-block position-relative text-secondary text-uppercase pb-2">Resultados</h6>
+                <h1 class="display-5">@Model.Count() publicaciones encontradas</h1>
+            </div>
+
+            <div class="owl-carousel team-carousel position-relative" style="padding: 0 30px;">
+                @foreach (var post in Model)
+                {
+                    postImage = post.IMAGES.Take(1).FirstOrDefault()?.PATH ?? defaultImage;
+
+                    <div class="team-item">
+                        <a href="/Posts/Details/@post.ID" style="text-decoration: none;">
+                            <img class="img-fluid w-100" src="@postImage" alt="@post.TITLE" />
+                            <div class="bg-light text-center p-4">
+                                <h5 class="mb-3">@post.TITLE</h5>
+                                <p class="mb-2">@post.CATEGORY?.Name</p>
+                                <p class="text-truncate">@post.CONTENT</p>
+                            </div>
+                        </a>
+                    </div>
+                }
+            </div>
+        }
+        else
+        {
+            <h2 class="text-center mt-3 fw-bold">No hay ninguna coincidencia</h2>
         }
     </div>
-    </div>
-    </div>
-</body>
+</div>
 
-@section Scripts {
-    <script>
-        document.querySelector('.main-content').classList.remove('with-menu');
-        document.querySelector('.main-content').classList.add('full-width');
-    </script>
-}
+<!-- Owl Carousel JS -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/OwlCarousel2/2.3.4/owl.carousel.min.js"></script>
+<script>
+    $(document).ready(function () {
+        $(".team-carousel").owlCarousel({
+            autoplay: true,
+            smartSpeed: 1000,
+            margin: 30,
+            dots: false,
+            loop: true,
+            nav: true,
+            responsive: {
+                0: { items: 1 },
+                576: { items: 2 },
+                768: { items: 3 },
+                992: { items: 4 }
+            }
+        });
+    });
+
+    document.querySelector('.main-content').classList.remove('with-menu');
+    document.querySelector('.main-content').classList.add('full-width');
+</script>

@@ -1,24 +1,27 @@
 ﻿@model Library.DataAccess.Domain.Categories
-
 @{
     ViewData["Title"] = "Eliminar Categoría";
 }
-
+<link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet">
 <style>
-    body {
-        overflow-x: hidden;
-        background-color: #f8f9fa;
+    #contenedor-principal {
+        border-radius: 0.5rem;
+    }
+    @@media (max-width: 768px) {
+        .margenEdit
+
+    {
+        padding: 0 10px;
     }
 
-    .delete-card {
-        background: white;
-        border-radius: 15px;
-        box-shadow: 0 0 10px rgba(0,0,0,0.1);
-        padding: 30px;
-        margin-top: 40px;
-        max-width: 600px;
-        margin-left: auto;
-        margin-right: auto;
+    .btn-group-responsive .btn {
+        margin-bottom: 10px;
+    }
+
+    }
+
+    .form-label {
+        font-weight: 500;
     }
 
     dt {
@@ -28,37 +31,38 @@
     dd {
         margin-bottom: 10px;
     }
-
-    .btn-group-custom {
-        display: flex;
-        justify-content: center;
-        gap: 15px;
-        margin-top: 30px;
-    }
 </style>
 
-<div class="container">
-    <div class="delete-card">
-        <h3 class="text-center text-danger">🗑️ Eliminar Categoría</h3>
-        <p class="text-center fs-5 mb-4">¿Está seguro que desea eliminar el siguiente registro?</p>
-
-        <dl class="row">
-            <dt class="col-sm-4">@Html.DisplayNameFor(model => model.CATEGORY_ID)</dt>
-            <dd class="col-sm-8">@Html.DisplayFor(model => model.CATEGORY_ID)</dd>
-
-            <dt class="col-sm-4">@Html.DisplayNameFor(model => model.CATEGORY_NAME)</dt>
-            <dd class="col-sm-8">@Html.DisplayFor(model => model.CATEGORY_NAME)</dd>
-        </dl>
-
-        <form asp-action="Delete" class="btn-group-custom">
-            <input type="hidden" asp-for="CATEGORY_ID" />
-            <button type="submit" class="btn btn-danger d-flex align-items-center">
-                <i class="bi bi-trash3 me-2"></i> Eliminar
-            </button>
-            <a asp-action="Index" class="btn btn-secondary d-flex align-items-center">
-                <i class="bi bi-reply-fill me-2"></i> Cancelar
-            </a>
-        </form>
+<div class="card" id="contenedor-principal">
+    <div class="card-body">
+        <div class="container-fluid">
+            <h1 class="card-title text-center" style="font-family: 'Poppins', sans-serif; font-weight: 600; color: #dc3545;">
+                <i class="bi bi-trash3"></i> Eliminar Categoría
+            </h1>
+            <hr />
+            <div class="row justify-content-center">
+                <div class="col-12 col-md-8 col-lg-6 margenEdit">
+                    <p class="text-center fs-5 mb-4">¿Está seguro que desea eliminar el siguiente registro?</p>
+                    <dl class="row">
+                        <dt class="col-sm-4">@Html.DisplayNameFor(model => model.CATEGORY_ID)</dt>
+                        <dd class="col-sm-8">@Html.DisplayFor(model => model.CATEGORY_ID)</dd>
+                        <dt class="col-sm-4">@Html.DisplayNameFor(model => model.CATEGORY_NAME)</dt>
+                        <dd class="col-sm-8">@Html.DisplayFor(model => model.CATEGORY_NAME)</dd>
+                    </dl>
+                    <form asp-action="Delete">
+                        <input type="hidden" asp-for="CATEGORY_ID" />
+                        <div class="d-flex justify-content-center mt-4 btn-group-responsive">
+                            <button type="submit" class="btn btn-danger me-2">
+                                <i class="bi bi-trash3"></i> Eliminar
+                            </button>
+                            <a asp-action="Index" class="btn btn-secondary">
+                                <i class="bi bi-reply-fill"></i> Cancelar
+                            </a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
     </div>
 </div>
 
