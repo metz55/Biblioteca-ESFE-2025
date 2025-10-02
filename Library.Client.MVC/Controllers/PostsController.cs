@@ -63,6 +63,8 @@ namespace Library.Client.MVC.Controllers
             }
             return View(posts);
         }
+
+        [Authorize(Policy = "AdminOnly")]
         public async Task<IActionResult> Manage(string search = "")
         {
             var posts = new List<Posts>();
@@ -110,6 +112,7 @@ namespace Library.Client.MVC.Controllers
             return View(posts);
         }
 
+        [Authorize(Policy = "AdminOnly")]
         public async Task<IActionResult> Create()
         {
             ViewBag.BlogNavbar = true;
@@ -123,6 +126,7 @@ namespace Library.Client.MVC.Controllers
             return View();
         }
 
+        [Authorize(Policy = "AdminOnly")]
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Save(Posts posts)
@@ -130,34 +134,34 @@ namespace Library.Client.MVC.Controllers
             var error = false;
             if (string.IsNullOrEmpty(posts.TITLE))
             {
-               error = true;
-               TempData["titleError"] = "El Titulo es requerido";
+                error = true;
+                TempData["titleError"] = "El Titulo es requerido";
             }
             if (posts.TITLE.Length > 250)
             {
-               error = true;
-               TempData["titleError"] = "Caracteres maximos 250";
+                error = true;
+                TempData["titleError"] = "Caracteres maximos 250";
             }
             if (string.IsNullOrEmpty(posts.CONTENT))
             {
-               error = true;
-               TempData["contentError"] = "El Contenido es requerido";
+                error = true;
+                TempData["contentError"] = "El Contenido es requerido";
             }
             if (posts.CONTENT.Length > 3000)
             {
-               error = true;
-               TempData["contentError"] = "Caracteres maximos 3000";
+                error = true;
+                TempData["contentError"] = "Caracteres maximos 3000";
             }
             if (posts.CATEGORYID == 0)
             {
-               error = true;
-               TempData["categoryError"] = "La categoria es obligatoria";
+                error = true;
+                TempData["categoryError"] = "La categoria es obligatoria";
             }
             TempData["error"] = error;
-            if(error){return RedirectToAction(nameof(Create));}
-            var result = await blPosts.CreatePostAsync(posts);
+            if (error) { return RedirectToAction(nameof(Create)); }
 
-            if(result == 0)
+            var result = await blPosts.CreatePostAsync(posts);
+            if (result == 0)
             {
                 TempData["error"] = true;
                 TempData["messageError"] = "No se pudo crear el post. Revisa que los datos esten correctos";
@@ -173,73 +177,62 @@ namespace Library.Client.MVC.Controllers
                         {
                             var fileExtension = Path.GetExtension(file.FileName).ToLower();
                             var uploadDir = "";
-
                             if (fileExtension == ".jpg" || fileExtension == ".jpeg" || fileExtension == ".png")
                             {
                                 // Procesar imágenes
                                 uploadDir = Path.Combine("wwwroot", "images", "blog");
-
                                 if (!Directory.Exists(uploadDir))
                                 {
                                     Directory.CreateDirectory(uploadDir);
                                 }
-
                                 var uniqueFileName = $"{posts.ID}_{Guid.NewGuid()}.jpg";
                                 var filePath = Path.Combine(uploadDir, uniqueFileName);
-
                                 using (var stream = new FileStream(filePath, FileMode.Create))
                                 {
                                     await file.CopyToAsync(stream);
                                 }
-
                                 var imagePath = $"/images/blog/{uniqueFileName}";
-
                                 // Guardar la ruta en la base de datos
                                 var postsImages = new PostsImages
                                 {
                                     PATH = imagePath,
                                     POSTID = posts.ID
                                 };
-
                                 await blPostsImages.CreatePostImageAsync(postsImages);
                             }
                             else
                             {
                                 // Procesar documentos
                                 uploadDir = Path.Combine("wwwroot", "documents", "blog");
-
                                 if (!Directory.Exists(uploadDir))
                                 {
                                     Directory.CreateDirectory(uploadDir);
                                 }
-
                                 var uniqueFileName = $"{posts.ID}_{Guid.NewGuid()}{fileExtension}";
                                 var filePath = Path.Combine(uploadDir, uniqueFileName);
-
                                 using (var stream = new FileStream(filePath, FileMode.Create))
                                 {
                                     await file.CopyToAsync(stream);
                                 }
-
                                 var docPath = $"/documents/blog/{uniqueFileName}";
-
                                 var postsDocs = new PostsDocs
                                 {
                                     Path = docPath,
                                     PostId = posts.ID
                                 };
-
                                 await blPostDocs.CreatePostDocAsync(postsDocs);
-
                             }
                         }
                     }
                 }
+                // Agregar mensaje de éxito
+                TempData["success"] = true;
+                TempData["messageSuccess"] = "El post se creo correctamente.";
             }
-                
             return RedirectToAction(nameof(Manage));
         }
 
+        [Authorize(Policy = "AdminOnly")]
         public async Task<IActionResult> Edit(long id = 0)
         {
             if(id == 0)
@@ -257,6 +250,7 @@ namespace Library.Client.MVC.Controllers
             return View(post);
         }
 
+        [Authorize(Policy = "AdminOnly")]
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Update(Posts posts)
@@ -418,7 +412,8 @@ namespace Library.Client.MVC.Controllers
             var result = await blPosts.UpdatePostAsync(posts);
             return RedirectToAction(nameof(Manage));
         }
-        
+
+        [Authorize(Policy = "AdminOnly")]
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Pin(long postId)
@@ -436,6 +431,7 @@ namespace Library.Client.MVC.Controllers
             return RedirectToAction(nameof(Manage));
         }
 
+        [Authorize(Policy = "AdminOnly")]
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Unpin(long postId)
@@ -453,7 +449,7 @@ namespace Library.Client.MVC.Controllers
             return RedirectToAction(nameof(Manage));
         }
 
-        
+        [Authorize(Policy = "AdminOnly")]
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Delete(long id)

@@ -86,28 +86,29 @@ namespace Library.Client.MVC.Controllers
         }
 
         // GET: AcquisitionTypesController/Delete/5
-        public async Task<IActionResult> Delete(int id)
-        {
-            var reservationStatus = await reservationStatusBL.GetReservationStatusByIdAsync(new ReservationStatus { RESERVATION_ID = id });
-            ViewBag.ShowMenu = true;
-            return View(reservationStatus);
-        }
+        //public async Task<IActionResult> Delete(int id)
+        //{
+        //    var reservationStatus = await reservationStatusBL.GetReservationStatusByIdAsync(new ReservationStatus { RESERVATION_ID = id });
+        //    ViewBag.ShowMenu = true;
+        //    return View(reservationStatus);
+        //}
 
         // POST: CategoriesController/Delete/5
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Delete(int id, ReservationStatus pReservationStatus)
+        public async Task<IActionResult> Delete(int id)
         {
             try
             {
-                int result = await reservationStatusBL.DeleteReservationStatusAsync(new ReservationStatus { RESERVATION_ID = id });
-                return RedirectToAction(nameof(Index));
+                var status = await reservationStatusBL.GetReservationStatusByIdAsync(new ReservationStatus { RESERVATION_ID = id });
+                int result = await reservationStatusBL.DeleteReservationStatusAsync(status);
+                return Json(new { success = true, message = "Estado de reservación eliminado correctamente." });
             }
             catch (Exception ex)
             {
-                ViewBag.Error = ex.Message;
-                return View(pReservationStatus);
+                return Json(new { success = false, message = ex.Message });
             }
         }
+
     }
 }

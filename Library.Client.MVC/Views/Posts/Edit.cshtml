@@ -1,184 +1,96 @@
 @using Library.DataAccess.Domain
 @model Library.DataAccess.Domain.Posts
-
 @{
     ViewData["TITLE"] = "Editar Publicación";
     List<PostsCategories> categories = ViewBag.categories as List<PostsCategories>;
 }
-
-<style>
-    body {
-        overflow-x: hidden;
-        background-color: #f8f9fa;
-    }
-
-    #contenedor-principal {
-        border-radius: 1rem;
-        box-shadow: 0 0 20px rgba(0,0,0,0.1);
-        padding: 30px;
-    }
-
-    .markdown-editor {
-        min-height: 200px;
-    }
-
-    .preview-container {
-        display: flex;
-        flex-wrap: wrap;
-        gap: 10px;
-        margin-top: 10px;
-    }
-
-    .preview-image {
-        width: 100px;
-        height: 100px;
-        object-fit: cover;
-        border: 1px solid #ccc;
-        border-radius: 5px;
-    }
-
-    .doc-preview {
-        display: flex;
-        flex-direction: column;
-        padding: 10px;
-        border: 1px solid #dee2e6;
-        border-radius: 5px;
-        background-color: #fff;
-        margin-bottom: 10px;
-    }
-
-        .doc-preview i {
-            font-size: 24px;
-            margin-bottom: 5px;
-        }
-
-        .doc-preview span {
-            font-weight: bold;
-            margin-bottom: 5px;
-        }
-
-    .form-label {
-        font-weight: 600;
-    }
-
-    @@media (max-width: 768px) {
-        .form-buttons
-
-    {
-        flex-direction: column !important;
-        align-items: stretch;
-    }
-
-    .form-buttons .btn {
-        width: 100% !important;
-        margin-bottom: 10px;
-    }
-
-        .form-buttons .btn:last-child {
-            margin-bottom: 0;
-        }
-
-    }</style>
-
-<div class="card" id="contenedor-principal">
-    <div class="card-body">
-        <h1 class="text-center mb-4" style="font-family: 'Poppins', sans-serif; font-weight: 600;">Editar Publicación</h1>
-        <hr />
-        <div class="container">
-            <form asp-action="Update" method="post" enctype="multipart/form-data">
-                <div asp-validation-summary="ModelOnly" class="text-danger"></div>
-                <input asp-for="ID" class="form-control" hidden value="@Model.ID" />
-
-                @if (ViewBag.error)
-                {
-                    <div class="alert alert-danger text-center">
-                        Hubo un problema al actualizar la Publicación
-                    </div>
-                }
-
-                <div class="row mb-4">
-                    <div class="col-md-8">
-                        <label asp-for="TITLE" class="form-label">Título</label>
-                        <input asp-for="TITLE" class="form-control" value="@Model.TITLE" />
-                        <span asp-validation-for="TITLE" class="text-danger">@ViewBag.titleError</span>
-                    </div>
-                    <div class="col-md-4">
-                        <label asp-for="CATEGORYID" class="form-label">Categoría</label>
-                        <select asp-for="CATEGORYID" class="form-control">
-                            <option value="@Model.CATEGORYID">Seleccionar</option>
-                            @if (categories != null)
-                            {
-                                @foreach (var item in categories)
+<link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet">
+<div class="row">
+    <div class="col-md-12 grid-margin stretch-card">
+        <div class="card">
+            <div class="card-body">
+                <h4 class="card-title text-center" style="font-family: 'Poppins', sans-serif; font-weight: 600;">Editar Publicación</h4>
+                <form asp-action="Update" method="post" enctype="multipart/form-data">
+                    <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+                    <input asp-for="ID" class="form-control" hidden value="@Model.ID" />
+                    @if (ViewBag.error)
+                    {
+                        <div class="alert alert-danger text-center">
+                            Hubo un problema al actualizar la Publicación
+                        </div>
+                    }
+                    <div class="row">
+                        <div class="mb-3 col-md-8">
+                            <label asp-for="TITLE" class="form-label">Título</label>
+                            <input asp-for="TITLE" class="form-control" value="@Model.TITLE" />
+                            <span asp-validation-for="TITLE" class="text-danger">@ViewBag.titleError</span>
+                        </div>
+                        <div class="mb-3 col-md-4">
+                            <label asp-for="CATEGORYID" class="form-label">Categoría</label>
+                            <select asp-for="CATEGORYID" class="form-select">
+                                <option value="0">Seleccionar</option>
+                                @if (categories != null)
                                 {
-                                    <option value="@item.Id">@item.Name</option>
+                                    @foreach (var item in categories)
+                                    {
+                                        <option value="@item.Id">@item.Name</option>
+                                    }
+                                }
+                            </select>
+                            <span asp-validation-for="CATEGORYID" class="text-danger">@ViewBag.categoryError</span>
+                        </div>
+                    </div>
+                    <div class="mb-3">
+                        <label asp-for="CONTENT" class="form-label">Contenido</label>
+                        <textarea asp-for="CONTENT" class="form-control markdown-editor" id="markdownEditor" rows="6">@Model.CONTENT</textarea>
+                        <span asp-validation-for="CONTENT" class="text-danger">@ViewBag.contentError</span>
+                    </div>
+                    <div class="mb-3">
+                        <label asp-for="IMAGES_PATH" class="form-label">Imágenes</label>
+                        <input name="IMAGES_PATH" type="file" class="form-control" multiple id="imageInput" accept="image/*" />
+                        <span asp-validation-for="IMAGES_PATH" class="text-danger"></span>
+                        <div class="preview-container d-flex flex-wrap gap-2 mt-2" id="previewContainer">
+                            @if (Model.IMAGES != null && Model.IMAGES.Any())
+                            {
+                                foreach (var image in Model.IMAGES)
+                                {
+                                    <img src="@image.PATH" alt="Imagen" style="width: 100px; height: 100px; object-fit: cover; border: 1px solid #ccc; border-radius: 5px;" />
                                 }
                             }
-                        </select>
-                        <span asp-validation-for="CATEGORYID" class="text-danger">@ViewBag.categoryError</span>
+                        </div>
                     </div>
-                </div>
-
-                <div class="mb-4">
-                    <label asp-for="CONTENT" class="form-label">Contenido</label>
-                    <textarea asp-for="CONTENT" class="form-control markdown-editor" id="markdownEditor">@Model.CONTENT</textarea>
-                    <span asp-validation-for="CONTENT" class="text-danger">@ViewBag.contentError</span>
-                </div>
-
-                <div class="mb-4">
-                    <label asp-for="IMAGES_PATH" class="form-label">Imágenes</label>
-                    <input name="IMAGES_PATH" type="file" class="form-control" multiple id="imageInput" />
-                    <span asp-validation-for="IMAGES_PATH" class="text-danger"></span>
-                    <div class="preview-container" id="previewContainer">
-                        @if (Model.IMAGES != null && Model.IMAGES.Any())
-                        {
-                            foreach (var image in Model.IMAGES)
+                    <div class="mb-3">
+                        <label asp-for="DOCS_PATH" class="form-label">Documentos</label>
+                        <input name="DOCS_PATH" type="file" class="form-control" multiple id="docInput" accept=".pdf,.doc,.docx,.txt,.xls,.xlsx,.ppt,.pptx" />
+                        <span asp-validation-for="DOCS_PATH" class="text-danger"></span>
+                        <div class="doc-preview-container d-flex flex-wrap gap-2 mt-2" id="docPreviewContainer">
+                            @if (Model.DOCS != null && Model.DOCS.Any())
                             {
-                                <img src="@image.PATH" alt="Imagen" class="preview-image" />
+                                foreach (var doc in Model.DOCS)
+                                {
+                                    <div style="display: flex; flex-direction: column; padding: 10px; border: 1px solid #dee2e6; border-radius: 5px; background-color: #fff; margin-bottom: 10px;">
+                                        <i class="bi @(doc.Path.EndsWith(".pdf") ? "bi-file-earmark-pdf" : "bi-file-earmark")"
+                                           style="font-size: 24px; margin-bottom: 5px; color: @(doc.Path.EndsWith(".pdf") ? "red" : "#007bff");"></i>
+                                        <span style="font-weight: bold; margin-bottom: 5px;">@doc.Path.Split('/').Last()</span>
+                                        <a href="@doc.Path" target="_blank" style="color: #0d6efd;">Ver Documento</a>
+                                    </div>
+                                }
                             }
-                        }
+                        </div>
                     </div>
-                </div>
-
-                <div class="mb-4">
-                    <label asp-for="DOCS_PATH" class="form-label">Documentos</label>
-                    <input name="DOCS_PATH" type="file" class="form-control" multiple id="docInput" />
-                    <span asp-validation-for="DOCS_PATH" class="text-danger"></span>
-                    <div class="doc-preview-container" id="docPreviewContainer">
-                        @if (Model.DOCS != null && Model.DOCS.Any())
-                        {
-                            foreach (var doc in Model.DOCS)
-                            {
-                                <div class="doc-preview">
-                                    <i class="fa @(doc.Path.EndsWith(".pdf") ? "fa-file-pdf" : "fa-file")" style="color: @(doc.Path.EndsWith(".pdf") ? "red" : "#007bff");"></i>
-                                    <span>@doc.Path.Split('/').Last()</span>
-                                    <a href="@doc.Path" target="_blank">Ver Documento</a>
-                                </div>
-                            }
-                        }
+                    <div class="d-flex justify-content-center mt-4">
+                        <button type="submit" class="btn btn-success me-2">
+                            <i class="bi bi-floppy"></i> Guardar
+                        </button>
+                        <a asp-action="Manage" class="btn btn-secondary">
+                            <i class="bi bi-reply-fill"></i> Regresar
+                        </a>
                     </div>
-                </div>
-
-                <div class="form-group d-flex justify-content-end mt-4 form-buttons">
-                    <button type="submit" class="btn btn-success">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-floppy" viewBox="0 0 16 16">
-                            <path d="M11 2H9v3h2z" />
-                            <path d="M1.5 0h11.586a1.5 1.5 0 0 1 1.06.44l1.415 1.414A1.5 1.5 0 0 1 16 2.914V14.5a1.5 1.5 0 0 1-1.5 1.5h-13A1.5 1.5 0 0 1 0 14.5v-13A1.5.5 0 0 1 1.5 0M1 1.5v13a.5.5 0 0 0 .5.5H2v-4.5A1.5 1.5 0 0 1 3.5 9h9a1.5 1.5 0 0 1 1.5 1.5V15h.5a.5.5 0 0 0 .5-.5V2.914a.5.5 0 0 0-.146-.353l-1.415-1.415A.5.5 0 0 0 13.086 1H13v4.5A1.5 1.5 0 0 1 11.5 7h-7A1.5 1.5 0 0 1 3 5.5V1H1.5a.5.5 0 0 0-.5.5m3 4a.5.5 0 0 0 .5.5h7a.5.5 0 0 0 .5-.5V1H4zM3 15h10v-4.5a.5.5 0 0 0-.5-.5h-9a.5.5 0 0 0-.5.5z" />
-                        </svg>
-                        Guardar
-                    </button>
-                    <div style="width: 10px;"></div>
-                    <a asp-action="Manage" class="btn btn-info">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-reply-fill" viewBox="0 0 16 16">
-                            <path d="M5.921 11.9 1.353 8.62a.72.72 0 0 1 0-1.238L5.921 4.1A.716.716 0 0 1 7 4.719V6c1.5 0 6 0 7 8-2.5-4.5-7-4-7-4v1.281c0 .56-.606.898-1.079.62z" />
-                        </svg>
-                        Regresar
-                    </a>
-                </div>
-            </form>
+                </form>
+            </div>
         </div>
     </div>
 </div>
-
 <script>
     document.addEventListener('DOMContentLoaded', function () {
         new EasyMDE({
@@ -192,56 +104,57 @@
                 "quote", "unordered-list", "ordered-list", "|",
                 "link", "code", "|",
                 "preview", "side-by-side", "fullscreen"
-            ]
+            ],
         });
-
         const imageInput = document.getElementById('imageInput');
         const previewContainer = document.getElementById('previewContainer');
-
         imageInput.addEventListener('change', function () {
-            previewContainer.innerHTML = '';
-            Array.from(imageInput.files).forEach(file => {
-                const reader = new FileReader();
-                reader.onload = function (e) {
-                    const img = document.createElement('img');
-                    img.src = e.target.result;
-                    img.classList.add('preview-image');
-                    previewContainer.appendChild(img);
-                };
-                reader.readAsDataURL(file);
-            });
+            const files = imageInput.files;
+            if (files) {
+                Array.from(files).forEach(file => {
+                    const reader = new FileReader();
+                    reader.onload = function (e) {
+                        const img = document.createElement('img');
+                        img.src = e.target.result;
+                        img.alt = file.name;
+                        img.style.width = '100px';
+                        img.style.height = '100px';
+                        img.style.objectFit = 'cover';
+                        img.style.border = '1px solid #ccc';
+                        img.style.borderRadius = '5px';
+                        previewContainer.appendChild(img);
+                    };
+                    reader.readAsDataURL(file);
+                });
+            }
         });
-
         const docInput = document.getElementById('docInput');
         const docPreviewContainer = document.getElementById('docPreviewContainer');
-
         docInput.addEventListener('change', function () {
-            docPreviewContainer.innerHTML = '';
             Array.from(docInput.files).forEach(file => {
-                const reader = new FileReader();
-                reader.onload = function (e) {
-                    const docPreview = document.createElement('div');
-                    docPreview.classList.add('doc-preview');
+                const docPreview = document.createElement('div');
+                docPreview.style.display = 'flex';
+                docPreview.style.flexDirection = 'column';
+                docPreview.style.padding = '10px';
+                docPreview.style.border = '1px solid #dee2e6';
+                docPreview.style.borderRadius = '5px';
+                docPreview.style.backgroundColor = '#fff';
+                docPreview.style.marginBottom = '10px';
 
-                    const fileIcon = document.createElement('i');
-                    fileIcon.classList.add('fa', file.type === "application/pdf" ? 'fa-file-pdf' : 'fa-file');
-                    fileIcon.style.color = file.type === "application/pdf" ? 'red' : '#007bff';
+                const fileIcon = document.createElement('i');
+                fileIcon.className = file.type === "application/pdf" ? 'bi bi-file-earmark-pdf' : 'bi bi-file-earmark';
+                fileIcon.style.fontSize = '24px';
+                fileIcon.style.marginBottom = '5px';
+                fileIcon.style.color = file.type === "application/pdf" ? 'red' : '#007bff';
 
-                    const fileName = document.createElement('span');
-                    fileName.textContent = file.name;
+                const fileName = document.createElement('span');
+                fileName.textContent = file.name;
+                fileName.style.fontWeight = 'bold';
+                fileName.style.marginBottom = '5px';
 
-                    const fileLink = document.createElement('a');
-                    fileLink.href = e.target.result;
-                    fileLink.textContent = 'Ver Documento';
-                    fileLink.target = '_blank';
-
-                    docPreview.appendChild(fileIcon);
-                    docPreview.appendChild(fileName);
-                    docPreview.appendChild(fileLink);
-
-                    docPreviewContainer.appendChild(docPreview);
-                };
-                reader.readAsDataURL(file);
+                docPreview.appendChild(fileIcon);
+                docPreview.appendChild(fileName);
+                docPreviewContainer.appendChild(docPreview);
             });
         });
     });

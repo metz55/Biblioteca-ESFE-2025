@@ -25,7 +25,7 @@ namespace Library.Client.MVC.Controllers
             _loanService = loanService;
         }
 
-        public async Task<IActionResult> Index(Loans pLoans = null, string studentCode = "", int page = 1, int pageSize = 5)
+        public async Task<IActionResult> Index(Loans pLoans = null, string studentCode = "", int page = 1, int pageSize = 10)
         {
             if (pLoans == null)
                 pLoans = new Loans();
@@ -108,7 +108,7 @@ namespace Library.Client.MVC.Controllers
             return View(loans);
         }
 
-        public async Task<IActionResult> LoansDelite(Books pBooks, Loans pLoans = null, string studentCode = "", int page = 1, int pageSize = 10)
+        public async Task<IActionResult> LoansDelite(Books pBooks, Loans pLoans = null, string studentCode = "", int page = 1, int pageSize = 20)
         {
             if (pLoans == null)
                 pLoans = new Loans();
@@ -496,7 +496,7 @@ namespace Library.Client.MVC.Controllers
             return Json(resultado);
         }
 
-        public async Task<IActionResult> AllLoans(Books pBooks, Loans pLoans = null, int page = 1, int pageSize = 15)
+        public async Task<IActionResult> AllLoans(Books pBooks, Loans pLoans = null, int page = 1, int pageSize = 20)
         {
             if (pLoans == null)
                 pLoans = new Loans();

@@ -39,33 +39,55 @@
 <!-- Header End -->
 @if (pinnedPosts != null && pinnedPosts.Count > 0)
 {
-    <!-- Publicaciones Importantes -->
     <div class="container-fluid py-1">
         <div class="container py-1">
             <div class="section-title text-center position-relative mb-5">
                 <h6 class="d-inline-block position-relative text-secondary text-uppercase pb-2">Destacadas</h6>
                 <h1 class="display-5">Publicaciones Importantes</h1>
             </div>
-            <div class="owl-carousel team-carousel position-relative" style="padding: 0 30px;">
-                @foreach (var post in pinnedPosts)
-                {
-                    postImage = post.IMAGES.Take(1).FirstOrDefault()?.PATH ?? defaultImage;
-                    <div class="team-item">
-                        <a href="/Posts/Details/@post.ID" style="text-decoration:none;">
-                            <img class="img-fluid w-100" src="@postImage" alt="@post.TITLE">
-                            <div class="bg-light text-center p-4">
-                                <h5 class="mb-3">@post.TITLE</h5>
-                                <p class="mb-2">@post.CATEGORY.Name</p>
-                                <p class="text-muted small">@Html.Raw(post.CONTENT.Length > 100 ? post.CONTENT.Substring(0, 100) + "..." : post.CONTENT)</p>
-                                <div class="d-flex justify-content-center">
-                                    <a class="mx-1 p-1" href="#"><i class="fas fa-share-alt"></i></a>
-                                    <a class="mx-1 p-1" href="#"><i class="fas fa-bookmark"></i></a>
+
+            @if (pinnedPosts.Count > 3)
+            {
+                <!-- Carrusel -->
+                <div class="owl-carousel team-carousel position-relative" style="padding: 0 30px;">
+                    @foreach (var post in pinnedPosts)
+                    {
+                        postImage = post.IMAGES.Take(1).FirstOrDefault()?.PATH ?? defaultImage;
+                        <div class="team-item">
+                            <a href="/Posts/Details/@post.ID" style="text-decoration:none;">
+                                <img class="img-fluid w-100" src="@postImage" alt="@post.TITLE">
+                                <div class="bg-light text-center p-4">
+                                    <h5 class="mb-3">@post.TITLE</h5>
+                                    <p class="mb-2">@post.CATEGORY.Name</p>
+                                    <p class="text-muted small">@Html.Raw(post.CONTENT.Length > 100 ? post.CONTENT.Substring(0, 100) + "..." : post.CONTENT)</p>
                                 </div>
-                            </div>
-                        </a>
-                    </div>
-                }
-            </div>
+                            </a>
+                        </div>
+                    }
+                </div>
+            }
+            else
+            {
+                <!-- Mostrar en tarjetas normales -->
+                <div class="row">
+                    @foreach (var post in pinnedPosts)
+                    {
+                        postImage = post.IMAGES.Take(1).FirstOrDefault()?.PATH ?? defaultImage;
+                        <div class="col-md-4 col-sm-6 mb-4">
+                            <a href="/Posts/Details/@post.ID" style="text-decoration:none;">
+                                <div class="card shadow-sm border-0 h-100">
+                                    <img class="card-img-top" src="@postImage" alt="@post.TITLE">
+                                    <div class="card-body text-center">
+                                        <h5 class="card-title">@post.TITLE</h5>
+                                        <p class="text-secondary">@post.CATEGORY.Name</p>
+                                        <p class="text-muted small">@Html.Raw(post.CONTENT.Length > 100 ? post.CONTENT.Substring(0, 100) + "..." : post.CONTENT)</p>
+                                    </div>
+                                </div>
+                            </a>
+                        </div>
+                    }
+                </div>
+            }
         </div>
     </div>
 }

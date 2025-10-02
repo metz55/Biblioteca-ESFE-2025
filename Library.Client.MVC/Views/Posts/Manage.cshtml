@@ -192,23 +192,26 @@
                                 <div class="card-footer d-flex flex-column gap-2">
                                     <small class="text-muted">Publicado: @item.CREATED_AT.ToString("dd/MM/yyyy")</small>
                                     <div class="d-flex flex-wrap gap-2">
-                                        <a href="@Url.Action("Edit", new { id = item.ID })" class="btn btn-sm btn-warning" style="background: #1D4ED8">Editar</a>
-                                        <form asp-action="Delete" method="post" onsubmit="return confirm('¿Eliminar este post?');">
+                                        <a href="@Url.Action("Edit", new { id = item.ID })" class="btn btn-info" style="background: #1D4ED8">Editar</a>
+                                        <form asp-action="Delete" method="post" id="deleteForm_@item.ID">
                                             <input type="hidden" name="id" value="@item.ID" />
-                                            <button type="submit" class="btn btn-sm btn-danger" style="background-color: #EF4444">Eliminar</button>
+                                            <button type="button" class="btn btn-danger" style="background-color: #EF4444"
+                                                    onclick="confirmDelete('@item.ID', '@item.TITLE')">
+                                                Eliminar
+                                            </button>
                                         </form>
                                         @if (item.IS_PINNED)
                                         {
                                             <form asp-action="Unpin" method="post">
                                                 <input type="hidden" name="postId" value="@item.ID" />
-                                                <button type="submit" class="btn btn-sm btn-danger" style="background-color: #64748B">Desfijar</button>
+                                                <button type="submit" class="btn btn-secondary" style="background-color: #64748B">Desfijar</button>
                                             </form>
                                         }
                                         else
                                         {
                                             <form asp-action="Pin" method="post">
                                                 <input type="hidden" name="postId" value="@item.ID" />
-                                                <button type="submit" class="btn btn-sm btn-primary" style="background-color: #64748B">Fijar</button>
+                                                <button type="submit" class="btn btn-secondary" style="background-color: #64748B">Fijar</button>
                                             </form>
                                         }
                                     </div>
@@ -225,22 +228,43 @@
         </div>
     </div>
 </div>
+@section Scripts {
 
-<script>
-    document.addEventListener("DOMContentLoaded", function () {
-        var message = '@ViewBag.message';
-        var success = '@ViewBag.success';
-
-        if (message && success === 'False') {
-            var toastError = new bootstrap.Toast(document.getElementById('toastError'));
-            document.getElementById('toastError').style.display = 'block';
-            toastError.show();
+    <script>
+        function confirmDelete(postId, postTitle) {
+            Swal.fire({
+                title: '¿Estás seguro?',
+                text: `¡No podrás revertir la eliminación de "${postTitle}"!`,
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#EF4444',
+                cancelButtonColor: '#6c757d',
+                confirmButtonText: 'Sí, eliminar',
+                cancelButtonText: 'Cancelar'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    document.getElementById(`deleteForm_${postId}`).submit();
+                }
+            });
         }
+    </script>
 
-        if (message && success === 'True') {
-            var toastSuccess = new bootstrap.Toast(document.getElementById('toastSuccess'));
-            document.getElementById('toastSuccess').style.display = 'block';
-            toastSuccess.show();
-        }
-    });
-</script>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            @if (TempData["success"] != null && (bool)TempData["success"])
+            {
+                    <text>
+                        Swal.fire({
+                            icon: 'success',
+                            title: '¡Éxito!',
+                            text: '@TempData["messageSuccess"]',
+                            confirmButtonText: 'Aceptar',
+                            confirmButtonColor: '#28a745'
+                        });
+                    </text>
+            }
+        });
+    </script>
+
+}
