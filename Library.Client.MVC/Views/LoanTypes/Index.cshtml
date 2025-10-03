@@ -9,6 +9,9 @@
     int topActual = Convert.ToInt32(ViewBag.Top);
 }
 
+<link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
 <style>
     #contenedor-principal {
         border-radius: 1rem;
@@ -25,58 +28,30 @@
 
         #btn-create:hover {
             transform: translateY(-3px);
-            box-shadow: 0 6px 15px rgba(0, 0, 0, 0.2);
+            box-shadow: 0 6px 15px rgba(0,0,0,0.2);
         }
 
-    #btn-details {
-        background-color: #b39ddb;
-        color: white;
+    .anchoAccionesLibro > div {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        flex-wrap: nowrap;
     }
 
-    @@media (max-width: 768px) {
-        .form-busqueda
-
-    {
-        flex-direction: column !important;
-        align-items: stretch !important;
-    }
-
-    .spacer {
-        margin-right: 0 !important;
-        margin-bottom: 10px !important;
-    }
-
-    #btn-create {
-        width: 100% !important;
-        margin-bottom: 15px;
-            background-color: #10B981;
-    }
-
-    table.table td,
-    table.table th {
-        font-size: 14px;
+    .anchoAccionesLibro .btn {
+        flex: 1 1 0;
         white-space: nowrap;
     }
-
-    .table-responsive {
-        overflow-x: auto;
-    }
-
-        .anchoAccionesLibro > div {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            flex-wrap: nowrap;
-        }
-
-        .anchoAccionesLibro .btn {
-            flex: 1 1 0;
-            white-space: nowrap;
-        }
-        @@media (max-width: 768px) {
-            .anchoAccionesLibro > div
+    @@media (max-width: 768px) {
+        #btn-create
 
     {
+        width: 100% !important;
+        margin-bottom: 15px;
+        background-color: #10B981;
+    }
+
+    .anchoAccionesLibro > div {
         flex-wrap: wrap;
         gap: 6px;
         flex-direction: column;
@@ -86,10 +61,16 @@
     .anchoAccionesLibro .btn {
         flex: none;
         width: 100% !important;
+        margin-bottom: 5px;
+    }
+
+    table.table td, table.table th {
+        font-size: 14px;
+        white-space: nowrap;
     }
 
     }
-    }</style>
+</style>
 
 <div class="card" id="contenedor-principal">
     <div class="card-body">
@@ -98,10 +79,6 @@
         <div class="row g-2 mb-3 align-items-center">
             <div class="col-12 col-md-auto">
                 <a asp-action="Create" class="btn btn-success w-100" id="btn-create">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-plus-square" viewBox="0 0 16 16">
-                        <path d="M14 1a1 1 0 0 1 1 1v12a1 1 0 0 1-1 1H2a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1zM2 0a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V2a2 2 0 0 0-2-2z" />
-                        <path d="M8 4a.5.5 0 0 1 .5.5v3h3a.5.5 0 0 1 0 1h-3v3a.5.5 0 0 1-1 0v-3h-3a.5.5 0 0 1 0-1h3v-3A.5.5 0 0 1 8 4" />
-                    </svg>
                     <i class="bi bi-plus-square"></i> Crear Nuevo
                 </a>
             </div>
@@ -113,39 +90,29 @@
             <table id="customers" class="table">
                 <thead>
                     <tr>
-                        <th class="borIz">
-                            @Html.DisplayNameFor(model => model.TYPES_ID)
-                        </th>
-                        <th>
-                            @Html.DisplayNameFor(model => model.TYPES_NAME)
-                        </th>
-                        <th class="borDer">Acciones</th>
+                        <th>@Html.DisplayNameFor(model => model.TYPES_ID)</th>
+                        <th>@Html.DisplayNameFor(model => model.TYPES_NAME)</th>
+                        <th>Acciones</th>
                     </tr>
                 </thead>
                 <tbody>
                     @foreach (var item in Model)
                     {
                         <tr>
-                            <td>
-                                @Html.DisplayFor(modelItem => item.TYPES_ID)
-                            </td>
-                            <td>
-                                @Html.DisplayFor(modelItem => item.TYPES_NAME)
-                            </td>
+                            <td>@item.TYPES_ID</td>
+                            <td>@item.TYPES_NAME</td>
                             <td class="anchoAccionesLibro">
                                 <div>
                                     <a href="@Url.Action("Edit", new { id = item.TYPES_ID })" class="btn btn-info" style="background: #1D4ED8">
                                         <i class="bi bi-pencil-square"></i> Editar
                                     </a>
-@*                                     <a href="@Url.Action("Details", new { id = item.TYPES_ID })" class="btn btn-info" style="background-color: #64748B">
-                                        <i class="bi bi-eye"></i> Detalles
-                                    </a> *@
-                                    <a href="@Url.Action("Delete", new { id = item.TYPES_ID })" class="btn btn-danger" style="background-color: #EF4444">
+                                    <a href="javascript:void(0)" onclick="confirmDelete(@item.TYPES_ID)" class="btn btn-danger" style="background-color: #EF4444">
                                         <i class="bi bi-trash3"></i> Eliminar
                                     </a>
                                 </div>
                             </td>
                         </tr>
+
                         numRegistros++;
                         if (numRegistros == numRegistrosPorPage)
                         {
@@ -153,29 +120,49 @@
                             numRegistros = 0;
                         }
                     }
-                    @if (numRegistros == 0)
-                    {
-                        numPage--;
-                    }
+                    @if (numRegistros == 0) { numPage--; }
                 </tbody>
             </table>
         </div>
-
-        @if (numPage > 1)
-        {
-            <div class="row" style="overflow:auto">
-                <div class="col-md-12">
-                    <ul class="pagination paginationjs" data-numpage="@numPage" data-pageactive="1">
-                        <li class="page-item" data-typepage="Previous"><a class="page-link" href="#">Previous</a></li>
-                        @for (var i = 1; i <= numPage; i++)
-                        {
-                            <li class="page-item" data-page="@i" data-typepage="Item"><a class="page-link" href="#">@i</a></li>
-                        }
-                        <li class="page-item" data-typepage="Next"><a class="page-link" href="#">Next</a></li>
-                    </ul>
-                </div>
-            </div>
-        }
     </div>
 </div>
 
+<form id="antiForgeryForm" style="display:none;">
+    @Html.AntiForgeryToken()
+</form>
+
+<script>
+    function confirmDelete(typeId) {
+        Swal.fire({
+            title: '¿Estás seguro?',
+            text: "¡No podrás revertir esto!",
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#EF4444',
+            cancelButtonColor: '#6c757d',
+            confirmButtonText: 'Sí, eliminar',
+            cancelButtonText: 'Cancelar'
+        }).then((result) => {
+            if (result.isConfirmed) {
+                fetch(`/LoanTypes/Delete/${typeId}`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'RequestVerificationToken': document.querySelector('input[name="__RequestVerificationToken"]').value
+                    }
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        Swal.fire('¡Eliminado!', data.message, 'success').then(() => location.reload());
+                    } else {
+                        Swal.fire('Error', data.message, 'error');
+                    }
+                })
+                .catch(error => {
+                    Swal.fire('Error', 'Ocurrió un error al intentar eliminar.', 'error');
+                });
+            }
+        });
+    }
+</script>
