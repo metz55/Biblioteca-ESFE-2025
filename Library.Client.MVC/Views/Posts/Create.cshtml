@@ -1,161 +1,71 @@
 @using Library.DataAccess.Domain
 @model Library.DataAccess.Domain.Posts
-
 @{
     ViewData["TITLE"] = "Crear Publicación";
     List<PostsCategories> categories = ViewBag.categories as List<PostsCategories>;
 }
-
-<style>
-    body {
-        overflow-x: hidden;
-        background-color: #f8f9fa;
-    }
-
-    #contenedor-principal {
-        border-radius: 1rem;
-        box-shadow: 0 0 20px rgba(0,0,0,0.1);
-        padding: 30px;
-    }
-
-    .markdown-editor {
-        min-height: 200px;
-    }
-
-    .preview-container {
-        display: flex;
-        flex-wrap: wrap;
-        gap: 10px;
-        margin-top: 10px;
-    }
-
-    .preview-image {
-        width: 100px;
-        height: 100px;
-        object-fit: cover;
-        border: 1px solid #ccc;
-        border-radius: 5px;
-    }
-
-    .doc-preview {
-        display: flex;
-        flex-direction: column;
-        padding: 10px;
-        border: 1px solid #dee2e6;
-        border-radius: 5px;
-        background-color: #fff;
-        margin-bottom: 10px;
-    }
-
-        .doc-preview i {
-            font-size: 24px;
-            margin-bottom: 5px;
-        }
-
-        .doc-preview span {
-            font-weight: bold;
-            margin-bottom: 5px;
-        }
-
-    .form-label {
-        font-weight: 600;
-    }
-
-    @@media (max-width: 768px) {
-        .form-buttons
-
-    {
-        flex-direction: column !important;
-        align-items: stretch;
-    }
-
-    .form-buttons .btn {
-        width: 100% !important;
-        margin-bottom: 10px;
-    }
-
-        .form-buttons .btn:last-child {
-            margin-bottom: 0;
-        }
-
-    }</style>
-
-<div class="card" id="contenedor-principal">
-    <div class="card-body">
-        <h1 class="text-center mb-4" style="font-family: 'Poppins', sans-serif; font-weight: 600;">Crear Publicación</h1>
-        <hr />
-        <div class="container">
-            <form asp-action="Save" method="post" enctype="multipart/form-data">
-                <div asp-validation-summary="ModelOnly" class="text-danger"></div>
-
-                @if (ViewBag.error)
-                {
-                    <div class="alert alert-danger text-center">
-                        Hubo un problema al crear la Publicación
-                    </div>
-                }
-
-                <div class="row mb-4">
-                    <div class="col-md-8">
-                        <label asp-for="TITLE" class="form-label">Título</label>
-                        <input asp-for="TITLE" class="form-control" value="" />
-                        <span asp-validation-for="TITLE" class="text-danger">@ViewBag.titleError</span>
-                    </div>
-                    <div class="col-md-4">
-                        <label asp-for="CATEGORYID" class="form-label">Categoría</label>
-                        <select asp-for="CATEGORYID" class="form-control" id="categoryDropdown">
-                            <option value="0">Seleccionar</option>
-                            @if (categories != null)
-                            {
-                                @foreach (var item in categories)
+<link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet">
+<div class="row">
+    <div class="col-md-12 grid-margin stretch-card">
+        <div class="card">
+            <div class="card-body">
+                <h4 class="card-title text-center" style="font-family: 'Poppins', sans-serif; font-weight: 600;">Crear Publicación</h4>
+                <form asp-action="Save" method="post" enctype="multipart/form-data" class="forms-sample">
+                    <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+                    @if (ViewBag.error)
+                    {
+                        <div class="alert alert-danger text-center">
+                            Hubo un problema al crear la Publicación
+                        </div>
+                    }
+                    <div class="row">
+                        <div class="mb-3 col-md-8">
+                            <label asp-for="TITLE" class="form-label">Título</label>
+                            <input asp-for="TITLE" class="form-control" value="" />
+                            <span asp-validation-for="TITLE" class="text-danger">@ViewBag.titleError</span>
+                        </div>
+                        <div class="mb-3 col-md-4">
+                            <label asp-for="CATEGORYID" class="form-label">Categoría</label>
+                            <select asp-for="CATEGORYID" class="form-select">
+                                <option value="0">Seleccionar</option>
+                                @if (categories != null)
                                 {
-                                    <option value="@item.Id">@item.Name</option>
+                                    @foreach (var item in categories)
+                                    {
+                                        <option value="@item.Id">@item.Name</option>
+                                    }
                                 }
-                            }
-                        </select>
-                        <span asp-validation-for="CATEGORYID" class="text-danger">@ViewBag.categoryError</span>
+                            </select>
+                            <span asp-validation-for="CATEGORYID" class="text-danger">@ViewBag.categoryError</span>
+                        </div>
                     </div>
-                </div>
-
-                <div class="mb-4">
-                    <label asp-for="CONTENT" class="form-label">Contenido</label>
-                    <textarea asp-for="CONTENT" class="form-control markdown-editor" id="markdownEditor"></textarea>
-                    <span asp-validation-for="CONTENT" class="text-danger">@ViewBag.contentError</span>
-                </div>
-
-                <div class="mb-4">
-                    <label asp-for="IMAGES_PATH" class="form-label">Imágenes</label>
-                    <input name="IMAGES_PATH" type="file" class="form-control" multiple id="imageInput" />
-                    <span asp-validation-for="IMAGES_PATH" class="text-danger"></span>
-                    <div class="preview-container" id="previewContainer"></div>
-                </div>
-
-                <div class="mb-4">
-                    <label asp-for="DOCS_PATH" class="form-label">Documentos</label>
-                    <input name="DOCS_PATH" type="file" class="form-control" multiple id="docInput" />
-                    <span asp-validation-for="DOCS_PATH" class="text-danger"></span>
-                    <div class="doc-preview-container" id="docPreviewContainer"></div>
-                </div>
-
-                <!-- Botones de Acción -->
-                <div class="form-group d-flex justify-content-end mt-4 form-buttons">
-                    <button type="submit" class="btn btn-success">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-floppy" viewBox="0 0 16 16">
-                            <path d="M11 2H9v3h2z" />
-                            <path d="M1.5 0h11.586a1.5 1.5 0 0 1 1.06.44l1.415 1.414A1.5 1.5 0 0 1 16 2.914V14.5a1.5 1.5 0 0 1-1.5 1.5h-13A1.5 1.5 0 0 1 0 14.5v-13A1.5.5 0 0 1 1.5 0M1 1.5v13a.5.5 0 0 0 .5.5H2v-4.5A1.5 1.5 0 0 1 3.5 9h9a1.5 1.5 0 0 1 1.5 1.5V15h.5a.5.5 0 0 0 .5-.5V2.914a.5.5 0 0 0-.146-.353l-1.415-1.415A.5.5 0 0 0 13.086 1H13v4.5A1.5 1.5 0 0 1 11.5 7h-7A1.5 1.5 0 0 1 3 5.5V1H1.5a.5.5 0 0 0-.5.5m3 4a.5.5 0 0 0 .5.5h7a.5.5 0 0 0 .5-.5V1H4zM3 15h10v-4.5a.5.5 0 0 0-.5-.5h-9a.5.5 0 0 0-.5.5z" />
-                        </svg>
-                        Guardar
-                    </button>
-                    <div style="width: 10px;"></div>
-                    <a asp-action="Manage" class="btn btn-info">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-reply-fill" viewBox="0 0 16 16">
-                            <path d="M5.921 11.9 1.353 8.62a.72.72 0 0 1 0-1.238L5.921 4.1A.716.716 0 0 1 7 4.719V6c1.5 0 6 0 7 8-2.5-4.5-7-4-7-4v1.281c0 .56-.606.898-1.079.62z" />
-                        </svg>
-                        Regresar
-                    </a>
-                </div>
-
-            </form>
+                    <div class="mb-3">
+                        <label asp-for="CONTENT" class="form-label">Contenido</label>
+                        <textarea asp-for="CONTENT" class="form-control markdown-editor" id="markdownEditor" rows="6"></textarea>
+                        <span asp-validation-for="CONTENT" class="text-danger">@ViewBag.contentError</span>
+                    </div>
+                    <div class="mb-3">
+                        <label asp-for="IMAGES_PATH" class="form-label">Imágenes</label>
+                        <input name="IMAGES_PATH" type="file" class="form-control" multiple id="imageInput" accept="image/*" />
+                        <span asp-validation-for="IMAGES_PATH" class="text-danger"></span>
+                        <div class="preview-container d-flex flex-wrap gap-2 mt-2" id="previewContainer"></div>
+                    </div>
+                    <div class="mb-3">
+                        <label asp-for="DOCS_PATH" class="form-label">Documentos</label>
+                        <input name="DOCS_PATH" type="file" class="form-control" multiple id="docInput" accept=".pdf,.doc,.docx,.txt,.xls,.xlsx,.ppt,.pptx" />
+                        <span asp-validation-for="DOCS_PATH" class="text-danger"></span>
+                        <div class="doc-preview-container d-flex flex-wrap gap-2 mt-2" id="docPreviewContainer"></div>
+                    </div>
+                    <div class="d-flex justify-content-center mt-4">
+                        <button type="submit" class="btn btn-success me-2">
+                            <i class="bi bi-floppy"></i> Guardar
+                        </button>
+                        <a asp-action="Manage" class="btn btn-secondary">
+                            <i class="bi bi-reply-fill"></i> Regresar
+                        </a>
+                    </div>
+                </form>
+            </div>
         </div>
     </div>
 </div>
@@ -176,63 +86,210 @@
             ],
         });
 
+        // Preview de imágenes con opción de cancelar
         const imageInput = document.getElementById('imageInput');
         const previewContainer = document.getElementById('previewContainer');
 
         imageInput.addEventListener('change', function () {
-            previewContainer.innerHTML = '';
-            const files = imageInput.files;
-            if (files) {
-                Array.from(files).forEach(file => {
-                    const reader = new FileReader();
-                    reader.onload = function (e) {
-                        const img = document.createElement('img');
-                        img.src = e.target.result;
-                        img.alt = file.name;
-                        img.classList.add('preview-image');
-                        previewContainer.appendChild(img);
-                    };
-                    reader.readAsDataURL(file);
-                });
-            }
-        });
-
-        const docInput = document.getElementById('docInput');
-        const docPreviewContainer = document.getElementById('docPreviewContainer');
-
-        docInput.addEventListener('change', function () {
-            docPreviewContainer.innerHTML = '';
-            Array.from(docInput.files).forEach(file => {
+        const files = imageInput.files;
+        if (files) {
+            Array.from(files).forEach((file, index) => {
                 const reader = new FileReader();
                 reader.onload = function (e) {
-                    const docPreview = document.createElement('div');
-                    docPreview.classList.add('doc-preview');
+                        // Crear contenedor para cada imagen
+                    const imageContainer = document.createElement('div');
+                    imageContainer.style.position = 'relative';
+                    imageContainer.style.display = 'inline-block';
+                    imageContainer.style.marginRight = '15px';
+                    imageContainer.style.marginBottom = '15px';
+                    imageContainer.style.padding = '0'; // Sin padding en el contenedor
+                    imageContainer.style.borderRadius = '10px'; // Mismo border-radius que la imagen
 
-                    const fileIcon = document.createElement('i');
-                    fileIcon.classList.add('fa', file.type === "application/pdf" ? 'fa-file-pdf' : 'fa-file');
-                    fileIcon.style.color = file.type === "application/pdf" ? 'red' : '#007bff';
+                    // Crear imagen
+                    const img = document.createElement('img');
+                    img.src = e.target.result;
+                    img.alt = file.name;
+                    img.style.width = '250px';
+                    img.style.height = 'auto';
+                    img.style.maxHeight = '250px';
+                    img.style.objectFit = 'contain';
+                    img.style.border = '1px solid #ccc';
+                    img.style.borderRadius = '10px';
+                    img.style.transition = 'opacity 0.5s ease-out';
+                    img.style.margin = '5px';
 
-                    const fileName = document.createElement('span');
-                    fileName.textContent = file.name;
+                    // Crear botón de cancelar
+                    const cancelButton = document.createElement('span');
+                    cancelButton.innerHTML = '&times;';
+                    cancelButton.style.position = 'absolute';
+                    cancelButton.style.top = '10px'; 
+                    cancelButton.style.right = '10px'; 
+                    cancelButton.style.background = 'rgba(255, 255, 255, 0.8)';
+                    cancelButton.style.borderRadius = '50%';
+                    cancelButton.style.width = '25px';
+                    cancelButton.style.height = '25px';
+                    cancelButton.style.display = 'none';
+                    cancelButton.style.justifyContent = 'center';
+                    cancelButton.style.alignItems = 'center';
+                    cancelButton.style.cursor = 'pointer';
+                    cancelButton.style.fontWeight = 'bold';
+                    cancelButton.style.color = '#dc3545';
+                    cancelButton.style.border = '1px solid #dc3545';
+                    cancelButton.style.fontSize = '18px'; 
 
-                    const fileLink = document.createElement('a');
-                    fileLink.href = e.target.result;
-                    fileLink.textContent = 'Ver Documento';
-                    fileLink.target = '_blank';
 
-                    docPreview.appendChild(fileIcon);
-                    docPreview.appendChild(fileName);
-                    docPreview.appendChild(fileLink);
+                    // Mostrar/Ocultar botón de cancelar al pasar el cursor
+                    imageContainer.addEventListener('mouseenter', function() {
+                        cancelButton.style.display = 'flex';
+                    });
+                    imageContainer.addEventListener('mouseleave', function() {
+                        cancelButton.style.display = 'none';
+                    });
 
-                    docPreviewContainer.appendChild(docPreview);
+                    // Función para cancelar la imagen
+                    cancelButton.addEventListener('click', function(e) {
+                        e.stopPropagation();
+                        img.style.opacity = '0';
+                        setTimeout(function() {
+                            imageContainer.remove();
+                            // Remover el archivo del input file
+                            const dataTransfer = new DataTransfer();
+                            const { files } = imageInput;
+                            const newFiles = Array.from(files).filter((_, i) => i !== index);
+                            newFiles.forEach(file => dataTransfer.items.add(file));
+                            imageInput.files = dataTransfer.files;
+                        }, 500);
+                    });
+
+                    // Agregar elementos al contenedor
+                    imageContainer.appendChild(img);
+                    imageContainer.appendChild(cancelButton);
+                    previewContainer.appendChild(imageContainer);
                 };
                 reader.readAsDataURL(file);
             });
+            }
+        });
+
+            // Preview de documentos
+        const docInput = document.getElementById('docInput');
+        const docPreviewContainer = document.getElementById('docPreviewContainer');
+        docInput.addEventListener('change', function () {
+            docPreviewContainer.innerHTML = '';
+            Array.from(docInput.files).forEach((file, index) => {
+                // Crear contenedor para cada documento
+                const docContainer = document.createElement('div');
+                docContainer.style.position = 'relative';
+                docContainer.style.display = 'flex';
+                docContainer.style.flexDirection = 'column';
+                docContainer.style.padding = '10px';
+                docContainer.style.border = '1px solid #dee2e6';
+                docContainer.style.borderRadius = '5px';
+                docContainer.style.backgroundColor = '#fff';
+                docContainer.style.marginBottom = '10px';
+                docContainer.style.marginRight = '10px';
+
+                // Crear icono del documento
+                const fileIcon = document.createElement('i');
+                fileIcon.className = file.type === "application/pdf" ? 'bi bi-file-earmark-pdf' : 'bi bi-file-earmark';
+                fileIcon.style.fontSize = '24px';
+                fileIcon.style.marginBottom = '5px';
+                fileIcon.style.color = file.type === "application/pdf" ? 'red' : '#007bff';
+
+                // Crear nombre del documento
+                const fileName = document.createElement('span');
+                fileName.textContent = file.name;
+                fileName.style.fontWeight = 'bold';
+                fileName.style.marginBottom = '5px';
+
+                // Crear botón de cancelar (X)
+                const cancelButton = document.createElement('span');
+                cancelButton.innerHTML = '&times;';
+                cancelButton.style.position = 'absolute';
+                cancelButton.style.top = '5px';
+                cancelButton.style.right = '5px';
+                cancelButton.style.background = 'rgba(255, 255, 255, 0.8)';
+                cancelButton.style.borderRadius = '50%';
+                cancelButton.style.width = '22px';
+                cancelButton.style.height = '22px';
+                cancelButton.style.display = 'none';
+                cancelButton.style.justifyContent = 'center';
+                cancelButton.style.alignItems = 'center';
+                cancelButton.style.cursor = 'pointer';
+                cancelButton.style.fontWeight = 'bold';
+                cancelButton.style.color = '#dc3545';
+                cancelButton.style.border = '1px solid #dc3545';
+                cancelButton.style.fontSize = '16px';
+
+                // Mostrar/Ocultar botón de cancelar al pasar el cursor
+                docContainer.addEventListener('mouseenter', function() {
+                    cancelButton.style.display = 'flex';
+                });
+                docContainer.addEventListener('mouseleave', function() {
+                    cancelButton.style.display = 'none';
+                });
+
+                // Función para cancelar el documento
+                cancelButton.addEventListener('click', function(e) {
+                    e.stopPropagation();
+                    docContainer.style.opacity = '0';
+                    setTimeout(function() {
+                        docContainer.remove();
+                        // Remover el archivo del input file
+                        const dataTransfer = new DataTransfer();
+                        const { files } = docInput;
+                        const newFiles = Array.from(files).filter((_, i) => i !== index);
+                        newFiles.forEach(file => dataTransfer.items.add(file));
+                        docInput.files = dataTransfer.files;
+                    }, 300);
+                });
+
+                // Agregar elementos al contenedor
+                docContainer.appendChild(fileIcon);
+                docContainer.appendChild(fileName);
+                docContainer.appendChild(cancelButton);
+                docPreviewContainer.appendChild(docContainer);
+            });
+        });
+
+    });
+</script>
+<!-- SweetAlert -->
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        // Script para validación del formulario
+        const form = document.querySelector("form.forms-sample");
+        form.addEventListener("submit", function (e) {
+            e.preventDefault();
+            const title = document.querySelector("input[name='TITLE']").value.trim();
+            const category = document.querySelector("select[name='CATEGORYID']").value;
+            const content = document.querySelector("textarea[name='CONTENT']").value.trim();
+            let errors = [];
+            if (title === "") {
+                errors.push("El título es requerido.");
+            } else if (title.length > 250) {
+                errors.push("El título no puede superar los 250 caracteres.");
+            }
+            if (category === "0") {
+                errors.push("Debe seleccionar una categoría.");
+            }
+            if (content === "") {
+                errors.push("El contenido es requerido.");
+            } else if (content.length > 3000) {
+                errors.push("El contenido no puede superar los 3000 caracteres.");
+            }
+            if (errors.length > 0) {
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Validación',
+                    html: errors.join("<br>"),
+                    confirmButtonText: 'Entendido',
+                    confirmButtonColor: '#d33'
+                });
+            } else {
+                form.submit();
+            }
         });
     });
 </script>
-<script>
-    document.querySelector('.main-content')?.classList.remove('with-menu');
-    document.querySelector('.main-content')?.classList.add('full-width');
-</script>
-
