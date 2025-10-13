@@ -165,3 +165,19 @@
         });
     }
 </script>
+<script>
+    $(document).ready(function() {
+        @if (TempData["CreateSuccess"] != null && (bool)TempData["CreateSuccess"])
+        {
+            <text>
+                Swal.fire({
+                    icon: 'success',
+                    title: '¡Éxito!',
+                    text: 'Tipo de Prestamo creado correctamente.',
+                    confirmButtonColor: '#3085d6',
+                    confirmButtonText: 'Aceptar'
+                });
+            </text>
+        }
+    });
+</script>

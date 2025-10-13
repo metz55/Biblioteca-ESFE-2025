@@ -223,6 +223,22 @@
             });
         }
     </script>
+    <script>
+        $(document).ready(function() {
+            @if (TempData["CreateSuccess"] != null && (bool)TempData["CreateSuccess"])
+            {
+                <text>
+                    Swal.fire({
+                        icon: 'success',
+                        title: '¡Éxito!',
+                        text: 'El Catalogo se creo correctamente.',
+                        confirmButtonColor: '#3085d6',
+                        confirmButtonText: 'Aceptar'
+                    });
+                </text>
+            }
+        });
+    </script>
 }
 
 

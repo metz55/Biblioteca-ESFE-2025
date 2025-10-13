@@ -85,6 +85,7 @@ namespace Library.Client.MVC.Controllers
                 else
                 {
                     // seguimineot regular para las peticiones que no seas AJAX
+                    TempData["CreateSuccess"] = true;
                     return RedirectToAction(nameof(Index));
                 }
             }

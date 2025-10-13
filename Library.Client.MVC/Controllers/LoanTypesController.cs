@@ -50,6 +50,7 @@ namespace Library.Client.MVC.Controllers
             try
             {
                 int result = await loanTypesBL.CreateLoanTypesAsync(pLoanTypes);
+                TempData["CreateSuccess"] = true;
                 return RedirectToAction(nameof(Index));
             }
             catch (Exception ee)

@@ -188,6 +188,38 @@
         });
     }
 </script>
+<script>
+    $(document).ready(function() {
+        @if (TempData["CreateSuccess"] != null && (bool)TempData["CreateSuccess"])
+        {
+            <text>
+                Swal.fire({
+                    icon: 'success',
+                    title: '¡Éxito!',
+                    text: 'La Categoria se creo correctamente.',
+                    confirmButtonColor: '#3085d6',
+                    confirmButtonText: 'Aceptar'
+                });
+            </text>
+        }
+    });
+</script>
+<script>
+    $(document).ready(function() {
+        @if (TempData["EditSuccess"] != null && (bool)TempData["EditSuccess"])
+        {
+            <text>
+                Swal.fire({
+                    icon: 'success',
+                    title: '¡Éxito!',
+                    text: 'Categoria editada correctamente.',
+                    confirmButtonColor: '#3085d6',
+                    confirmButtonText: 'Aceptar'
+                });
+            </text>
+        }
+    });
+</script>
 
 <!-- Token AntiForgery -->
 <form style="display:none;">

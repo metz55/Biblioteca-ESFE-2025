@@ -139,8 +139,17 @@ namespace Library.Client.MVC.services
                     }
                     else
                     {
-                        existente.EJEMPLARS = ejemplares;
-                        existente.EXISTENCES = existencias;
+                        // Sumar ejemplares y existencias
+                        existente.EJEMPLARS += ejemplares;
+                        existente.EXISTENCES += existencias;
+
+                        // Validar que existencias no superen ejemplares
+                        if (existente.EXISTENCES > existente.EJEMPLARS)
+                        {
+                            existente.EXISTENCES = existente.EJEMPLARS;
+                        }
+
+                        // Actualizar otros campos
                         existente.ID_CATEGORY = categoriaId ?? existente.ID_CATEGORY;
                         existente.ID_AUTHOR = autorId ?? existente.ID_AUTHOR;
                         existente.ID_EDITORIAL = editorialId ?? existente.ID_EDITORIAL;
@@ -151,6 +160,7 @@ namespace Library.Client.MVC.services
                         existente.COVER = SaveCoverImageFromPath(coverPath);
                         existente.DEWEY = dewey;
                         existente.CUTER = cutter;
+
                         if (actualizarExistentes) result.Actualizados++;
                     }
                 }
