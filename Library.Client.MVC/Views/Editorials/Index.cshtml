@@ -110,7 +110,6 @@
         #btn-create {
             width: 100% !important;
             margin-bottom: 15px;
-            background-color: #10B981;
         }
 
         .anchoAccionesLibro .btn {
@@ -294,6 +293,22 @@
                 }
             });
         }
+    </script>
+    <script>
+        $(document).ready(function() {
+            @if (TempData["EditSuccess"] != null && (bool)TempData["EditSuccess"])
+            {
+                    <text>
+                        Swal.fire({
+                            icon: 'success',
+                            title: '¡Éxito!',
+                            text: 'La Editorial ha sido editada correctamente.',
+                            confirmButtonColor: '#3085d6',
+                            confirmButtonText: 'Aceptar'
+                        });
+                    </text>
+            }
+        });
     </script>
     <script>
         document.addEventListener("DOMContentLoaded", () => {

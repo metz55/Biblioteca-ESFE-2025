@@ -22,17 +22,16 @@ namespace Library.Client.MVC.Controllers
         BLLoans loansBL = new BLLoans();
 
         Books booksEN = new Books();
-        public async Task<IActionResult> Index(Books pBooks = null)
+        public async Task<IActionResult> Index(Books pBooks = null, int page = 1, int pageSize = 12)
         {
             if (pBooks == null)
                 pBooks = new Books();
-            if (pBooks.Top_Aux == 0)
-                pBooks.Top_Aux = 12;
-            else if (pBooks.Top_Aux == -1)
-                pBooks.Top_Aux = 0;
 
-            var books = await booksBL.GetIncludePropertiesAsync(pBooks);
+            // Obtener libros paginados y el total de registros
+            var (books, totalRecords) = await booksBL.GetPaginatedBooksAsync(pBooks, page, pageSize);
+            var totalPages = (int)Math.Ceiling((double)totalRecords / pageSize);
 
+            // Pasar datos a la vista
             ViewBag.books = await booksBL.GetAllBooksAsync();
             ViewBag.Categories = await categoriesBL.GetAllCategoriesAsync();
             ViewBag.AcquisitionTypes = await acquisitionTypesBL.GetAllAcquisitionTypesAsync();
@@ -42,22 +41,35 @@ namespace Library.Client.MVC.Controllers
             ViewBag.Countries = await countriesBL.GetAllCountriesAsync();
             ViewBag.Catalogs = await catalogsBL.GetAllCatalogsAsync();
             ViewBag.Top = pBooks.Top_Aux;
+            ViewBag.CurrentPage = page;
+            ViewBag.PageSize = pageSize;
+            ViewBag.TotalPages = totalPages;
+            ViewBag.TitleFilter = pBooks.TITLE;
+            ViewBag.CategoryFilter = pBooks.ID_CATEGORY;
+            ViewBag.AuthorFilter = pBooks.ID_AUTHOR;
+            ViewBag.EditorialFilter = pBooks.ID_EDITORIAL;
+
             return View(books);
         }
+
 
 
         // GET: CategoriesController/Edit/5
         public async Task<IActionResult> CreateLoansSt(int id)
         {
             var books = await booksBL.GetBooksByIdAsync(new Books { BOOK_ID = id });
-
             var reservations = new List<int> { 1, 3, 4 };
             var cantidadPrestamos = reservations
                 .Select(async reservation => await loansBL.GetLoansAsync(new Loans { ID_BOOK = id, ID_RESERVATION = reservation, STATUS = true }))
                 .Select(task => task.Result.Count)
                 .Sum();
 
-            if (cantidadPrestamos < books.EJEMPLARS && books.EXISTENCES > 1)
+            // Validación corregida:
+            if (books.EJEMPLARS <= 0)
+            {
+                ViewBag.AlertaLibro2 = "No hay ejemplares disponibles para reservación";
+            }
+            else if (cantidadPrestamos < books.EJEMPLARS && books.EXISTENCES >= 1)
             {
                 ViewBag.AlertaLibro = "Disponible para Reservacion";
             }
@@ -67,20 +79,18 @@ namespace Library.Client.MVC.Controllers
             }
 
             ViewBag.LoanTypes = await loanTypesBL.GetAllLoanTypesAsync();
-
             var editorial = await editorialsBL.GetEditorialsByIdAsync(new Editorials { EDITORIAL_ID = books.ID_EDITORIAL });
             var categoria = await categoriesBL.GetCategoriesByIdAsync(new Categories { CATEGORY_ID = books.ID_CATEGORY });
             var authors = await authorsBL.GetAuthorsByIdAsync(new Authors { AUTHOR_ID = books.ID_AUTHOR });
-
             ViewBag.Editorial = editorial.EDITORIAL_NAME;
             ViewBag.Categoria = categoria.CATEGORY_NAME;
             ViewBag.Autor = authors.AUTHOR_NAME;
             ViewBag.Imagen = books.COVER;
             ViewBag.Titulo = books.TITLE;
             ViewBag.Year = books.YEAR;
-
             return View(books);
         }
+
 
         [HttpPost]
         [ValidateAntiForgeryToken]

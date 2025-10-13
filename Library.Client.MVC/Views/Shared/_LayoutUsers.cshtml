@@ -35,6 +35,15 @@
     <!-- SweetAlert2 JS -->
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
+    <style>
+        html, body {
+            height: 100%;
+            width: 100%;
+            margin: 0;
+            padding: 0;
+            overflow-x: hidden;
+        }
+    </style>
 </head>
 <body>
 
@@ -168,7 +177,7 @@
                 <div class="container">
                     <div class="row">
                         <div class="col-md-12 text-center text-md-left mb-3 mb-md-0">
-                            <p class="text-center"> <a class="container text-center my-5 py-5" href="https://esfe.agape.edu.sv/">ESFE/AGAPE</a></p>
+                            <p class="text-center"> <a class="container text-center" href="https://esfe.agape.edu.sv/">ESFE/AGAPE</a></p>
                         </div>
 
                     </div>
@@ -235,8 +244,5 @@
     </script>
 
     @await RenderSectionAsync("Scripts", required: false)
-
-
-
 </body>
 </html>

@@ -46,7 +46,7 @@
                     </div>
                     <div class="mb-3">
                         <label asp-for="IMAGES_PATH" class="form-label">Imágenes</label>
-                        <input name="IMAGES_PATH" type="file" class="form-control" multiple id="imageInput" accept="image/*" />
+                        <input name="IMAGES_PATH" type="file" class="form-control" multiple id="imageInput" accept=".png,.jpeg" />
                         <span asp-validation-for="IMAGES_PATH" class="text-danger"></span>
                         <div class="preview-container d-flex flex-wrap gap-2 mt-2" id="previewContainer"></div>
                     </div>

@@ -120,6 +120,7 @@ namespace Library.Client.MVC.Controllers
             try
             {
                 int result = await authorsBL.UpdateAuthorsAsync(pAuthors);
+                TempData["EditSuccess"] = true;
                 return RedirectToAction(nameof(Index));
             }
             catch (Exception ex)

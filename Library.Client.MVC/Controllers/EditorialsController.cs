@@ -117,6 +117,7 @@ namespace Library.Client.MVC.Controllers
             try
             {
                 int result = await editorialsBL.UpdateEditorialsAsync(pEditorials);
+                TempData["EditSuccess"] = true;
                 return RedirectToAction(nameof(Index));
             }
             catch (Exception ex)

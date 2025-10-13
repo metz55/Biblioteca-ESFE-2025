@@ -28,6 +28,7 @@
     <PackageReference Include="Microsoft.Owin.Security.Cookies" Version="4.2.2" />
     <PackageReference Include="Microsoft.Owin.Security.Google" Version="4.2.2" />
     <PackageReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Design" Version="8.0.6" />
+    <PackageReference Include="NPOI" Version="2.7.5" />
     <PackageReference Include="Swashbuckle.AspNetCore" Version="6.9.0" />
   </ItemGroup>
   <ItemGroup>

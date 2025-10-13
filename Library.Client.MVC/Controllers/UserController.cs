@@ -116,6 +116,7 @@ namespace Library.Client.MVC.Controllers
             try
             {
                 int result = await usersBL.UpdateUsersASync(pUsers);
+                TempData["EditSuccess"] = true;
                 return RedirectToAction(nameof(Index));
             }
             catch(Exception ex)

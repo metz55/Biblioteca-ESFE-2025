@@ -267,4 +267,20 @@
         });
     </script>
 
+    <script>
+        $(document).ready(function() {
+            @if (TempData["EditSuccess"] != null && (bool)TempData["EditSuccess"])
+            {
+                <text>
+                    Swal.fire({
+                        icon: 'success',
+                        title: '¡Éxito!',
+                        text: 'La publicacion ha sido editada correctamente.',
+                        confirmButtonColor: '#3085d6',
+                        confirmButtonText: 'Aceptar'
+                    });
+                </text>
+            }
+        });
+    </script>
 }

@@ -53,7 +53,7 @@
                     <!-- ================== IMÁGENES ================== -->
                     <div class="mb-3">
                         <label asp-for="IMAGES_PATH" class="form-label">Imágenes</label>
-                        <input name="IMAGES_PATH" type="file" class="form-control" multiple id="imageInput" accept="image/*" />
+                        <input name="IMAGES_PATH" type="file" class="form-control" multiple id="imageInput" accept=".png,.jpeg" />
                         <span asp-validation-for="IMAGES_PATH" class="text-danger"></span>
 
                         <div class="preview-container d-flex flex-wrap gap-2 mt-2" id="previewContainer">
@@ -109,6 +109,8 @@
                             <i class="bi bi-reply-fill"></i> Regresar
                         </a>
                     </div>
+                    <input type="hidden" id="removeImages" name="removeImages" value="false" />
+                    <input type="hidden" id="removeDocs" name="removeDocs" value="false" />
                 </form>
             </div>
         </div>
@@ -137,12 +139,12 @@
         const previewContainer = document.getElementById('previewContainer');
 
         previewContainer.addEventListener('click', function (e) {
-            if (e.target.classList.contains('remove-btn')) {
-                e.preventDefault();
-                e.stopPropagation();
-                e.target.closest('.image-wrapper').remove();
-                imageInput.value = ""; // limpiar input para re-elegir
-            }
+        if (e.target.classList.contains('remove-btn')) {
+            e.preventDefault();
+            e.stopPropagation();
+            e.target.closest('.image-wrapper').remove();
+            document.getElementById('removeImages').value = 'true';
+        }
         });
 
         imageInput.addEventListener('change', function () {
@@ -190,13 +192,13 @@
         const docPreviewContainer = document.getElementById('docPreviewContainer');
 
         docPreviewContainer.addEventListener('click', function (e) {
-            if (e.target.classList.contains('remove-doc')) {
-                e.preventDefault();
-                e.stopPropagation();
-                e.target.closest('.doc-wrapper').remove();
-                docInput.value = "";
-            }
-        });
+        if (e.target.classList.contains('remove-doc')) {
+            e.preventDefault();
+            e.stopPropagation();
+            e.target.closest('.doc-wrapper').remove();
+            document.getElementById('removeDocs').value = 'true';
+        }
+        })
 
         docInput.addEventListener('change', function () {
             docPreviewContainer.innerHTML = "";
