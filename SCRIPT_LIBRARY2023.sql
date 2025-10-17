@@ -1,10 +1,3 @@
-USE master;
-GO
-ALTER DATABASE LIBRARY SET SINGLE_USER WITH ROLLBACK IMMEDIATE;
-GO
-DROP DATABASE LIBRARY;
-GO
-
 CREATE DATABASE LIBRARY
 go
 USE LIBRARY
@@ -154,15 +147,15 @@ create table PINNED_POSTS(
 
 
 --INSERCCI�N DE REGISTROS PREDETERMINADOS
-INSERT INTO CATEGORIES VALUES('Software'),('Mercadeo'),('Turismo'),('El�ctrica');
+INSERT INTO CATEGORIES VALUES('Software'),('Mercadeo'),('Turismo'),('Electrica');
 
-INSERT INTO ACQUISITION_TYPES VALUES ('Compra'),('Donaci�n');
+INSERT INTO ACQUISITION_TYPES VALUES ('Compra'),('Donacion');
 
-INSERT INTO CATALOGS VALUES ('Software'),('Mercadeo'),('Turismo'),('El�ctrica');
+INSERT INTO CATALOGS VALUES ('Software'),('Mercadeo'),('Turismo'),('Electrica');
 
 INSERT INTO LOAN_TYPES VALUES ('Local'),('Externo');
  
-INSERT INTO RESERVATION_STATUS VALUES ('Prestado'),('Devuelto'),('Reservado'),('Renovado'),('Cancelado');
+INSERT INTO RESERVATION_STATUS VALUES ('Prestado'),('Devuelto'),('Reservado'),('Renovado');
 
 INSERT INTO POSTS_CATEGORIES VALUES ('Noticias');
 
