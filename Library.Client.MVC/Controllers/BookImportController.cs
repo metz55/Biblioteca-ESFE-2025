@@ -1,6 +1,8 @@
 ﻿using Library.Client.MVC.services;
 using Library.DataAccess.Persistence.Context;
 using Microsoft.AspNetCore.Mvc;
+using System.Text.Json; 
+
 
 namespace Library.Client.MVC.Controllers
 {
@@ -39,9 +41,14 @@ namespace Library.Client.MVC.Controllers
 
             TempData["Creados"] = result.Creados;
             TempData["Actualizados"] = result.Actualizados;
-            TempData["Errores"] = result.Errores.Count > 0 ? result.Errores : null;
+
+            //serializa los errores antes de guardarlos
+            TempData["Errores"] = result.Errores.Count > 0
+                ? JsonSerializer.Serialize(result.Errores)
+                : null;
 
             return RedirectToAction(nameof(ImportBooks));
         }
+
     }
 }

@@ -1,7 +1,12 @@
-﻿@{
-ViewData["Title"] = "Importar Libros";
+﻿@using System.Text.Json
+@using Library.Client.MVC.services
+
+@{
+    ViewData["Title"] = "Importar Libros";
 }
+
 <h2>Importar Libros desde Excel</h2>
+
 @if (TempData["Creados"] != null || TempData["Actualizados"] != null)
 {
     <div class="alert alert-success" role="alert">
@@ -9,22 +14,28 @@ ViewData["Title"] = "Importar Libros";
         Se actualizaron: @TempData["Actualizados"] libros.
     </div>
 }
-@if (TempData["Errores"] != null)
-{
-    var errores = TempData["Errores"] as List<Library.Client.MVC.services.BookImportError>;
-    if (errores != null && errores.Count > 0)
+
+@{
+    List<BookImportError> errores = new();
+    if (TempData["Errores"] is string erroresJson && !string.IsNullOrEmpty(erroresJson))
     {
-        <div class="alert alert-danger" role="alert">
-            <strong>Errores encontrados:</strong>
-            <ul>
-                @foreach (var e in errores)
-                {
-                    <li>Fila @e.Fila - @e.Campo: @e.Mensaje</li>
-                }
-            </ul>
-        </div>
+        errores = JsonSerializer.Deserialize<List<BookImportError>>(erroresJson);
     }
 }
+
+@if (errores != null && errores.Count > 0)
+{
+    <div class="alert alert-danger" role="alert">
+        <strong>Errores encontrados:</strong>
+        <ul>
+            @foreach (var e in errores)
+            {
+                <li>Fila @e.Fila - @e.Campo: @e.Mensaje</li>
+            }
+        </ul>
+    </div>
+}
+
 <form asp-action="ImportBooks" asp-controller="BooksImport" method="post" enctype="multipart/form-data">
     <div class="mb-3">
         <label for="excelFile" class="form-label">Archivo Excel</label>
