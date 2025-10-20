@@ -12,7 +12,6 @@ using Library.Client.MVC.Models.DTO;
 
 namespace Library.Client.MVC.Controllers
 {
-    [Authorize(AuthenticationSchemes = "AdminScheme")]
     public class PostsController : Controller
     {
         BLPostsCategories blCategories = new BLPostsCategories();
@@ -64,6 +63,8 @@ namespace Library.Client.MVC.Controllers
             }
             return View(posts);
         }
+
+        [Authorize(Policy = "AdminOnly")]
         public async Task<IActionResult> Manage(string search = "")
         {
             var posts = new List<Posts>();
@@ -111,6 +112,7 @@ namespace Library.Client.MVC.Controllers
             return View(posts);
         }
 
+        [Authorize(Policy = "AdminOnly")]
         public async Task<IActionResult> Create()
         {
             ViewBag.BlogNavbar = true;
@@ -124,6 +126,7 @@ namespace Library.Client.MVC.Controllers
             return View();
         }
 
+        [Authorize(Policy = "AdminOnly")]
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Save(Posts posts)
@@ -131,34 +134,34 @@ namespace Library.Client.MVC.Controllers
             var error = false;
             if (string.IsNullOrEmpty(posts.TITLE))
             {
-               error = true;
-               TempData["titleError"] = "El Titulo es requerido";
+                error = true;
+                TempData["titleError"] = "El Titulo es requerido";
             }
             if (posts.TITLE.Length > 250)
             {
-               error = true;
-               TempData["titleError"] = "Caracteres maximos 250";
+                error = true;
+                TempData["titleError"] = "Caracteres maximos 250";
             }
             if (string.IsNullOrEmpty(posts.CONTENT))
             {
-               error = true;
-               TempData["contentError"] = "El Contenido es requerido";
+                error = true;
+                TempData["contentError"] = "El Contenido es requerido";
             }
             if (posts.CONTENT.Length > 3000)
             {
-               error = true;
-               TempData["contentError"] = "Caracteres maximos 3000";
+                error = true;
+                TempData["contentError"] = "Caracteres maximos 3000";
             }
             if (posts.CATEGORYID == 0)
             {
-               error = true;
-               TempData["categoryError"] = "La categoria es obligatoria";
+                error = true;
+                TempData["categoryError"] = "La categoria es obligatoria";
             }
             TempData["error"] = error;
-            if(error){return RedirectToAction(nameof(Create));}
-            var result = await blPosts.CreatePostAsync(posts);
+            if (error) { return RedirectToAction(nameof(Create)); }
 
-            if(result == 0)
+            var result = await blPosts.CreatePostAsync(posts);
+            if (result == 0)
             {
                 TempData["error"] = true;
                 TempData["messageError"] = "No se pudo crear el post. Revisa que los datos esten correctos";
@@ -174,73 +177,62 @@ namespace Library.Client.MVC.Controllers
                         {
                             var fileExtension = Path.GetExtension(file.FileName).ToLower();
                             var uploadDir = "";
-
                             if (fileExtension == ".jpg" || fileExtension == ".jpeg" || fileExtension == ".png")
                             {
                                 // Procesar imágenes
-                                uploadDir = Path.Combine("wwwroot", "images", "blog");
-
+                                uploadDir = Path.Combine("C:\\", "ImagenesBlog");
                                 if (!Directory.Exists(uploadDir))
                                 {
                                     Directory.CreateDirectory(uploadDir);
                                 }
-
                                 var uniqueFileName = $"{posts.ID}_{Guid.NewGuid()}.jpg";
                                 var filePath = Path.Combine(uploadDir, uniqueFileName);
-
                                 using (var stream = new FileStream(filePath, FileMode.Create))
                                 {
                                     await file.CopyToAsync(stream);
                                 }
-
-                                var imagePath = $"/images/blog/{uniqueFileName}";
-
+                                var imagePath = $"/ImagenesBlog/{uniqueFileName}";
                                 // Guardar la ruta en la base de datos
                                 var postsImages = new PostsImages
                                 {
                                     PATH = imagePath,
                                     POSTID = posts.ID
                                 };
-
                                 await blPostsImages.CreatePostImageAsync(postsImages);
                             }
                             else
                             {
                                 // Procesar documentos
-                                uploadDir = Path.Combine("wwwroot", "documents", "blog");
-
+                                uploadDir = Path.Combine("C:\\", "DocumentosBlog");
                                 if (!Directory.Exists(uploadDir))
                                 {
                                     Directory.CreateDirectory(uploadDir);
                                 }
-
                                 var uniqueFileName = $"{posts.ID}_{Guid.NewGuid()}{fileExtension}";
                                 var filePath = Path.Combine(uploadDir, uniqueFileName);
-
                                 using (var stream = new FileStream(filePath, FileMode.Create))
                                 {
                                     await file.CopyToAsync(stream);
                                 }
-
-                                var docPath = $"/documents/blog/{uniqueFileName}";
-
+                                var docPath = $"/DocumentosBlog/{uniqueFileName}";
                                 var postsDocs = new PostsDocs
                                 {
                                     Path = docPath,
                                     PostId = posts.ID
                                 };
-
                                 await blPostDocs.CreatePostDocAsync(postsDocs);
-
                             }
                         }
                     }
                 }
+                // Agregar mensaje de éxito
+                TempData["success"] = true;
+                TempData["messageSuccess"] = "El post se creo correctamente.";
             }
-                
             return RedirectToAction(nameof(Manage));
         }
 
+        [Authorize(Policy = "AdminOnly")]
         public async Task<IActionResult> Edit(long id = 0)
         {
             if(id == 0)
@@ -258,44 +250,99 @@ namespace Library.Client.MVC.Controllers
             return View(post);
         }
 
+        [Authorize(Policy = "AdminOnly")]
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Update(Posts posts)
+        public async Task<IActionResult> Update(Posts posts, string removeImages, string removeDocs)
         {
             var error = false;
             if (string.IsNullOrEmpty(posts.TITLE))
             {
-               error = true;
-               TempData["titleError"] = "El Titulo es requerido";
+                error = true;
+                TempData["titleError"] = "El Titulo es requerido";
             }
             if (posts.TITLE.Length > 250)
             {
-               error = true;
-               TempData["titleError"] = "Caracteres maximos 250";
+                error = true;
+                TempData["titleError"] = "Caracteres maximos 250";
             }
             if (string.IsNullOrEmpty(posts.CONTENT))
             {
-               error = true;
-               TempData["contentError"] = "El Contenido es requerido";
+                error = true;
+                TempData["contentError"] = "El Contenido es requerido";
             }
             if (posts.CONTENT.Length > 3000)
             {
-               error = true;
-               TempData["contentError"] = "Caracteres maximos 3000";
+                error = true;
+                TempData["contentError"] = "Caracteres maximos 3000";
             }
             if (posts.CATEGORYID == 0)
             {
-               error = true;
-               TempData["categoryError"] = "La categoria es obligatoria";
+                error = true;
+                TempData["categoryError"] = "La categoria es obligatoria";
             }
             TempData["error"] = error;
-            if(error)
+            if (error)
             {
-                return RedirectToAction(nameof(Create));
+                return RedirectToAction(nameof(Edit), new { id = posts.ID });
             }
+
             var postsImages = await blPostsImages.GetPostImagesByIdPostAsync(posts);
             var postsDocs = await blPostDocs.GetPostDocsByPostIdAsync(posts);
-            
+
+            // Eliminar imágenes si se indica
+            if (removeImages == "true")
+            {
+                foreach (var image in postsImages)
+                {
+                    string uploadDir = Path.Combine("C:\\");
+                    string fullPath = Path.Combine(uploadDir, image.PATH.TrimStart('/'));
+                    if (System.IO.File.Exists(fullPath))
+                    {
+                        try
+                        {
+                            System.IO.File.Delete(fullPath);
+                        }
+                        catch (Exception ex)
+                        {
+                            Console.WriteLine($"Error al eliminar archivo {fullPath}: {ex.Message}");
+                        }
+                    }
+                    else
+                    {
+                        Console.WriteLine($"Archivo no encontrado: {fullPath}");
+                    }
+                }
+                await blPostsImages.DeletePostsImagesByIdPostAsync(posts);
+            }
+
+            // Eliminar documentos si se indica
+            if (removeDocs == "true")
+            {
+                foreach (var doc in postsDocs)
+                {
+                    string uploadDir = Path.Combine("C:\\");
+                    string fullPath = Path.Combine(uploadDir, doc.Path.TrimStart('/'));
+                    if (System.IO.File.Exists(fullPath))
+                    {
+                        try
+                        {
+                            System.IO.File.Delete(fullPath);
+                        }
+                        catch (Exception ex)
+                        {
+                            Console.WriteLine($"Error al eliminar archivo {fullPath}: {ex.Message}");
+                        }
+                    }
+                    else
+                    {
+                        Console.WriteLine($"Archivo no encontrado: {fullPath}");
+                    }
+                }
+                await blPostDocs.DeleteAllPostsDocsByIdPostAsync(posts);
+            }
+
+            // Procesar nuevos archivos si se suben
             if (Request.Form.Files.Count > 0)
             {
                 foreach (var file in Request.Form.Files)
@@ -303,15 +350,13 @@ namespace Library.Client.MVC.Controllers
                     if (file.Length > 0)
                     {
                         var fileExtension = Path.GetExtension(file.FileName).ToLower();
-
                         if (fileExtension == ".jpg" || fileExtension == ".jpeg" || fileExtension == ".png")
                         {
-                            //Eliminar imagenes anteriores
+                            // Eliminar imágenes anteriores si se sube una nueva imagen
                             foreach (var image in postsImages)
                             {
-                                string uploadDir = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot");
+                                string uploadDir = Path.Combine("C:\\");
                                 string fullPath = Path.Combine(uploadDir, image.PATH.TrimStart('/'));
-
                                 if (System.IO.File.Exists(fullPath))
                                 {
                                     try
@@ -332,12 +377,11 @@ namespace Library.Client.MVC.Controllers
                         }
                         else
                         {
-                            //Eliminar documentos anteriores
+                            // Eliminar documentos anteriores si se sube un nuevo documento
                             foreach (var doc in postsDocs)
                             {
-                                string uploadDir = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot");
+                                string uploadDir = Path.Combine("C:\\");
                                 string fullPath = Path.Combine(uploadDir, doc.Path.TrimStart('/'));
-
                                 if (System.IO.File.Exists(fullPath))
                                 {
                                     try
@@ -356,11 +400,10 @@ namespace Library.Client.MVC.Controllers
                             }
                             await blPostDocs.DeleteAllPostsDocsByIdPostAsync(posts);
                         }
-
                     }
                 }
 
-                //Añadir nuevos archivos
+                // Añadir nuevos archivos
                 foreach (var file in Request.Form.Files)
                 {
                     if (file.Length > 0)
@@ -369,57 +412,49 @@ namespace Library.Client.MVC.Controllers
                         if (fileExtension == ".jpg" || fileExtension == ".jpeg" || fileExtension == ".png")
                         {
                             PostsImages _postsimages = new PostsImages();
-
-                            var uploadDir = Path.Combine("wwwroot", "images", "blog");
-
+                            var uploadDir = Path.Combine("C:\\", "ImagenesBlog");
                             if (!Directory.Exists(uploadDir))
                             {
                                 Directory.CreateDirectory(uploadDir);
                             }
-                            var uniqueFileName = posts.ID.ToString() + "_" +Guid.NewGuid().ToString()+".jpg";
+                            var uniqueFileName = posts.ID.ToString() + "_" + Guid.NewGuid().ToString() + ".jpg";
                             var filePath = Path.Combine(uploadDir, uniqueFileName);
-
                             using (var stream = new FileStream(filePath, FileMode.Create))
                             {
                                 await file.CopyToAsync(stream);
                             }
-                            Path.Combine("/images/blog", uniqueFileName);
-                            _postsimages.PATH = $"/images/blog/{uniqueFileName}";
+                            _postsimages.PATH = $"/ImagenesBlog/{uniqueFileName}";
                             _postsimages.POSTID = posts.ID;
                             await blPostsImages.CreatePostImageAsync(_postsimages);
                         }
                         else
                         {
                             PostsDocs _postsDocs = new PostsDocs();
-
-                            var uploadDir = Path.Combine("wwwroot", "documents", "blog");
-
+                            var uploadDir = Path.Combine("C:\\", "DocumentosBlog");
                             if (!Directory.Exists(uploadDir))
                             {
                                 Directory.CreateDirectory(uploadDir);
                             }
                             var uniqueFileName = $"{posts.ID}_{Guid.NewGuid()}{fileExtension}";
                             var filePath = Path.Combine(uploadDir, uniqueFileName);
-
                             using (var stream = new FileStream(filePath, FileMode.Create))
                             {
                                 await file.CopyToAsync(stream);
                             }
-                            Path.Combine("/documents/blog", uniqueFileName);
-                            _postsDocs.Path = $"/documents/blog/{uniqueFileName}";
+                            _postsDocs.Path = $"/DocumentosBlog/{uniqueFileName}";
                             _postsDocs.PostId = posts.ID;
                             await blPostDocs.CreatePostDocAsync(_postsDocs);
                         }
-                        
                     }
                 }
-                    
             }
 
             var result = await blPosts.UpdatePostAsync(posts);
+            TempData["EditSuccess"] = true;
             return RedirectToAction(nameof(Manage));
         }
-        
+
+        [Authorize(Policy = "AdminOnly")]
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Pin(long postId)
@@ -437,6 +472,7 @@ namespace Library.Client.MVC.Controllers
             return RedirectToAction(nameof(Manage));
         }
 
+        [Authorize(Policy = "AdminOnly")]
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Unpin(long postId)
@@ -454,7 +490,7 @@ namespace Library.Client.MVC.Controllers
             return RedirectToAction(nameof(Manage));
         }
 
-        
+        [Authorize(Policy = "AdminOnly")]
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Delete(long id)

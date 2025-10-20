@@ -1,534 +1,139 @@
 ﻿@{
-    ViewBag.ShowNavbar = false;
-}﻿
-<!DOCTYPE html>
-<html lang="es">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Normas de la Biblioteca</title>
-
-    <style>
-        body {
-            overflow-x: hidden;
-            background-color: white;
-            color: black;
-            margin: 0;
-            padding: 0;
-            font-family: Arial, sans-serif;
-        }
-
-        .container {
-            margin-top: 20px;
-        }
-
-        .img-fluid {
-            display: block;
-            margin: 0 auto;
-            width: 100%;
-            height: auto;
-        }
-
-        .img-container {
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            height: 140px;
-            margin-bottom: -10px;
-        }
-
-            .img-container img {
-                max-height: 100%;
-                max-width: 100%;
-            }
-
-        header,
-        footer {
-            width: 100vw;
-            margin: 0;
-            padding: 0;
-            position: relative;
-            left: 0;
-            right: 0;
-        }
-
-        .custom-header-bg {
-            background-color: #00537C !important;
-            width: 100%;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-            margin-top: 75px;
-        }
-
-        .footer-section {
-            background-color: #00537C;
-            color: white;
-            padding: 20px 0;
-            box-shadow: 0 -4px 8px rgba(0, 0, 0, 0.1);
-            width: 100%;
-        }
-
-            .footer-section .container {
-                display: flex;
-                flex-wrap: wrap;
-                justify-content: space-between;
-                max-width: 1200px;
-                margin: 0 auto;
-                padding: 0 20px;
-            }
-
-            .footer-section .footer {
-                display: flex;
-                flex-wrap: wrap;
-                justify-content: space-between;
-                width: 100%;
-            }
-
-                .footer-section .footer > div {
-                    flex: 1;
-                    margin: 10px;
-                }
-
-            .footer-section h3 {
-                display: inline-block;
-                border-bottom: 2px solid #fff;
-                padding-bottom: 5px;
-                margin-bottom: 10px;
-                font-size: 18px;
-                transition: color 0.3s ease, transform 0.3s ease;
-            }
-
-                .footer-section h3:hover {
-                    color: #f0f0f0;
-                    transform: scale(1.1);
-                }
-
-            .footer-section p,
-            .footer-section a {
-                color: white;
-                font-size: 14px;
-                line-height: 1.6;
-                text-decoration: none;
-                transition: color 0.3s ease, transform 0.3s ease;
-            }
-
-                .footer-section p:hover,
-                .footer-section a:hover {
-                    color: #f0f0f0;
-                    transform: scale(1.05);
-                }
-
-            .footer-section .contact-info {
-                margin-top: 10px;
-            }
-
-                .footer-section .contact-info i {
-                    margin-right: 10px;
-                    transition: transform 0.3s ease, color 0.3s ease;
-                }
-
-                    .footer-section .contact-info i:hover {
-                        transform: scale(1.2);
-                        color: #f0f0f0;
-                    }
-
-            .footer-section .social-icons {
-                margin-top: 15px;
-                display: flex;
-                gap: 10px;
-            }
-
-                .footer-section .social-icons a {
-                    color: white;
-                    font-size: 16px;
-                    width: 35px;
-                    height: 35px;
-                    background-color: transparent;
-                    border: 1px solid white;
-                    display: flex;
-                    align-items: center;
-                    justify-content: center;
-                    text-decoration: none;
-                    transition: all 0.3s ease;
-                }
-
-                    .footer-section .social-icons a.facebook:hover {
-                        background-color: white;
-                        color: #3b5998;
-                    }
-
-                    .footer-section .social-icons a.twitter:hover {
-                        background-color: white;
-                        color: #1da1f2;
-                    }
-
-                    .footer-section .social-icons a.instagram:hover {
-                        background-color: white;
-                        color: #e1306c;
-                    }
-
-                    .footer-section .social-icons a.youtube:hover {
-                        background-color: white;
-                        color: #ff0000;
-                    }
+    ViewData["Title"] = "Reglamento";
+    Layout = "~/Views/Shared/_LayoutUsers.cshtml";
+    ViewBag.ShowHeader = true;          // Para que aparezca
+    ViewBag.HeaderTitle = "Reglamento"; // Título dinámico
+}
 
 
-        .suggestions-btn {
-            background-color: #00aaff;
-            color: white;
-            padding: 8px 15px;
-            text-decoration: none;
-            display: flex;
-            align-items: center;
-            width: fit-content;
-            margin: 10px 0;
-            text-transform: uppercase;
-            font-size: 14px;
-            font-weight: normal;
-        }
-
-            .suggestions-btn i {
-                margin-right: 8px;
-            }
-
-            .suggestions-btn:hover {
-                background-color: #0088cc;
-            }
-
-        .footer-section .top-logos,
-        .footer-section .middle-logos,
-        .footer-section .bottom-logos {
-            display: flex;
-            justify-content: center;
-            margin: 5px 0;
-        }
-
-        .top-logos img,
-        .middle-logos img,
-        .bottom-logos img {
-            margin: 0 5px;
-            transition: transform 0.3s ease;
-            height: 120px;
-        }
-
-        .middle-logos img {
-            height: 60px;
-        }
-
-        .bottom-logos img {
-            height: 60px;
-        }
-
-            .top-logos img:hover,
-            .middle-logos img:hover,
-            .bottom-logos img:hover {
-                transform: scale(1.1);
-            }
-
-        .main-content {
-            width: 100%;
-            margin: 0 auto;
-            padding: 20px;
-            background-color: white;
-            color: black;
-        }
-
-            .main-content h2,
-            .main-content h3 {
-                color: #00537C;
-                font-weight: bold;
-            }
-
-            .main-content ul {
-                list-style-type: none;
-                padding: 0;
-            }
-
-                .main-content ul li {
-                    background-color: #f8f9fa;
-                    margin-bottom: 10px;
-                    padding: 10px;
-                    border-radius: 5px;
-                    border-left: 5px solid #00537C;
-                }
-
-                    .main-content ul li:hover {
-                        background-color: #e9ecef;
-                    }
-
-        .header-content {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            padding: 10px 20px;
-        }
-
-            .header-content .logo {
-                display: flex;
-                align-items: center;
-            }
-
-                .header-content .logo img {
-                    height: 50px;
-                    margin-right: 10px;
-                }
-
-            .header-content .contact-info {
-                display: flex;
-                align-items: center;
-            }
-
-                .header-content .contact-info div {
-                    display: flex;
-                    align-items: center;
-                    margin-left: 20px;
-                }
-
-                    .header-content .contact-info div i {
-                        font-size: 24px;
-                        margin-right: 15px;
-                        color: white;
-                    }
-
-                    .header-content .contact-info div span {
-                        display: block;
-                    }
-
-                        .header-content .contact-info div span:first-child {
-                            font-weight: bold;
-                        }
-
-        .scroll-up {
-            position: absolute;
-            right: 20px;
-            top: 50%;
-            transform: translateY(-50%);
-            background-color: #05237B;
-            color: white;
-            padding: 15px;
-            border-radius: 5px;
-            cursor: pointer;
-        }
-
-            .scroll-up i {
-                font-size: 20px;
-            }
-
-        .footer-b {
-            background-color: #00537C;
-            color: #ccc;
-            text-align: center;
-            padding: 20px;
-            position: relative;
-        }
-
-            .footer-b a {
-                color: #fff;
-                text-decoration: none;
-            }
-
-        @@media (max-width: 768px) {
-            .header-content {
-                flex-direction: column;
-                align-items: flex-start;
-            }
-
-                .header-content .contact-info {
-                    margin-top: 10px;
-                    justify-content: flex-start;
-                }
-
-                    .header-content .contact-info div {
-                        margin-left: 0;
-                        margin-right: 20px;
-                    }
-        }
-    </style>
-    <!-- FontAwesome Icons -->
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css" rel="stylesheet" />
-</head>
-
-<body>
-    <!-- Encabezado -->
-    <header class="custom-header-bg text-white py-3">
-        <div class="container-fluid">
-            <div class="d-flex justify-content-between align-items-center">
-                <!-- Logo -->
-                <div class="d-flex align-items-center">
-                    <a href="https://esfe.agape.edu.sv/">
-                        <img src="https://esfe.agape.edu.sv/wp-content/uploads/2024/02/logo-header-2.png" alt="Logo de ESFE/AGAPE" class="img-fluid" style="max-height: 60px; margin-right: 15px;">
-                    </a>
-                </div>
-                <!-- Información de contacto -->
-                <div class="d-flex align-items-center">
-                    <div class="d-flex align-items-center me-4">
-                        <i class="fas fa-phone-alt me-2"></i>
-                        <div class="text-white">
-                            <span class="d-block fw-bold">LLÁMANOS</span>
-                            <span>2429-9721</span>
-                        </div>
+<!-- Detail Start -->
+<div class="container-fluid py-1">
+    <div class="container py-1">
+        <div class="row">
+            <!-- CONTENIDO PRINCIPAL -->
+            <div class="col-lg-8">
+                <!-- Normas -->
+                <div class="mb-5">
+                    <div class="section-title position-relative mb-5">
+                        <h6 class="d-inline-block position-relative text-secondary text-uppercase pb-2">
+                            Reglamento Biblioteca
+                        </h6>
+                        <h1 class="display-4">Normas de Comportamiento Social</h1>
                     </div>
-                    <div class="d-flex align-items-center">
-                        <i class="fas fa-envelope me-2"></i>
-                        <div class="text-white">
-                            <span class="d-block fw-bold">ESCRÍBENOS</span>
-                            <span>biblioteca.esfe@agape.edu.sv</span>
+                    <img class="img-fluid rounded w-100 mb-4" src="~/User/img/BibliotecaReglamento1.jpg" alt="Biblioteca">
+
+                    <div class="row">
+                        <div class="col-md-12">
+                            <ul class="list-group list-group-flush">
+                                <li class="list-group-item"><strong>1.</strong> Al ingresar a la biblioteca usted debe guardar silencio.</li>
+                                <li class="list-group-item"><strong>2.</strong> Haga buen uso de la sala de lectura.</li>
+                                <li class="list-group-item"><strong>3.</strong> Al retirarse de la biblioteca debe dejar ordenadas las sillas.</li>
+                                <li class="list-group-item"><strong>4.</strong> No deje basura sobre las mesas, sea ordenado y limpio.</li>
+                                <li class="list-group-item"><strong>5.</strong> No ingrese con alimentos ni bebidas, consúmalos fuera de la biblioteca.</li>
+                                <li class="list-group-item"><strong>6.</strong> Modere el tono de voz dentro de la biblioteca.</li>
+                                <li class="list-group-item"><strong>7.</strong> Evite usar vocabulario inadecuado dentro de la biblioteca.</li>
+                                <li class="list-group-item"><strong>8.</strong> Haga buen uso del equipo informático.</li>
+                                <li class="list-group-item"><strong>9.</strong> Solicite el equipo informático al encargado y llene el formato de préstamo de PC.</li>
+                                <li class="list-group-item"><strong>10.</strong> Solo se permite una persona por PC para evitar aglomeraciones.</li>
+                                <li class="list-group-item"><strong>11.</strong> Al abandonar la PC, pierde el derecho a seguir usándola.</li>
+                                <li class="list-group-item"><strong>12.</strong> No deje objetos personales para reservar el equipo; serán retirados por el personal.</li>
+                            </ul>
                         </div>
                     </div>
                 </div>
-            </div>
-        </div>
-    </header>
 
-
-    <!-- Contenido principal -->
-    <div class="main-content">
-        <h2 class="text-dark border-bottom pb-2 mb-4">Normas de Comportamiento Social Dentro de la Biblioteca</h2>
-        <div class="mb-5">
-            <ul class="list-group">
-                <li class="list-group-item">1. Al ingresar a la biblioteca usted debe guardar silencio.</li>
-                <li class="list-group-item">2. Haga buen uso de la sala de lectura.</li>
-                <li class="list-group-item">3. Al retirarse de la biblioteca debe dejar ordenadas las sillas.</li>
-                <li class="list-group-item">4. No deje basura sobre las mesas, sea ordenado y limpio.</li>
-                <li class="list-group-item">5. No ingrese con alimentos ni bebidas, consúmalos fuera de la biblioteca.</li>
-                <li class="list-group-item">6. Modere el tono de voz dentro de la biblioteca.</li>
-                <li class="list-group-item">7. Evite usar vocabulario inadecuado dentro de la biblioteca.</li>
-                <li class="list-group-item">8. Haga buen uso del equipo informático.</li>
-                <li class="list-group-item">9. Solicite el equipo informático al encargado y llene el formato de préstamo de PC.</li>
-                <li class="list-group-item">10. Solo se permite una persona por PC para evitar aglomeraciones.</li>
-                <li class="list-group-item">11. Al abandonar la PC, pierde el derecho a seguir usándola.</li>
-                <li class="list-group-item">12. No deje objetos personales para reservar el equipo; serán retirados por el personal.</li>
-            </ul>
-        </div>
-
-        <h3 class="text-dark border-bottom pb-2 mb-4">Requisitos de Préstamos Bibliográficos</h3>
-        <div class="mb-5">
-            <ul class="list-group">
-                <li class="list-group-item">1. Carnet vigente de estudiante activo.</li>
-                <li class="list-group-item">2. El número de textos prestados no podrá exceder de 2 para préstamo externo y 3 para préstamo interno.</li>
-                <li class="list-group-item">3. Solo se prestarán recursos con tres o más ejemplares para uso externo.</li>
-                <li class="list-group-item">4. El préstamo es personal e intransferible.</li>
-                <li class="list-group-item">5. El usuario es responsable por el extravío o daño del recurso prestado.</li>
-                <li class="list-group-item">6. El retraso en la devolución implica una mora de $0.50 por día.</li>
-            </ul>
-        </div>
-        <h3 class="text-dark border-bottom pb-2 mb-4">Lineamentos para el prestamo de computadoras portátiles institucionales para estudiantes</h3>
-        <div class="mb-5">
-            <ul>
-                <strong> 1.Requisitos de Elegibilidad</strong>
-                <ul>
-                    <li>El préstamo de computadoras portátiles está disponible únicamente para estudiantes activos de la Escuela Superior Franciscana Especializada/AGAPE.</li>
-                    <li>Los estudiantes deben estar matriculados y tener un estado académico activo.</li>
-                </ul>
-                <strong>2. Proceso de Préstamo</strong>
-                <ul>
-                    <li>El préstamo se realizará en el orden de llegada y tras completar las solicitudes correspondientes.</li>
-                    <li>Cada estudiante puede solicitar solo un equipo informático al día, presentando su carnet institucional vigente junto con un documento de identidad (DUI, carnet de minoridad o licencia de conducir).</li>
-                    <li>El equipo es de uso exclusivo dentro de la institución, y el estudiante es responsable del buen uso del mismo.</li>
-                </ul>
-                <strong>3. Condiciones para Docentes</strong>
-                <ul>
-                    <li>Los docentes pueden solicitar hasta 15 computadoras para uso exclusivo en actividades académicas de su clase, y deben devolver el equipo al finalizar.</li>
-                    <li>La solicitud debe realizarse preferiblemente un día antes o al menos 5 horas antes de la clase, para permitir la preparación y reserva del equipo.</li>
-                    <li>Es responsabilidad del docente devolver el equipo en buen estado, y está prohibido que lo preste en nombre de los estudiantes.</li>
-                </ul>
-                <strong>4. Horarios de Préstamo y Devolución</strong>
-                <ul>
-                    <li>El servicio de préstamo está disponible de lunes a jueves de 7:30 a.m. a 6:45 p.m., y los viernes hasta las 4:00 p.m.</li>
-                    <li>Los estudiantes deben devolver el equipo puntualmente antes de las 6:45 p.m. de lunes a jueves, y antes de las 4:00 p.m. los viernes.</li>
-                </ul>
-                <strong>5. Proceso de Solicitud</strong>
-                <ul>
-                    <li>Los estudiantes deben llenar la solicitud de préstamo de laptop en formato digital o físico en la biblioteca con tiempo para cumplir con el proceso establecido.</li>
-                    <li>Los docentes deben llenar la solicitud preferiblemente un día antes o al menos 5 horas antes de su clase, evitando hacerlo justo antes de la misma para asegurar la disponibilidad y preparación del equipo.</li>
-                </ul>
-                <strong>6. Documentación Requerida</strong>
-                <ul>
-                    <li><strong>Estudiantes:</strong> carnet institucional vigente y un documento de identidad legal con fotografía (DUI, carnet de minoridad o licencia de conducir).</li>
-                    <li><strong>Docentes:</strong> DUI o licencia de conducir.</li>
-                </ul>
-
-                <strong>7. Extensión de Tiempo de Préstamo</strong>
-                <ul>
-                    <li>Si un estudiante necesita más tiempo, debe acudir a la biblioteca para solicitar una extensión del horario de préstamo, presentándose con el equipo asignado.</li>
-                    <li>La extensión se puede realizar solo una vez al día.</li>
-                </ul>
-                <strong>8. Cuidado del Equipo</strong>
-                <ul>
-                    <li>El préstamo incluye el cargador de la computadora; en caso de pérdida o daño, se aplicará una sanción establecida institucionalmente.</li>
-                    <li>Las laptops deben devolverse en el mismo estado en que se entregaron, y cualquier retraso en la devolución puede resultar en sanciones o suspensión de futuros préstamos.</li>
-                </ul>
-                <strong>9. Restricciones de Uso</strong>
-                <ul>
-                    <li>Está prohibido extraer la laptop de la institución. En caso de hacerlo, se aplicará una multa establecida.</li>
-                    <li>No se debe utilizar el equipo para fines no académicos, ni instalar o descargar aplicaciones sin autorización.</li>
-                    <li>Evitar dejar archivos personales en el equipo, ya que podrían ser utilizados por otros usuarios.</li>
-                    <li>Es responsabilidad del solicitante cualquier daño o pérdida del equipo, así como los riesgos asociados a prestar la laptop a otra persona o estudiante.</li>
-                </ul>
-            </ul>
-        </div>
-    </div>
-
-    <footer class="footer-section mt-5">
-        <div class="container">
-            <div class="footer">
-                <div>
-                    <h3 style="color: white;">ESCUELA SUPERIOR FRANCISCANA ESPECIALIZADA/AGAPE</h3>
-                    <div class="top-logos">
-                        <a href="https://esfe.agape.edu.sv/"><img alt="ESFE Agape logo" height="120" src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTMMy9MjdV9fz53K5CSuITP9tvJoC_-yLjxIQ&s" width="90" /></a>
-                        <a href="https://agapesv.com/"><img alt="Agape logo" height="120" src="https://agapesv.com/wp-content/uploads/2022/07/IsologoAgape-01.png" width="90" /></a>
+                <!-- Requisitos de préstamo -->
+                <div class="mb-5">
+                    <div class="section-title position-relative mb-4">
+                        <h1 class="h3">Requisitos de Préstamos Bibliográficos</h1>
                     </div>
-                    <div class="middle-logos">
-                        <a href="https://www.mined.gob.sv/"><img alt="Ministerio de Educación, Ciencia y Tecnología logo" height="60" src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQ2Vw40lGUfHPTBnOZInp4PpvCATx83y0nKuBPUEjy1bA2ZB42PyeSPdnb06irskGtt7ws&usqp=CAU" width="90" /></a>
-                        <a href="https://cbues.org.sv/"><img alt="CBUES logo" height="60" src="https://cbues.org.sv/wp-content/uploads/2023/08/imagenes-y-logos-de-cbues.png" width="90" /></a>
-                    </div>
-                    <div class="bottom-logos">
-                        <a href="https://www.uniagustiniana.edu.co/"><img alt="ebooks 7-24 logo" height="60" src="https://www.uniagustiniana.edu.co/sites/default/files/styles/noticia_imagen_max_767px/public/noticias/01-2017/Nueva-herramienta-ebooks-7-24.jpg?itok=cCZekHTd" width="180" /></a>
-                    </div>
+                    <ul class="list-group list-group-flush">
+                        <li class="list-group-item"><strong>1.</strong> Carnet vigente de estudiante activo.</li>
+                        <li class="list-group-item"><strong>2.</strong> Máximo de 1 reservacion, para hacer otro prestamo ir a Biblioteca de forma presencial.</li>
+                        <li class="list-group-item"><strong>3.</strong> Solo se prestarán recursos con tres o más ejemplares para uso externo.</li>
+                        <li class="list-group-item"><strong>4.</strong> El préstamo es personal e intransferible.</li>
+                        <li class="list-group-item"><strong>5.</strong> El usuario es responsable por extravío o daño del recurso.</li>
+                        <li class="list-group-item"><strong>6.</strong> Mora de $0.50 por día en caso de retraso.</li>
+                    </ul>
                 </div>
-                <div>
-                    <h3 style="color: white;">NOSOTROS</h3>
-                    <p>La Escuela Superior Franciscana Especializada/Agape (ESFE/AGAPE), es una Institución de Educación Superior dedicada a la formación de Profesionales Técnicos en las áreas de Ingeniería Eléctrica, Ingeniería de Desarrollo de Software y Gestión y Desarrollo Turístico, brindamos servicios de capacitación, cursos y diplomados, dirigidos a trabajadores de empresas y público en general, además nuestra Escuela de Idiomas ofrece servicios educativos en los niveles básico, intermedio y avanzado del idioma inglés para niños, jóvenes y adultos.</p>
-                </div>
-                <div>
-                    <h3 style="color: white;">ESCRÍBENOS</h3>
-                    <p><a href="mailto:esfe@agape.edu.sv"><i class="fas fa-envelope"></i> biblioteca.esfe@agape.edu.sv</a></p>
-                    <a class="suggestions-btn" href="https://agapesv.com/escribanos/">
-                        <i class="fas fa-envelope"></i> ENVÍANOS TUS SUGERENCIAS
-                    </a>
 
-                    <h3 style="color: white;">CONTÁCTENOS</h3>
-                    <div class="contact-info">
-                        <p><i class="fas fa-phone-alt"></i> 2429-9721</p>
+                <!-- Lineamientos Laptops -->
+                <div class="mb-5">
+                    <div class="section-title position-relative mb-4">
+                        <h1 class="h3">Lineamientos para Préstamo de Laptops</h1>
                     </div>
-                    <div class="social-icons">
-                        <a href="https://www.facebook.com/ESFE.AGAPE" class="facebook"><i class="fab fa-facebook-f"></i></a>
-                        <a href="https://twitter.com/ESFE_AGAPE" class="twitter"><i class="fab fa-twitter"></i></a>
-                        <a href="https://www.instagram.com/esfe_agapeelsalvador/" class="instagram"><i class="fab fa-instagram"></i></a>
-                        <a href="https://www.youtube.com/@@escuelasuperiorfranciscana5655" class="youtube"><i class="fab fa-youtube"></i></a>
+                    <div class="accordion" id="accordionLaptops">
+                        <div class="card">
+                            <div class="card-header" id="heading1">
+                                <h2 class="mb-0">
+                                    <button class="card-header btn btn-link" type="button" data-bs-toggle="collapse" data-bs-target="#collapse1">
+                                        1. Requisitos de Elegibilidad
+                                    </button>
+                                </h2>
+                            </div>
+                            <div id="collapse1" class="collapse show" data-parent="#accordionLaptops">
+                                <div class="card-body">
+                                    <ul>
+                                        <li>Disponible únicamente para estudiantes activos de la institución.</li>
+                                        <li>Deben estar matriculados y con estado académico activo.</li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="card">
+                            <div class="card-header" id="heading2">
+                                <h2 class="mb-0">
+                                    <button class="card-header btn btn-link collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapse2">
+                                        2. Proceso de Préstamo
+                                    </button>
+                                </h2>
+                            </div>
+                            <div id="collapse2" class="collapse" data-parent="#accordionLaptops">
+                                <div class="card-body">
+                                    <ul>
+                                        <li>Préstamo en orden de llegada con reservacion completada.</li>
+                                        <li>Presentar carnet + documento de identidad.</li>
+                                        <li>Uso exclusivo dentro de la institución.</li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Puedes seguir adaptando las secciones 3 a 9 de laptops igual que arriba -->
                     </div>
                 </div>
             </div>
-        </div>
-    </footer>
-    <div class="footer-b">
-        <div class="container">
-            <div class="footer">
-                © 2024 - Escuela Superior Franciscana Especializada/Agape
-                <div class="scroll-up" onclick="scrollToTop()">
-                    <i class="fas fa-chevron-up"></i>
+
+            <!-- COLUMNA DERECHA -->
+            <div class="col-lg-4 mt-5 mt-lg-0">
+                <div class="bg-primary mb-5 py-3">
+                    <h3 class="text-white py-3 px-4 m-0">Información</h3>
+                    <div class="d-flex justify-content-between border-bottom px-4">
+                        <h6 class="text-white my-3">Horario</h6>
+                        <h6 class="text-white my-3">Lun-Jue: 7:30-6:45 <br> Vie: 7:30-4:00</h6>
+                    </div>
+                    <div class="d-flex justify-content-between border-bottom px-4">
+                        <h6 class="text-white my-3">Ubicación</h6>
+                        <h6 class="text-white my-3">Biblioteca ESFE/AGAPE</h6>
+                    </div>
+                    <div class="d-flex justify-content-between px-4">
+                        <h6 class="text-white my-3">Contacto</h6>
+                        <h6 class="text-white my-3">biblioteca@agape.edu.sv</h6>
+                    </div>
+                </div>
+
+                <div class="mb-5">
+                    <h2 class="mb-3">Categorías</h2>
+                    <ul class="list-group list-group-flush">
+                        <li class="list-group-item">Normas</li>
+                        <li class="list-group-item">Préstamos Bibliográficos</li>
+                        <li class="list-group-item">Lineamientos Laptops</li>
+                        <li class="list-group-item">Restricciones</li>
+                    </ul>
                 </div>
             </div>
         </div>
     </div>
-
-    <script>
-        function scrollToTop() {
-            window.scrollTo({
-                top: 0,
-                behavior: 'smooth'
-            });
-        }
-    </script>
-</body>
-
-</html>
+</div>
+<!-- Detail End -->

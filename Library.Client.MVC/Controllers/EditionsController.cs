@@ -12,21 +12,35 @@ namespace Library.Client.MVC.Controllers
     {
         BLEditions editionsBL = new BLEditions();
 
-        // GET: AcquisitionTypesController
-        public async Task<IActionResult> Index(Editions pEditions = null)
+        public async Task<IActionResult> Index(Editions pEditions = null, int page = 1, int pageSize = 10)
         {
             if (pEditions == null)
                 pEditions = new Editions();
             if (pEditions.Top_Aux == -1)
-                pEditions.Top_Aux = 10;
-            else
-               if (pEditions.Top_Aux == 1)
                 pEditions.Top_Aux = 0;
-            var editions = await editionsBL.GetEditionsAsync(pEditions);
-            ViewBag.Top = pEditions.Top_Aux;
+            else if (pEditions.Top_Aux == 1)
+                pEditions.Top_Aux = 0;
+
+            var allEditions = await editionsBL.GetEditionsAsync(pEditions);
+            allEditions = allEditions.OrderBy(e => e.EDITION_ID).ToList();
+
+            // Aplicar paginación
+            int totalRegistros = allEditions.Count();
+            int totalPaginas = totalRegistros > 0 ? (int)Math.Ceiling((double)totalRegistros / pageSize) : 1;
+            ViewBag.TotalPaginas = totalPaginas;
+            var editions = allEditions
+                .Skip((page - 1) * pageSize)
+                .Take(pageSize)
+                .ToList();
+
+            ViewBag.TotalPaginas = totalPaginas;
+            ViewBag.PaginaActual = page;
+            ViewBag.Top = pageSize;
             ViewBag.ShowMenu = true;
+
             return View(editions);
         }
+
 
         // GET: AcquisitionTypesController/Details/5
         public async Task<ActionResult> Details(int id)
@@ -67,6 +81,7 @@ namespace Library.Client.MVC.Controllers
                 else
                 {
                     // seguimineot regular para las peticiones que no seas AJAX
+                    TempData["CreateSuccess"] = true;
                     return RedirectToAction(nameof(Index));
                 }
             }
@@ -100,6 +115,7 @@ namespace Library.Client.MVC.Controllers
             try
             {
                 int result = await editionsBL.UpdateEditionsAsync(pEditions);
+                TempData["EditSuccess"] = true;
                 return RedirectToAction(nameof(Index));
             }
             catch (Exception ex)
@@ -110,28 +126,40 @@ namespace Library.Client.MVC.Controllers
         }
 
         // GET: CategoriesController/Delete/5
-        public async Task<IActionResult> Delete(int id)
-        {
-            var editions = await editionsBL.GetEditionsByIdAsync(new Editions { EDITION_ID = id });
-            ViewBag.ShowMenu = true;
-            return View(editions);
-        }
+        //public async Task<IActionResult> Delete(int id)
+        //{
+        //    var editions = await editionsBL.GetEditionsByIdAsync(new Editions { EDITION_ID = id });
+        //    ViewBag.ShowMenu = true;
+        //    return View(editions);
+        //}
 
         // POST: CategoriesController/Delete/5
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Delete(int id, Editions pEditions)
+        public async Task<IActionResult> Delete(int id)
         {
             try
             {
                 int result = await editionsBL.DeleteEditionsAsync(new Editions { EDITION_ID = id });
-                return RedirectToAction(nameof(Index));
+                return Ok(new { success = true, message = "Edición eliminada correctamente." });
             }
             catch (Exception ex)
             {
-                ViewBag.Error = ex.Message;
-                return View(pEditions);
+                return BadRequest(new { success = false, message = ex.Message });
             }
         }
+
+        [HttpGet]
+        public async Task<IActionResult> Search(string nombre)
+        {
+            var lista = await editionsBL.GetEditionsAsync(new Editions { EDITION_NUMBER = nombre });
+            var resultado = lista.Select(e => new
+            {
+                editionId = e.EDITION_ID,
+                editionNumber = e.EDITION_NUMBER
+            });
+            return Json(resultado);
+        }
+
     }
 }

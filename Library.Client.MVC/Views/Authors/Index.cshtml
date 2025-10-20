@@ -10,137 +10,349 @@
 }
 
 <style>
-    .page-header {
-        margin-bottom: 30px;
-        border-bottom: 1px solid #dee2e6;
-        padding-bottom: 10px;
+    body {
+        overflow-x: hidden;
     }
 
-    .form-filter {
+    .spacer {
+        margin-right: 20px;
+    }
+
+    #contenedor-principal {
+        border-radius: 0.5rem;
+    }
+
+    #contenedor-principal {
+        border-radius: 0.5rem;
+        transition: all 0.3s ease;
+    }
+
+        #contenedor-principal:hover {
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+            transform: translateY(-2px);
+            border: 1px solid #e5e7eb;
+        }
+
+    #btn-create {
+        transition: all 0.3s ease;
+    }
+
+        #btn-create:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 6px 15px rgba(0, 0, 0, 0.2);
+        }
+
+    .fade-page {
+        opacity: 0;
+        transition: opacity 0.5s ease;
+    }
+
+        .fade-page.show {
+            opacity: 1;
+        }
+
+    .pagination-container {
         display: flex;
-        flex-wrap: wrap;
-        gap: 1rem;
-        margin-bottom: 20px;
-        align-items: center;
+        justify-content: center;
+        margin-top: 15px;
+        gap: 5px;
     }
 
-    .form-filter input,
-    .form-filter select {
-        min-width: 180px;
-        max-width: 100%;
+    .page-btn {
+        display: inline-block;
+        padding: 6px 12px;
+        border: 1px solid #d1d5db;
+        background-color: #f9fafb;
+        color: #374151;
+        text-decoration: none;
+        border-radius: 5px;
+        font-size: 14px;
+        transition: all 0.2s ease;
     }
 
-    .table-container {
-        overflow-x: auto;
+        .page-btn:hover {
+            background-color: #e5e7eb;
+            color: #111827;
+        }
+
+        .page-btn.active {
+            background-color: #d1d5db;
+            color: #111827;
+            font-weight: bold;
+            border-color: #9ca3af;
+        }
+
+    #suggestionsContainer .suggestion-item:hover {
+        background-color: #f0f0f0;
     }
 
-    .btn-group-sm .btn {
+    .anchoAccionesLibro .btn {
+        min-width: 80px;
         margin-right: 5px;
     }
 
+    .anchoAccionesLibro > div {
+        display: flex;
+        gap: 5px;
+    }
+
     @@media (max-width: 768px) {
-        .form-filter {
-            flex-direction: column;
-            align-items: stretch;
+        .form-busqueda {
+            flex-direction: column !important;
+            align-items: stretch !important;
         }
 
-        .form-filter button {
+        .spacer {
+            margin-right: 0 !important;
+            margin-bottom: 10px !important;
+        }
+
+        #btn-create {
+            width: 100% !important;
+            margin-bottom: 15px;
+        }
+
+        .anchoAccionesLibro .btn {
+            display: block;
             width: 100%;
+            margin-bottom: 5px;
+        }
+
+        table.table td,
+        table.table th {
+            font-size: 14px;
+            white-space: nowrap;
+        }
+
+        .table-responsive {
+            overflow-x: auto;
         }
     }
 </style>
 
-<div class="container mt-4">
-    <div class="page-header">
-        <h2 class="text-primary">Listado de Autores</h2>
-    </div>
+<div class="card" id="contenedor-principal">
+    <div class="card-body">
+        <h1 style="padding:15px; font-family: 'Poppins', sans-serif; font-weight: 600; margin-left: -15px;">Autores</h1>
 
-    <a asp-action="Create" class="btn btn-success btn-sm">
-        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-plus-square" viewBox="0 0 16 16">
-            <path d="M14 1a1 1 0 0 1 1 1v12a1 1 0 0 1-1 1H2a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1zM2 0a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V2a2 2 0 0 0-2-2z" />
-            <path d="M8 4a.5.5 0 0 1 .5.5v3h3a.5.5 0 0 1 0 1h-3v3a.5.5 0 0 1-1 0v-3h-3a.5.5 0 0 1 0-1h3v-3A.5.5 0 0 1 8 4" />
-        </svg>
-        Crear
-    </a>
+        <div class="row g-2 mb-3 align-items-center">
+            <div class="col-12 col-md-auto">
+                <a asp-action="Create" class="btn btn-success w-100" id="btn-create">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-plus-square" viewBox="0 0 16 16">
+                        <path d="M14 1a1 1 0 0 1 1 1v12a1 1 0 0 1-1 1H2a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1zM2 0a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V2a2 2 0 0 0-2-2z" />
+                        <path d="M8 4a.5.5 0 0 1 .5.5v3h3a.5.5 0 0 1 0 1h-3v3a.5.5 0 0 1-1 0v-3h-3a.5.5 0 0 1 0-1h3v-3A.5.5 0 0 1 8 4" />
+                    </svg>
+                    <i class="bi bi-plus-square"></i> Crear Nuevo
+                </a>
+            </div>
+            <div class="col">
+                <form asp-action="Index" class="d-flex form-busqueda flex-wrap">
+                    <div class="spacer">
+                        <input type="text" name="AUTHOR_NAME" placeholder="Buscar por nombre" class="form-control" />
+                    </div>
+                    <div class="spacer d-flex align-items-center">
+                        <label class="control-label me-2">Top</label>
+                        <select name="top_aux" class="form-control">
+                            @foreach (var item in tops)
+                            {
+                                string strItem = item != -1 ? item.ToString() : "Todos";
+                                string selected = item == topActual ? "selected" : "";
+                                <option value="@item" selected="@selected">@strItem</option>
+                            }
+                        </select>
+                    </div>
+                    <div class="spacer">
+                        <button type="submit" class="btn btn-secondary">
+                            <i class="bi bi-reply-fill"></i> Buscar
+                        </button>
+                    </div>
+                    <input type="hidden" name="page" value="@ViewBag.PaginaActual" />
+                </form>
+            </div>
+        </div>
 
+        <hr />
 
-
-
-        <form asp-action="Index" class="form-filter">
-            <input type="text" name="AUTHOR_NAME" placeholder="Buscar por nombre" class="form-control" />
-            <div class="d-flex align-items-center gap-2">
-                <label for="top_aux" class="mb-0">Top:</label>
-                <select name="top_aux" id="top_aux" class="form-control">
-                    @foreach (var item in tops)
+        <div class="table-responsive fade-page show" id="tableContainer">
+            <table id="customers" class="table">
+                <thead>
+                    <tr>
+                        <th class="borIz">@Html.DisplayNameFor(model => model.First().AUTHOR_ID)</th>
+                        <th>@Html.DisplayNameFor(model => model.First().AUTHOR_NAME)</th>
+                        <th class="borDer">Acciones</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var item in Model)
                     {
-                        string strItem = item != -1 ? item.ToString() : "Todos";
-                        if (item != topActual)
+                        <tr>
+                            <td>@item.AUTHOR_ID</td>
+                            <td>@item.AUTHOR_NAME</td>
+                            <td class="anchoAccionesLibro">
+                                <a asp-action="Edit" asp-route-id="@item.AUTHOR_ID" class="btn btn-info" style="background: #1D4ED8">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-pencil-square" viewBox="0 0 16 16">
+                                        <path d="M15.502 1.94a.5.5 0 0 1 0 .706L14.459 3.69l-2-2L13.502.646a.5.5 0 0 1 .707 0l1.293 1.293zm-1.75 2.456-2-2L4.939 9.21a.5.5 0 0 0-.121.196l-.805 2.414a.25.25 0 0 0 .316.316l2.414-.805a.5.5 0 0 0 .196-.12l6.813-6.814z" />
+                                        <path fill-rule="evenodd" d="M1 13.5A1.5 1.5 0 0 0 2.5 15h11a1.5 1.5 0 0 0 1.5-1.5v-6a.5.5 0 0 0-1 0v6a.5.5 0 0 1-.5.5h-11a.5.5 0 0 1-.5-.5v-11a.5.5 0 0 1 .5-.5H9a.5.5 0 0 0 0-1H2.5A1.5 1.5 0 0 0 1 2.5z" />
+                                    </svg>
+                                    Editar
+                                </a>
+                                @*<a asp-action="Details" asp-route-id="@item.AUTHOR_ID" class="btn btn-info">
+                                    <i class="bi bi-eye"></i> Detalles
+                                </a>*@
+                                <a href="javascript:void(0)" onclick="confirmDelete(@item.AUTHOR_ID)" class="btn btn-danger" style="background-color: #cc2649">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-trash3" viewBox="0 0 16 16">
+                                        <path d="M6.5 1h3a.5.5 0 0 1 .5.5v1H6v-1a.5.5 0 0 1 .5-.5M11 2.5v-1A1.5 1.5 0 0 0 9.5 0h-3A1.5 1.5 0 0 0 5 1.5v1H1.5a.5.5 0 0 0 0 1h.538l.853 10.66A2 2 0 0 0 4.885 16h6.23a2 2 0 0 0 1.994-1.84l.853-10.66h.538a.5.5 0 0 0 0-1zm1.958 1-.846 10.58a1 1 0 0 1-.997.92h-6.23a1 1 0 0 1-.997-.92L3.042 3.5zm-7.487 1a.5.5 0 0 1 .528.47l.5 8.5a.5.5 0 0 1-.998.06L5 5.03a.5.5 0 0 1 .47-.53Zm5.058 0a.5.5 0 0 1 .47.53l-.5 8.5a.5.5 0 1 1-.998-.06l.5-8.5a.5.5 0 0 1 .528-.47M8 4.5a.5.5 0 0 1 .5.5v8.5a.5.5 0 0 1-1 0V5a.5.5 0 0 1 .5-.5" />
+                                    </svg>
+                                    Eliminar
+                                </a>
+                            </td>
+                        </tr>
+                        numRegistros++;
+                        if (numRegistros == numRegistrosPorPage)
                         {
-                            <option value="@item">@strItem</option>
-                        }
-                        else
-                        {
-                            <option selected value="@item">@strItem</option>
+                            numPage++;
+                            numRegistros = 0;
                         }
                     }
-                </select>
-            </div>
-            <button type="submit" class="btn btn-outline-primary">
-                <i class="bi bi-search"></i> Buscar
-            </button>
+                    @if (numRegistros == 0)
+                    {
+                        numPage--;
+                    }
+                </tbody>
+            </table>
+        </div>
+
+        @if (ViewBag.TotalPaginas > 1)
+        {
+            <nav class="pagination-container">
+                @if (ViewBag.PaginaActual > 1)
+                {
+                    <a class="page-btn" asp-action="Index" asp-route-page="@(ViewBag.PaginaActual - 1)">Anterior</a>
+                }
+                @for (int i = 1; i <= ViewBag.TotalPaginas; i++)
+                {
+                    <a class="page-btn @(i == ViewBag.PaginaActual ? "active" : "")" asp-action="Index" asp-route-page="@i">@i</a>
+                }
+                @if (ViewBag.PaginaActual < ViewBag.TotalPaginas)
+                {
+                    <a class="page-btn" asp-action="Index" asp-route-page="@(ViewBag.PaginaActual + 1)">Siguiente</a>
+                }
+            </nav>
+        }
+
+        <form style="display:none;">
+            @Html.AntiForgeryToken()
         </form>
     </div>
-
-    <div class="table-container">
-        <table class="table table-striped table-bordered align-middle">
-            <thead class="table-light">
-                <tr>
-                    <th>@Html.DisplayNameFor(model => model.AUTHOR_ID)</th>
-                    <th>@Html.DisplayNameFor(model => model.AUTHOR_NAME)</th>
-                    <th>Acciones</th>
-                </tr>
-            </thead>
-            <tbody>
-                @foreach (var item in Model)
-                {
-                    <tr>
-                        <td>@Html.DisplayFor(modelItem => item.AUTHOR_ID)</td>
-                        <td>@Html.DisplayFor(modelItem => item.AUTHOR_NAME)</td>
-                        <td>
-                            <div class="btn-group-sm d-flex">
-                                <a asp-action="Edit" asp-route-id="@item.AUTHOR_ID" class="btn btn-warning">
-                                    <i class="bi bi-pencil-square"></i> Editar
-                                </a>
-                                <a asp-action="Details" asp-route-id="@item.AUTHOR_ID" class="btn btn-info">
-                                    <i class="bi bi-eye"></i> Detalles
-                                </a>
-                                <a asp-action="Delete" asp-route-id="@item.AUTHOR_ID" class="btn btn-danger">
-                                    <i class="bi bi-trash"></i> Eliminar
-                                </a>
-                            </div>
-                        </td>
-                    </tr>
-                    numRegistros++;
-                    if (numRegistros == numRegistrosPorPage)
-                    {
-                        numPage++;
-                        numRegistros = 0;
-                    }
+</div>
+@section Scripts {
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script>
+        function confirmDelete(authorId) {
+            Swal.fire({
+                title: '¿Estás seguro?',
+                text: "¡No podrás revertir esto!",
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#EF4444',
+                cancelButtonColor: '#6c757d',
+                confirmButtonText: 'Sí, eliminar Autor',
+                cancelButtonText: 'Cancelar'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    // Hacer la petición AJAX para eliminar
+                    fetch(`/Authors/Delete/${authorId}`, {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'RequestVerificationToken': document.querySelector('input[name="__RequestVerificationToken"]').value
+                        }
+                    })
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.success) {
+                            Swal.fire(
+                                '¡Autor Eliminado!',
+                                data.message,
+                                'success'
+                            ).then(() => {
+                                // Recargar la página para reflejar los cambios
+                                location.reload();
+                            });
+                        } else {
+                            Swal.fire(
+                                'Error',
+                                data.message,
+                                'error'
+                            );
+                        }
+                    })
+                    .catch(error => {
+                        Swal.fire(
+                            'Error',
+                            'Ocurrió un error al intentar eliminar el Autor.',
+                            'error'
+                        );
+                    });
                 }
-            </tbody>
-        </table>
-    </div>
+            });
+        }
+    </script>
+    <script>
+        document.addEventListener("DOMContentLoaded", () => {
+            const container = document.getElementById("tableContainer");
+            setTimeout(() => container.classList.add("show"), 50);
 
-    @if (numPage > 1)
-    {
-        <nav>
-            <ul class="pagination justify-content-center mt-3">
-                <li class="page-item"><a class="page-link" href="#">Anterior</a></li>
-                @for (var i = 1; i <= numPage; i++)
-                {
-                    <li class="page-item"><a class="page-link" href="#">@i</a></li>
-                }
-                <li class="page-item"><a class="page-link" href="#">Siguiente</a></li>
-            </ul>
-        </nav>
-    }
+            // Añadir el evento a los botones de paginación
+            document.querySelectorAll(".page-btn").forEach(link => {
+                link.addEventListener("click", function (e) {
+                    e.preventDefault();
+                    container.classList.remove("show");
+                    setTimeout(() => {
+                        window.location.href = this.href;
+                    }, 500);
+                });
+            });
+        });
+    </script>
+    <script>
+        $(document).ready(function() {
+            @if (TempData["EditSuccess"] != null && (bool)TempData["EditSuccess"])
+            {
+                    <text>
+                        Swal.fire({
+                            icon: 'success',
+                            title: '¡Éxito!',
+                            text: 'El Autor ha sido editado correctamente.',
+                            confirmButtonColor: '#3085d6',
+                            confirmButtonText: 'Aceptar'
+                        });
+                    </text>
+            }
+        });
+    </script>
+    <script>
+        $(document).ready(function() {
+            @if (TempData["CreateSuccess"] != null && (bool)TempData["CreateSuccess"])
+            {
+                <text>
+                    Swal.fire({
+                        icon: 'success',
+                        title: '¡Éxito!',
+                        text: 'El Autor se creo correctamente.',
+                        confirmButtonColor: '#3085d6',
+                        confirmButtonText: 'Aceptar'
+                    });
+                </text>
+            }
+        });
+    </script>
+    <script document.addEventListener("DOMContentLoaded", ()=>
+        {
+               const container = document.getElementById("tableContainer");
+               setTimeout(() => container.classList.add("show"), 50);
+            });
+    </script>
+}
+
+
+

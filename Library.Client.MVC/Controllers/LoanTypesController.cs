@@ -50,6 +50,7 @@ namespace Library.Client.MVC.Controllers
             try
             {
                 int result = await loanTypesBL.CreateLoanTypesAsync(pLoanTypes);
+                TempData["CreateSuccess"] = true;
                 return RedirectToAction(nameof(Index));
             }
             catch (Exception ee)
@@ -84,29 +85,30 @@ namespace Library.Client.MVC.Controllers
             }
         }
 
-        // GET: AcquisitionTypesController/Delete/5
-        public async Task<IActionResult> Delete(int id)
-        {
-            var editions = await loanTypesBL.GetLoanTypesByIdAsync(new LoanTypes { TYPES_ID = id });
-            ViewBag.ShowMenu = true;
-            return View(editions);
-        }
+        //// GET: AcquisitionTypesController/Delete/5
+        //public async Task<IActionResult> Delete(int id)
+        //{
+        //    var editions = await loanTypesBL.GetLoanTypesByIdAsync(new LoanTypes { TYPES_ID = id });
+        //    ViewBag.ShowMenu = true;
+        //    return View(editions);
+        //}
 
         // POST: CategoriesController/Delete/5
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Delete(int id, LoanTypes pLoanTypes)
+        public async Task<IActionResult> Delete(int id)
         {
             try
             {
-                int result = await loanTypesBL.DeleteLoanTypesAsync(new LoanTypes { TYPES_ID = id });
-                return RedirectToAction(nameof(Index));
+                var loanType = await loanTypesBL.GetLoanTypesByIdAsync(new LoanTypes { TYPES_ID = id });
+                int result = await loanTypesBL.DeleteLoanTypesAsync(loanType);
+                return Json(new { success = true, message = "Tipo de préstamo eliminado correctamente." });
             }
             catch (Exception ex)
             {
-                ViewBag.Error = ex.Message;
-                return View(pLoanTypes);
+                return Json(new { success = false, message = ex.Message });
             }
         }
+
     }
 }

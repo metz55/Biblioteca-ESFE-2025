@@ -29,18 +29,25 @@ namespace Library.DataAccess.Repositories
             using (var dbContext = new DBContext())
             {
                 var loans = await dbContext.Loans.FirstOrDefaultAsync(s => s.LOAN_ID == pLoans.LOAN_ID);
-                loans.ID_TYPE = pLoans.ID_TYPE;
-                loans.ID_RESERVATION = pLoans.ID_RESERVATION;
-                loans.COPY = pLoans.COPY;
-                loans.FEE = pLoans.FEE;
-                loans.LENDER_CONTACT = pLoans.LENDER_CONTACT;
-                loans.STATUS = pLoans.STATUS;
+                if (loans != null)
+                {
+                    loans.ID_TYPE = pLoans.ID_TYPE;
+                    loans.ID_RESERVATION = pLoans.ID_RESERVATION;
+                    loans.COPY = pLoans.COPY;
+                    loans.FEE = pLoans.FEE;
+                    loans.LENDER_CONTACT = pLoans.LENDER_CONTACT;
+                    loans.STATUS = pLoans.STATUS;
 
-                dbContext.Update(loans);
-                result = await dbContext.SaveChangesAsync();
+                    // **ACTUALIZAR USER_ID**
+                    loans.USER_ID = pLoans.USER_ID;
+
+                    dbContext.Update(loans);
+                    result = await dbContext.SaveChangesAsync();
+                }
             }
             return result;
         }
+
 
         public static async Task<int> UpdateLoans02Async(Loans2 pLoans)
         {
