@@ -2,7 +2,7 @@
 
 Sistema web desarrollado en **ASP.NET MVC** que permite administrar una biblioteca digital.  
 El proyecto se enfoca en la gestión de libros, autores, préstamos, ediciones, usuarios etc.
-Abierto a posibilidad de mejoras de funcionalidad y diseño.
+💡 Abierto a posibilidad de mejoras de funcionalidad y diseño.
 ---
 
 ## 🚀 Características principales
@@ -30,3 +30,14 @@ Abierto a posibilidad de mejoras de funcionalidad y diseño.
 1. Clona el repositorio:
    ```bash
    git clone https://github.com/metz55/Biblioteca-ESFE-2025.git
+2. Estructura del Proyecto
+LibrarySystem/
+│
+├── Controllers/         # Controladores MVC
+├── Models/              # Entidades y modelos de dominio
+├── Views/               # Vistas Razor (HTML + C#)
+├── Services/            # Lógica de negocio
+├── wwwroot/             # Recursos estáticos (CSS, JS, imágenes)
+├── appsettings.json     # Configuración de la base de datos
+└── Program.cs           # Punto de entrada de la aplicación
+
