@@ -2,7 +2,7 @@
 
 Sistema web desarrollado en **ASP.NET MVC** que permite administrar una biblioteca digital.  
 El proyecto se enfoca en la gestión de libros, autores, préstamos, ediciones, usuarios etc.
--Abierto a posibilidad de mejoras de funcionalidad y diseño.
+Abierto a posibilidad de mejoras de funcionalidad y diseño.
 ---
 
 ## 🚀 Características principales
