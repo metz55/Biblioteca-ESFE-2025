@@ -30,7 +30,12 @@ El proyecto se enfoca en la gestión de libros, autores, préstamos, ediciones, 
 1. Clona el repositorio:
    ```bash
    git clone https://github.com/metz55/Biblioteca-ESFE-2025.git
-2. Estructura del Proyecto
+
+---
+
+## 📂 Estructura del Proyecto
+
+```bash
 LibrarySystem/
 │
 ├── Controllers/         # Controladores MVC
@@ -40,4 +45,5 @@ LibrarySystem/
 ├── wwwroot/             # Recursos estáticos (CSS, JS, imágenes)
 ├── appsettings.json     # Configuración de la base de datos
 └── Program.cs           # Punto de entrada de la aplicación
+
 
