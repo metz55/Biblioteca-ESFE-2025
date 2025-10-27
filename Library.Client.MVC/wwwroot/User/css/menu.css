@@ -1,0 +1,100 @@
+/* Agrega este estilo para que la lista de navegación sea horizontal */
+.navbar-nav {
+    display: flex;
+    flex-direction: row;
+}
+
+/* Barra de navegación */
+.navbar-nav {
+    display: flex;
+    justify-content: flex-end; /* Alinea los elementos al final del contenedor */
+    align-items: center; /* Centra verticalmente los elementos */
+}
+
+
+/* Estilo adicional para los elementos de menú desplegable */
+.dropdown-menu {
+    margin-top: 0;
+    position: absolute;
+    top: 80%;
+    left: 0;
+}
+
+
+.nav-item.dropdown {
+    margin-top: -37px; /* Ajusta el margen superior según tus necesidades */
+    margin-right: 30px; /* Ajusta el margen derecho según tus necesidades */
+    margin-left: 3px; /* Ajusta el valor según sea necesario */
+}
+
+
+/* Ajusta el margen izquierdo de la opción Biblioteca ESFE */
+.navbar-brand {
+    margin-left: 25px; /* Ajusta el valor según sea necesario */
+}
+
+
+/*------------------------------------------------------------------------*/
+
+/* Estilo para pantallas más pequeñas (altura <= 450px) */
+@media screen and (max-height: 450px) {
+    .sidenav {
+        padding-top: 15px;
+    }
+
+        .sidenav a {
+            font-size: 18px;
+        }
+}
+
+/* Estilo para la barra de color */
+.color-bar {
+    background-color: #000080;
+    height: 125px;
+    width: 100%;
+    display: flex;
+    align-items: center;
+}
+
+/* Estilo para la imagen en la barra de color */
+.bar-image {
+    margin-left: 210px;
+    height: 125px;
+    width: 125px;
+}
+
+/* Estilo para el título en la barra de color */
+.tit {
+    color: white;
+    font-size: 30px;
+    margin-left: 20px;
+}
+
+/* Estilo para la imagen "agape" */
+.agape {
+    margin-left: 30px;
+}
+
+/* Estilo para las listas no ordenadas */
+ul {
+    list-style-type: none;
+    padding: 0;
+}
+
+    /* Estilo para los elementos de lista */
+    ul li {
+        display: block;
+        margin-bottom: 10px;
+        color: #FFFFFF;
+    }
+
+/* Estilo para enlaces con la clase "small-text" */
+a.small-text {
+    font-size: 23px;
+}
+
+/* Estilo para el cursor de selección */
+.sele {
+    cursor: pointer;
+}
+/*-----------------------------------------------------------------------------------------------------*/

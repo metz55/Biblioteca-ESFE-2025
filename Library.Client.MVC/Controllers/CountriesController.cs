@@ -85,6 +85,7 @@ namespace Library.Client.MVC.Controllers
                 else
                 {
                     // seguimineot regular para las peticiones que no seas AJAX
+                    TempData["CreateSuccess"] = true;
                     return RedirectToAction(nameof(Index));
                 }
             }
@@ -118,6 +119,7 @@ namespace Library.Client.MVC.Controllers
             try
             {
                 int result = await countriesBL.UpdateCountriesAsync(pCountries);
+                TempData["EditSuccess"] = true;
                 return RedirectToAction(nameof(Index));
             }
             catch (Exception ex)

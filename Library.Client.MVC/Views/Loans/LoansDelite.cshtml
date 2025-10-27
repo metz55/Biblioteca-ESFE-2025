@@ -135,7 +135,8 @@
                         @foreach (var item in tops)
                         {
                             string strItem = item != -1 ? item.ToString() : "Todos";
-                            <option value="@item" selected="@(item == topActual)">@strItem</option>
+                            string selected = item == topActual ? "selected" : "";
+                            <option value="@item" selected="@selected">@strItem</option>
                         }
                     </select>
                 </div>

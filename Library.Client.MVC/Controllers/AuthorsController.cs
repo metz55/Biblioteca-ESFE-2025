@@ -19,7 +19,7 @@ namespace Library.Client.MVC.Controllers
                 pAuthors = new Authors();
 
             if (pAuthors.Top_Aux == -1)
-                pAuthors.Top_Aux = 0; 
+                pAuthors.Top_Aux = 0;
 
             var allAuthors = await authorsBL.GetAuthorsAsync(pAuthors);
             allAuthors = allAuthors.OrderBy(a => a.AUTHOR_ID).ToList();
@@ -27,8 +27,6 @@ namespace Library.Client.MVC.Controllers
             // Aplica la paginación manualmente
             int totalRegistros = allAuthors.Count();
             int totalPaginas = totalRegistros > 0 ? (int)Math.Ceiling((double)totalRegistros / pageSize) : 1;
-            ViewBag.TotalPaginas = totalPaginas;
-
 
             var authors = allAuthors
                 .Skip((page - 1) * pageSize)
@@ -84,7 +82,7 @@ namespace Library.Client.MVC.Controllers
                 else
                 {
                     // seguimineot regular para las peticiones que no seas AJAX
-                    
+                    TempData["CreateSuccess"] = true;
                     return RedirectToAction(nameof(Index));
                 }
             }
@@ -120,6 +118,7 @@ namespace Library.Client.MVC.Controllers
             try
             {
                 int result = await authorsBL.UpdateAuthorsAsync(pAuthors);
+                TempData["EditSuccess"] = true;
                 return RedirectToAction(nameof(Index));
             }
             catch (Exception ex)

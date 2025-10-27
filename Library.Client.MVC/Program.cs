@@ -1,8 +1,10 @@
-using System.Security.Claims;
 using Library.BusinessRules;
 using Library.Client.MVC.services;
+using Library.DataAccess.Persistence.Context;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authentication.Google;
+using Microsoft.Extensions.FileProviders;
+using System.Security.Claims;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -13,7 +15,7 @@ builder.Services.AddSingleton<BLLoans>();
 builder.Services.AddSingleton<BLLoanDates>();  
 builder.Services.AddSingleton<BLCategories>();
 builder.Services.AddSingleton<TaskManager>();
-
+builder.Services.AddDbContext<DBContext>();
 
 builder.Services.AddAuthentication(options =>
 {
@@ -65,6 +67,26 @@ using (var scope = app.Services.CreateScope())
 // Middleware de autenticación y autorización
 app.UseHttpsRedirection();
 app.UseStaticFiles();
+// Habilitar acceso a las imágenes guardadas en C:\ImagenesBiblioteca
+app.UseStaticFiles(new StaticFileOptions
+{
+    FileProvider = new PhysicalFileProvider(@"C:\ImagenesBiblioteca"),
+    RequestPath = "/ImagenesBiblioteca"
+});
+
+// Habilitar acceso a C:\ImagenesBlog
+app.UseStaticFiles(new StaticFileOptions
+{
+    FileProvider = new PhysicalFileProvider(@"C:\ImagenesBlog"),
+    RequestPath = "/ImagenesBlog"
+});
+
+// Habilitar acceso a C:\DocumentosBlog
+app.UseStaticFiles(new StaticFileOptions
+{
+    FileProvider = new PhysicalFileProvider(@"C:\DocumentosBlog"),
+    RequestPath = "/DocumentosBlog"
+});
 app.UseRouting();
 
 app.UseAuthentication(); // Habilitar autenticación

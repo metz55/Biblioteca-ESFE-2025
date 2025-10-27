@@ -13,7 +13,7 @@ using System.Security.Claims;
 
 public class AuthController : Controller
 {
-
+   
     private readonly LoanService _loanService;
     BLUsers usersBL = new BLUsers();
     BLUsers_Roles rolesBL = new BLUsers_Roles();
@@ -146,7 +146,7 @@ public class AuthController : Controller
 
                     ViewBag.isStudent = true;
                     ViewBag.studentCodeLogin = codigoEstudiante;
-                    TempData["SuccessMessage"] = "Has iniciado sesión exitosamente!";
+                    TempData["SuccessMessage"] = "Has iniciado sesion exitosamente!";
                     
                     // var claimsIdentity = new ClaimsIdentity(claims, CookieAuthenticationDefaults.AuthenticationScheme);
                     var claimsIdentity = new ClaimsIdentity(claims, "UserScheme");
@@ -155,7 +155,7 @@ public class AuthController : Controller
                         IsPersistent = true, // Mantener la sesión aunque el navegador se cierre
                         ExpiresUtc = DateTime.UtcNow.AddDays(5) // Duración de la sesión
                     };
-
+                        
                     // Iniciar la sesión
                     await HttpContext.SignInAsync("UserScheme", new ClaimsPrincipal(claimsIdentity), authProperties);
 
@@ -179,6 +179,7 @@ public class AuthController : Controller
     {
         // Cerrar la sesión del usuario
         await HttpContext.SignOutAsync("UserScheme");
+        TempData["LogoutMessage"] = "Has cerrado sesion exitosamente.";
         return RedirectToAction("Index", "Library");
     }
     [HttpPost]
@@ -189,36 +190,23 @@ public class AuthController : Controller
         return RedirectToAction("LoginAdmin", "Auth");
     }
 
-    public async Task<IActionResult> Profile()
+    // -------- PERFIL CON PAGINACIÓN --------
+    [HttpGet]
+    public async Task<IActionResult> Profile(int page = 1, int pageSize = 6)
     {
-        var isAuthenticated = HttpContext.User.Identity.AuthenticationType == "UserScheme";
-        // Verificar si el usuario está autenticado
-        if (!isAuthenticated)
-        {
-            return RedirectToAction("Login", "Auth");
-        }
-
-        var userClaims = User.Identity as ClaimsIdentity;
-        String code = userClaims?.FindFirst("CodigoEstudiante")?.Value ?? string.Empty;
-
-        // Asegurarte de que el código no sea nulo antes de hacer cualquier operación
-        if (string.IsNullOrEmpty(code))
-        {
-            return RedirectToAction("Login", "Auth");
-        }
-
-        var (loans, loansDates) = await _loanService.GetStudentLoans(code);
-        
-        ViewBag.LoanDates = loansDates;
-
-        return View(loans);
+        return await LoadStudentLoans(page, pageSize, "Profile");
     }
 
     [HttpGet]
-    public async Task<IActionResult> Student()
+    public async Task<IActionResult> Student(int page = 1, int pageSize = 6)
+    {
+        return await LoadStudentLoans(page, pageSize, "Profile");
+    }
+
+    // -------- MÉTODO PRIVADO REUTILIZABLE --------
+    private async Task<IActionResult> LoadStudentLoans(int page, int pageSize, string viewName)
     {
         var isAuthenticated = HttpContext.User.Identity.AuthenticationType == "UserScheme";
-
         if (!isAuthenticated)
         {
             return RedirectToAction("Login", "Auth");
@@ -235,6 +223,19 @@ public class AuthController : Controller
         var (loans, loansDates) = await _loanService.GetStudentLoans(code);
         ViewBag.LoanDates = loansDates;
 
-        return View("Profile", loans); // usa la vista Profile.cshtml
+        int totalRecords = loans.Count();
+        int totalPages = (int)Math.Ceiling(totalRecords / (double)pageSize);
+
+        var loansPaged = loans
+            .OrderByDescending(l => l.LOAN_ID)
+            .Skip((page - 1) * pageSize)
+            .Take(pageSize)
+            .ToList();
+
+        ViewBag.CurrentPage = page;
+        ViewBag.PageSize = pageSize;
+        ViewBag.TotalPages = totalPages;
+
+        return View(viewName, loansPaged);
     }
 }

@@ -135,7 +135,7 @@ namespace Library.Client.MVC.Controllers
         private string SaveCoverImage(IFormFile coverImage)
         {
             // Lógica para guardar la imagen y obtener la ruta
-            var uploadDir = Path.Combine("wwwroot", "img");
+            var uploadDir = Path.Combine("C:\\", "ImagenesBiblioteca");
 
             if (!Directory.Exists(uploadDir))
             {
@@ -150,7 +150,7 @@ namespace Library.Client.MVC.Controllers
                 coverImage.CopyTo(fileStream);
             }
 
-            return Path.Combine("/img", uniqueFileName);
+            return Path.Combine("/ImagenesBiblioteca", uniqueFileName);
         }
 
 
@@ -210,6 +210,7 @@ namespace Library.Client.MVC.Controllers
                 }
 
                 int result = await booksBL.UpdateBooksAsync(pBooks);
+                TempData["EditSuccess"] = true;
                 return RedirectToAction(nameof(Index));
             }
             catch (Exception ex)
@@ -255,6 +256,7 @@ namespace Library.Client.MVC.Controllers
             try
             {
                 int result = await booksBL.DeleteBooksAsync(pBooks);
+                TempData["DeleteSuccess"] = true;
                 return RedirectToAction(nameof(Index));
             }
             catch (Exception ex)
@@ -269,6 +271,8 @@ namespace Library.Client.MVC.Controllers
 
             return Json(lista);
         }
+
+        [HttpPost]
         public async Task<JsonResult> BuscarCiudad(Countries pCountries, int page = 1, int pageSize = 10)
         {
             List<Countries> listaCompleta = await countriesBL.GetCountriesAsync(pCountries);
@@ -278,6 +282,7 @@ namespace Library.Client.MVC.Controllers
                 .ToList();
             return Json(new { Data = listaPaginada, TotalRecords = listaCompleta.Count });
         }
+
 
         public async Task<JsonResult> BuscarEdicion(Editions pEditions)
         {

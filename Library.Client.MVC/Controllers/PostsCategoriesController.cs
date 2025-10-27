@@ -36,7 +36,8 @@ namespace Library.Client.MVC.Controllers
             {
                 return RedirectToAction(nameof(Index));
             }
-                
+
+            TempData["CreateSuccess"] = true;
             return RedirectToAction(nameof(Index));
         }
 
@@ -52,6 +53,7 @@ namespace Library.Client.MVC.Controllers
         public async Task<IActionResult> Update(PostsCategories posts)
         {
             var result = await blPostsCategories.UpdatePostCategeoryAsync(posts);
+            TempData["EditSuccess"] = true;
             return RedirectToAction(nameof(Index));
         }
 

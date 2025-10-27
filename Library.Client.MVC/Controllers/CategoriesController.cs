@@ -54,6 +54,7 @@ namespace Library.Client.MVC.Controllers
             try
             {
                 int result = await categoriesBL.CreateCategoriesAsync(pCategories);
+                TempData["CreateSuccess"] = true;
                 return RedirectToAction(nameof(Index));
             }
             catch (Exception ee)

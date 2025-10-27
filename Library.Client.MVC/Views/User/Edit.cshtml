@@ -36,6 +36,9 @@
                     <form asp-action="Edit">
                         <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
                         <input asp-for="USER_ID" type="hidden" />
+                       
+                        <input asp-for="CREATED_AT" type="hidden" />
+                        
 
                         <div class="form-group mb-3">
                             <label asp-for="ROlE_ID" class="form-label">Rol del Usuario</label>
@@ -54,6 +57,12 @@
                             <input asp-for="USER_NAME" class="form-control" placeholder="Ej. Juan Pérez" />
                             <span asp-validation-for="USER_NAME" class="text-danger"></span>
                         </div>
+
+                       @*  <div class="form-group mb-3">
+                            <label asp-for="CREATED_AT" class="form-label">fecha</label>
+                            <input asp-for="CREATED_AT" class="form-control" placeholder="Ej. Juan Pérez" />
+                            <span asp-validation-for="CREATED_AT" class="text-danger"></span>
+                        </div> *@
 
                         <div class="d-flex justify-content-center mt-4">
                             <button type="submit" class="btn btn-success me-2">

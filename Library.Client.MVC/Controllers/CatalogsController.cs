@@ -55,6 +55,7 @@ namespace Library.Client.MVC.Controllers
             try
             {
                 int result = await catalogsBL.CreateCatalogsAsync(pCatalogs);
+                TempData["CreateSuccess"] = true;
                 return RedirectToAction(nameof(Index));
             }
             catch (Exception ee)

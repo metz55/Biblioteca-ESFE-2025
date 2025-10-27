@@ -2,193 +2,146 @@
 @using Newtonsoft.Json
 @{
     ViewData["Title"] = "Feed";
-    var groupedPostsCount = 0;
+    Layout = "~/Views/Shared/_LayoutUsers.cshtml";
     var defaultImage = "/img/esfelogo-expanded.png";
     var postImage = "";
     List<Posts> pinnedPosts = ViewBag.pinnedPosts as List<Posts>;
     List<Posts> lastPosts = ViewBag.lastPosts as List<Posts>;
 }
+<link href="https://fonts.googleapis.com/css?family=Inria+Sans&display=swap" rel="stylesheet" />
 
-<!DOCTYPE html>
-<head>
-    <link href="https://fonts.googleapis.com/css?family=Inria+Sans&display=swap" rel="stylesheet" />
-    <link rel="stylesheet" href="~/css/PostsFeed.css" asp-append-version="true" />
-</head>
+<!-- Header Start -->
+<div class="jumbotron jumbotron-fluid page-header position-relative overlay-bottom" style="margin-bottom: 90px;">
+    <div class="container text-center py-5">
+        <h1 class="text-white display-1">Blog</h1>
+        <div class="mx-auto mb-5" style="width: 100%; max-width: 600px;">
+            <!-- Botón de búsqueda -->
+            <form asp-action="Search" method="get" class="d-flex flex-column flex-md-row align-items-center justify-content-center p-4">
+                <!-- Input de búsqueda -->
+                <div class="w-100">
+                    <input type="text" name="Query" class="btn btn-light btn-lg px-4" id="Query" placeholder="Buscar..." />
+                </div>
 
-<body>
-    <div class="card">
-        <div class="card-body">
-    <div style="text-align: center; padding: 8px; margin-top: 22px;">
-        @* Search Filters *@
-        <form asp-action="Search" method="get" class="d-flex flex-column flex-md-row align-items-center justify-content-center p-4">
-            <!-- Search Input -->
-            <div class="m-2 w-100">
-                <input type="text" name="Query" class="form-control" id="Query" placeholder="Buscar..." />
-            </div>
+                <!-- Filtros -->
+                <div class="d-flex flex-column flex-md-row w-100 justify-content-between">
 
-            <!-- Category Dropdown -->
-            <div class="mb-2 mb-md-0 w-100 me-md-2">
-                <select class="form-select" id="CategoryId" name="CategoryId">
-                    <option value="0">Categoría</option>
-                    @foreach (PostsCategories item in ViewBag.Categories)
-                    {
-                        <option value="@item.Id">@item.Name</option>
-                    }
-                </select>
-            </div>
 
-            <!-- Date Input -->
-            <div class="mb-2 mb-md-0 w-100 me-md-2">
-                <input type="date" class="form-control" id="Date" name="Date" />
-            </div>
-
-            <!-- Search Button -->
-            <div class="w-100">
-                <button type="submit" class="btn btn-primary w-100">
-                    <i class="fas fa-search"></i> Buscar
-                </button>
-            </div>
-
-        </form>
-
-        @if (lastPosts != null && lastPosts.Count > 0)
-        {
-            <h2 class="mt-3" style="font-weight: bold;">Publicaciones Importantes</h2>
-        }
-        else
-        {
-            <h2 class="mt-3" style="font-weight: bold;">No hay publicaciones</h2>
-        }
-    </div>
-
-    @if (lastPosts != null && lastPosts.Count > 0)
-    {
-        <!-- Carousel for Pinned Posts -->
-        <div class="carousel-container">
-            <button class="carousel-arrow carousel-arrow-left" onclick="moveCarousel(-1)">&lt;</button>
-            <div class="carousel-wrapper" id="carouselWrapper">
-                @{
-                    var groupedPosts = pinnedPosts
-                    .Select((post, index) => new { Post = post, Index = index })
-                    .GroupBy(x => x.Index / 3)
-                    .Select(g => g.Select(x => x.Post).ToList())
-                    .ToList();
-
-                    groupedPostsCount = groupedPosts.Count;
-                }
-                @foreach (var postGroup in groupedPosts)
-                {
-                    <div class="postcard-group"></div>
-                }
-            </div>
-            <button class="carousel-arrow carousel-arrow-right" onclick="moveCarousel(1)">&gt;</button>
+                    <div class="w-100">
+                        <button type="submit" class="btn btn-light btn-lg px-4 shadow-sm mt-1">
+                            <i class="fas fa-search"></i> Buscar publicaciones
+                        </button>
+                    </div>
+                </div>
+            </form>
         </div>
+    </div>
+</div>
+<!-- Header End -->
+@if (pinnedPosts != null && pinnedPosts.Count > 0)
+{
+    <div class="container-fluid py-1">
+        <div class="container py-1">
+            <div class="section-title text-center position-relative mb-5">
+                <h6 class="d-inline-block position-relative text-secondary text-uppercase pb-2">Destacadas</h6>
+                <h1 class="display-5">Publicaciones Importantes</h1>
+            </div>
 
-        <!-- Latest Posts Section -->
-        <div class="p-2 m-2">
-            <h2 class="" style="font-weight: bold;">Últimas publicaciones</h2>
-            <div class=" justify-content-center">
-                <div class="row lastposts justify-content-center">
-                    @foreach (var post in lastPosts)
+            @if (pinnedPosts.Count > 3)
+            {
+                <!-- Carrusel -->
+                <div class="owl-carousel team-carousel position-relative" style="padding: 0 30px;">
+                    @foreach (var post in pinnedPosts)
                     {
-                        {
-                            postImage = post.IMAGES.Take(1).FirstOrDefault()?.PATH ?? defaultImage;
-                        }
-
-                        <div class="postcard-2 col-md-2">
-                            <a href="/Posts/Details/@post.ID" style="text-decoration: none;">
-                                <img class="postimage-2" src="@postImage" />
-                                <p class="postcategoryname-2">@post.CATEGORY.Name</p>
-                                <p class="posttitle-2">@post.TITLE</p>
-                                <p class="postcontent-2">@Html.Raw(post.CONTENT)</p>
+                        postImage = post.IMAGES.Take(1).FirstOrDefault()?.PATH ?? defaultImage;
+                        <div class="team-item">
+                            <a href="/Posts/Details/@post.ID" style="text-decoration:none;">
+                                <img class="img-fluid w-100" src="@postImage" alt="@post.TITLE">
+                                <div class="bg-light text-center p-4">
+                                    <h5 class="mb-3">@post.TITLE</h5>
+                                    <p class="mb-2">@post.CATEGORY.Name</p>
+                                    <p class="text-muted small">@Html.Raw(post.CONTENT.Length > 100 ? post.CONTENT.Substring(0, 100) + "..." : post.CONTENT)</p>
+                                </div>
                             </a>
                         </div>
                     }
                 </div>
-            </div>
-        </div>
-        }
-        </div>
-        </div>
-    
-</body>
-
-@section Scripts {
-    <script>
-        let currentSlide = 0;
-        const carouselWrapper = document.getElementById('carouselWrapper');
-        const posts = @Html.Raw(JsonConvert.SerializeObject(pinnedPosts, new JsonSerializerSettings { ReferenceLoopHandling = ReferenceLoopHandling.Ignore }));
-        let groupedPosts = [];
-        const totalPosts = posts.length;
-
-        // Group posts based on screen size
-        function groupPosts(posts, itemsPerGroup) {
-            return posts.reduce((result, post, index) => {
-                const groupIndex = Math.floor(index / itemsPerGroup);
-                if (!result[groupIndex]) {
-                    result[groupIndex] = [];
-                }
-                result[groupIndex].push(post);
-                return result;
-            }, []);
-        }
-
-        // Update carousel based on screen size
-        function updateCarousel() {
-            const isSmallScreen = window.innerWidth <= 765;
-            const isMediumScreen = window.innerWidth > 765 && window.innerWidth <= 1023;
-            const isWideScreen = window.innerWidth >= 1024;
-            var itemsPerGroup = 1; // Default for small screens
-            if (isMediumScreen) {
-                itemsPerGroup = 2;
-            } else if (isWideScreen) {
-                itemsPerGroup = 3;
             }
-            groupedPosts = groupPosts(posts, itemsPerGroup);
-
-            // Update carousel content
-            const wrapperHtml = groupedPosts.map(group => {
-                const groupHtml = group.map(post => `
-                            <a href="/Posts/Details/${post.ID}" style="text-decoration: none;">
-                                <div class="postcard">
-                                    <img class="postimage" src="${post.IMAGES[0]?.PATH || '@defaultImage'}" />
-                                    <p class="postcategoryname">${post.CATEGORY.Name}</p>
-                                    <p class="posttitle">${post.TITLE}</p>
-                                    <p class="postcontent">${post.CONTENT}</p>
+            else
+            {
+                <!-- Mostrar en tarjetas normales -->
+                <div class="row">
+                    @foreach (var post in pinnedPosts)
+                    {
+                        postImage = post.IMAGES.Take(1).FirstOrDefault()?.PATH ?? defaultImage;
+                        <div class="col-md-4 col-sm-6 mb-4">
+                            <a href="/Posts/Details/@post.ID" style="text-decoration:none;">
+                                <div class="card shadow-sm border-0 h-100">
+                                    <img class="card-img-top" src="@postImage" alt="@post.TITLE">
+                                    <div class="card-body text-center">
+                                        <h5 class="card-title">@post.TITLE</h5>
+                                        <p class="text-secondary">@post.CATEGORY.Name</p>
+                                        <p class="text-muted small">@Html.Raw(post.CONTENT.Length > 100 ? post.CONTENT.Substring(0, 100) + "..." : post.CONTENT)</p>
+                                    </div>
                                 </div>
                             </a>
-                        `).join('');
-                return `<div class="postcard-group">${groupHtml}</div>`;
-            }).join('');
-            carouselWrapper.innerHTML = wrapperHtml;
-
-            currentSlide = 0; // Reset carousel
-            carouselWrapper.style.transform = `translateX(0%)`;
-        }
-
-        // Move carousel
-        function moveCarousel(direction) {
-            currentSlide += direction;
-
-            // Handle boundaries
-            if (currentSlide < 0) {
-                currentSlide = groupedPosts.length - 1;
-            } else if (currentSlide >= groupedPosts.length) {
-                currentSlide = 0;
+                        </div>
+                    }
+                </div>
             }
+        </div>
+    </div>
+}
 
-            // Move carousel
-            carouselWrapper.style.transform = `translateX(-${currentSlide * 100}%)`;
-        }
+@if (lastPosts != null && lastPosts.Count > 0)
+{
+    <!-- Últimas Publicaciones -->
+    <div class="container mt-4">
+        <h2 class="fw-bold mb-3">Últimas publicaciones</h2>
+        <div class="row">
+            @foreach (var post in lastPosts)
+            {
+                postImage = post.IMAGES.Take(1).FirstOrDefault()?.PATH ?? defaultImage;
+                <div class="col-md-3 col-sm-6 mb-4">
+                    <a href="/Posts/Details/@post.ID" style="text-decoration:none;">
+                        <div class="card shadow-sm border-0 h-100">
+                            <img class="card-img-top" src="@postImage" alt="@post.TITLE">
+                            <div class="card-body">
+                                <p class="text-secondary mb-1">@post.CATEGORY.Name</p>
+                                <h5 class="card-title">@post.TITLE</h5>
+                                <p class="card-text text-muted">@Html.Raw(post.CONTENT.Length > 80 ? post.CONTENT.Substring(0, 80) + "..." : post.CONTENT)</p>
+                            </div>
+                        </div>
+                    </a>
+                </div>
+            }
+        </div>
+    </div>
+}
+else
+{
+    <h2 class="text-center fw-bold">No hay publicaciones</h2>
+}
 
-        // Update carousel on window resize
-        window.addEventListener('resize', updateCarousel);
-
-        // Initialize carousel on page load
-        updateCarousel();
-
-        // Adjust main content width
-        document.querySelector('.main-content').classList.remove('with-menu');
-        document.querySelector('.main-content').classList.add('full-width');
+@section Scripts {
+    <script src="~/lib/owlcarousel/owl.carousel.min.js"></script>
+    <script>
+        $(".team-carousel").owlCarousel({
+            autoplay: true,
+            smartSpeed: 1000,
+            margin: 30,
+            dots: false,
+            loop: true,
+            nav: true,
+            navText: [
+                '<i class="bi bi-chevron-left"></i>',
+                '<i class="bi bi-chevron-right"></i>'
+            ],
+            responsive: {
+                0: { items: 1 },
+                576: { items: 2 },
+                768: { items: 3 },
+                992: { items: 4 }
+            }
+        });
     </script>
 }

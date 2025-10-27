@@ -25,7 +25,7 @@ namespace Library.Client.MVC.Controllers
             _loanService = loanService;
         }
 
-        public async Task<IActionResult> Index(Loans pLoans = null, string studentCode = "", int page = 1, int pageSize = 5)
+        public async Task<IActionResult> Index(Loans pLoans = null, string studentCode = "", int page = 1, int pageSize = 10)
         {
             if (pLoans == null)
                 pLoans = new Loans();
@@ -108,7 +108,7 @@ namespace Library.Client.MVC.Controllers
             return View(loans);
         }
 
-        public async Task<IActionResult> LoansDelite(Books pBooks, Loans pLoans = null, string studentCode = "", int page = 1, int pageSize = 10)
+        public async Task<IActionResult> LoansDelite(Books pBooks, Loans pLoans = null, string studentCode = "", int page = 1, int pageSize = 20)
         {
             if (pLoans == null)
                 pLoans = new Loans();
@@ -360,7 +360,7 @@ namespace Library.Client.MVC.Controllers
 
                 // Actualizar el préstamo
                 await loansBL.UpdateLoansAsync(pLoans);
-                TempData["SuccessMessage"] = "El prestamo se ha modificado correctamente.";
+                TempData["Alerta"] = "El prestamo se ha modificado correctamente.";
                 return RedirectToAction(nameof(Index));
             }
             catch (Exception ex)
@@ -496,7 +496,7 @@ namespace Library.Client.MVC.Controllers
             return Json(resultado);
         }
 
-        public async Task<IActionResult> AllLoans(Books pBooks, Loans pLoans = null, int page = 1, int pageSize = 15)
+        public async Task<IActionResult> AllLoans(Books pBooks, Loans pLoans = null)
         {
             if (pLoans == null)
                 pLoans = new Loans();
@@ -504,17 +504,6 @@ namespace Library.Client.MVC.Controllers
             var loans = await loansBL.GetIncludePropertiesAsync(pLoans);
             loans = loans.OrderBy(l => l.LOAN_ID).ToList();
 
-            // Aplicar paginación
-            int totalRegistros = loans.Count();
-            int totalPaginas = (int)Math.Ceiling((double)totalRegistros / pageSize);
-            var loansPaginados = loans
-                .Skip((page - 1) * pageSize)
-                .Take(pageSize)
-                .ToList();
-
-            ViewBag.TotalPaginas = totalPaginas;
-            ViewBag.PaginaActual = page;
-            ViewBag.Top = pageSize;
             ViewBag.Categories = await categoriesBL.GetAllCategoriesAsync();
             ViewBag.Loans = await loansBL.GetAllLoansAsync();
             ViewBag.LoansTypes = await loansTypesBL.GetAllLoanTypesAsync();
@@ -522,7 +511,7 @@ namespace Library.Client.MVC.Controllers
             ViewBag.Books = await booksBL.GetIncludePropertiesAsync(pBooks);
             ViewBag.ShowMenu = true;
 
-            return View(loansPaginados);
+            return View(loans);
         }
 
 
