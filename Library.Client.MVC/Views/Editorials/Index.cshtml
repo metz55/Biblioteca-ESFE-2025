@@ -146,8 +146,16 @@
             </div>
             <div class="col">
                 <form asp-action="Index" class="d-flex form-busqueda flex-wrap">
-                    <div class="spacer">
-                        <input type="text" name="EDITORIAL_NAME" placeholder="Nombre" class="form-control" />
+                    <div class="spacer" style="position: relative;">
+                        <input type="text"
+                               placeholder="Nombre"
+                               class="form-control"
+                               name="EDITORIAL_NAME"
+                               id="editorialNameInput"
+                               autocomplete="off"
+                               value="@Context.Request.Query["EDITORIAL_NAME"]" />
+                              <div id="suggestionsContainer"
+                              style="position: absolute; top: 100%; left: 0; right: 0; background: white; border: 1px solid #ddd; border-top: none; display: none; z-index: 1000; max-height: 200px; overflow-y: auto;"></div>
                     </div>
                     <div class="spacer d-flex align-items-center">
                         <label class="control-label me-2">Top</label>
@@ -226,15 +234,15 @@
             <nav class="pagination-container">
                 @if (ViewBag.PaginaActual > 1)
                 {
-                    <a class="page-btn" asp-action="Index" asp-route-page="@(ViewBag.PaginaActual - 1)">Anterior</a>
+                    <a class="page-btn" asp-action="Index" asp-route-page="@(ViewBag.PaginaActual - 1)" asp-route-EDITORIAL_NAME="@Context.Request.Query["EDITORIAL_NAME"]" asp-route-top_aux="@Context.Request.Query["top_aux"]">Anterior</a>
                 }
                 @for (int i = 1; i <= ViewBag.TotalPaginas; i++)
                 {
-                    <a class="page-btn @(i == ViewBag.PaginaActual ? "active" : "")" asp-action="Index" asp-route-page="@i">@i</a>
+                    <a class="page-btn @(i == ViewBag.PaginaActual ? "active" : "")" asp-action="Index" asp-route-page="@i" asp-route-EDITORIAL_NAME="@Context.Request.Query["EDITORIAL_NAME"]" asp-route-top_aux="@Context.Request.Query["top_aux"]">@i</a>
                 }
                 @if (ViewBag.PaginaActual < ViewBag.TotalPaginas)
                 {
-                    <a class="page-btn" asp-action="Index" asp-route-page="@(ViewBag.PaginaActual + 1)">Siguiente</a>
+                    <a class="page-btn" asp-action="Index" asp-route-page="@(ViewBag.PaginaActual + 1)" asp-route-EDITORIAL_NAME="@Context.Request.Query["EDITORIAL_NAME"]" asp-route-top_aux="@Context.Request.Query["top_aux"]">Siguiente</a>
                 }
             </nav>
         }
@@ -346,6 +354,50 @@
             });
         });
     </script>
+    <script>
+        document.addEventListener("DOMContentLoaded", () => {
+            const editorialNameInput = document.getElementById("editorialNameInput");
+            const suggestionsContainer = document.getElementById("suggestionsContainer");
+
+            editorialNameInput.addEventListener("input", async () => {
+                const query = editorialNameInput.value.trim();
+                if (query.length < 1 ) {
+                    suggestionsContainer.style.display = "none";
+                    return;
+                }
+
+                try {
+                    const response = await fetch(`/Editorials/Search?nombre=${encodeURIComponent(query)}`);
+                    const suggestions = await response.json();
+
+                    if (suggestions.length > 0) {
+                        suggestionsContainer.innerHTML = suggestions
+                            .map(suggestion => `<div class="suggestion-item" style="padding: 8px; cursor: pointer;" onclick="selectSuggestion('${suggestion.editorialName}')">${suggestion.editorialName}</div>`)
+                            .join("");
+                        suggestionsContainer.style.display = "block";
+                    } else {
+                        suggestionsContainer.style.display = "none";
+                    }
+                } catch (error) {
+                    console.error("Error al obtener sugerencias:", error);
+                    suggestionsContainer.style.display = "none";
+                }
+            });
+
+            // Ocultar sugerencias si se hace clic fuera del campo
+            document.addEventListener("click", (e) => {
+                if (e.target !== editorialNameInput) {
+                    suggestionsContainer.style.display = "none";
+                }
+            });
+        });
+
+        function selectSuggestion(suggestion) {
+            document.getElementById("editorialNameInput").value = suggestion;
+            document.getElementById("suggestionsContainer").style.display = "none";
+        }
+    </script>
+
 }
 
 

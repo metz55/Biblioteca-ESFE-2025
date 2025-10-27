@@ -155,7 +155,7 @@ public class AuthController : Controller
                         IsPersistent = true, // Mantener la sesión aunque el navegador se cierre
                         ExpiresUtc = DateTime.UtcNow.AddDays(5) // Duración de la sesión
                     };
-
+                        
                     // Iniciar la sesión
                     await HttpContext.SignInAsync("UserScheme", new ClaimsPrincipal(claimsIdentity), authProperties);
 
