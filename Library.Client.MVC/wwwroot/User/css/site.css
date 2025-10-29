@@ -1,0 +1,236 @@
+
+
+html {
+    font-size: 14px;
+    
+}
+
+@media (min-width: 768px) {
+  html {
+    font-size: 16px;
+  }
+}
+
+html {
+  position: relative;
+  min-height: 100%;
+}
+
+body {
+  margin-bottom: 60px;
+}
+
+/*CSS para tabla
+*/
+#customers {
+    font-family: Arial, Helvetica, sans-serif;
+    border-collapse: separate;
+}
+
+    #customers td, #customers th {
+        padding: 8px;
+        text-align: center;
+    }
+
+    #customers tr:nth-child(even) {
+        background-color: #f2f2f2;
+    }
+
+    #customers tr:hover {
+        background-color: #ddd;
+    }
+
+    #customers th {
+        padding-top: 12px;
+        padding-bottom: 12px;
+        text-align: center;
+        background-color: #123678;
+        color: white;
+        
+    }
+
+
+.borIz {
+    border-radius: 10px 0px 0px 0px;
+}
+
+.borDer {
+    border-radius: 0px 10px 0px 0px;
+}
+
+al-horizontal {
+    display: flex;
+}
+
+.esp {
+    margin: 20px 0px 0px 80px;
+}
+
+.esp1 {
+    margin: 20px 0px 0px 200px;
+}
+
+.espa {
+    margin: 0px 120px 0px 0px;
+}
+
+.img {
+    width: 230px;
+    height: 230px;
+    border-radius: 500px;
+}
+
+.esp2 {
+    margin: 0px 0px 0px 15px;
+}
+
+.alin {
+    margin: 20px 0px 0px 435px;
+}
+
+.alinn {
+    margin: 20px 0px 0px 460px;
+}
+
+.margen{
+    margin: 0px 20px 0px 0px;
+}
+
+.modal-content{
+    border-radius: 20px;
+}
+
+.mi-boton {
+    display: inline-block;
+    color: white;
+    margin:25px 0px 0px 65px;
+    font-size: 16px;
+    border: none;
+    border-radius: 5px;
+}
+
+.esp-button{
+    margin:0px 0px 0px 5px;
+}
+
+.anchurabtn1 {
+    padding: 5px 20px 5px 28px;
+}
+.anchurabtn2 {
+    padding: 5px 44px 5px 48px;
+}
+
+.anch{
+    margin:0px 0px 0px 40px;
+    padding: 5px 100px 5px 50px;
+}
+
+
+
+.margenCreate{
+margin: 0px 0px 0px 350px;
+}
+
+.checkbox{
+    padding:10px;
+}
+.texto{
+font-size:18px;
+color:red;
+}
+.centrar{
+    text-align:center;
+}
+.margenAcordeon{
+    margin: 0px 0px 15px 0px;
+}
+
+.anchoalert{
+    margin: 0px 0px 15px 0px;
+    width: 602px;
+}
+.anchoalertLibro {
+    text-align:center;
+    margin: 0px 0px 15px 250px;
+    width: 602px;
+}
+
+.selectanchor{
+    width: 180px;
+}
+
+.centrarTexto{
+    margin: 10px 0px 10px 0px;
+}
+.anchofecha1{
+    margin: 0px 0px 15px 0px;
+    width: 560px;
+}
+.anchofecha2{
+width: 210px;
+}
+.Horz{
+    margin: 8px 0px 0px 0px;
+}
+.centrarTextoAcordion{
+padding: 12px 20px 12px 250px;
+}
+
+.alinear{
+margin: 0px 0px 0px 200px;
+}
+.alinear2{
+margin: 10px 0px 0px 260px;
+}
+
+.modal-dialog2 {
+    max-width: 600px;
+}
+.anchodeImagen {
+    width: 340px;
+    height: 400px;
+    border-radius: 10px;
+    margin: 15px 0px 20px 155px;
+    box-shadow: 5px 5px 15px rgba(0, 0, 0, 0.3);
+}
+
+.anchodeImagen2 {
+    width: 350px;
+    height: 375px;
+    border-radius: 15px;
+    margin: 10px 0px 20px 45px;
+    box-shadow: 4px 4px 10px rgba(0, 0, 0, 0.2);
+    opacity:0.9;
+}
+.margenEdit{
+    margin: 0px 0px 0px 80px
+}
+.margenfechas{
+    margin: 0px 40px 0px 40px;
+}
+
+.anchoAcciones{
+    width: 200px;
+}
+
+.anchoAccionesLibro {
+    width: 280px;
+}
+.centrarDetails{
+    margin: 60px 0px 0px 470px;
+}
+
+@media (max-width: 768px) {
+    .sidebar {
+        position: fixed;
+        width: 100%;
+        height: auto;
+        top: 60px; /* debajo del navbar */
+        left: 0;
+        z-index: 1050;
+    }
+
+    .main-panel {
+        margin-left: 0 !important;
+    }
+}

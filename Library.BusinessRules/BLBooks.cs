@@ -43,5 +43,31 @@ namespace Library.BusinessRules
         {
             return await DALBooks.GetIncludePropertiesAsync(pBooks);
         }
+
+        public async Task<List<Books>> BuscarPorTituloAsync(string pTitulo)
+        {
+            // Llama al método DAL que busca libros por título (o parte del título)
+            return await DALBooks.GetBooksByTitleAsync(pTitulo);
+        }
+
+        public async Task<(List<Books> Books, int TotalRecords)> GetPaginatedBooksAsync(Books pBooks, int page = 1, int pageSize = 12)
+        {
+            // Obtener el total de registros que coinciden con los filtros
+            var allBooks = await GetIncludePropertiesAsync(pBooks);
+            int totalRecords = allBooks.Count;
+
+            // Usar Top_Aux para limitar el número de registros por página
+            pBooks.Top_Aux = pageSize;
+
+            // Obtener los registros de la página actual usando Skip y Take
+            var paginatedBooks = allBooks
+                .Skip((page - 1) * pageSize)
+                .Take(pageSize)
+                .ToList();
+
+            return (paginatedBooks, totalRecords);
+        }
+
+
     }
 }

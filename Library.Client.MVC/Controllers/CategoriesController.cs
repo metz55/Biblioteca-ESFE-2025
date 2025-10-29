@@ -54,6 +54,7 @@ namespace Library.Client.MVC.Controllers
             try
             {
                 int result = await categoriesBL.CreateCategoriesAsync(pCategories);
+                TempData["CreateSuccess"] = true;
                 return RedirectToAction(nameof(Index));
             }
             catch (Exception ee)
@@ -89,27 +90,26 @@ namespace Library.Client.MVC.Controllers
         }
 
         // GET: CategoriesController/Delete/5
-        public async Task<IActionResult> Delete(int id)
-        {
-            var categories = await categoriesBL.GetCategoriesByIdAsync(new Categories { CATEGORY_ID = id });
-            ViewBag.ShowMenu = true;
-            return View(categories);
-        }
+        //public async Task<IActionResult> Delete(int id)
+        //{
+        //    var categories = await categoriesBL.GetCategoriesByIdAsync(new Categories { CATEGORY_ID = id });
+        //    ViewBag.ShowMenu = true;
+        //    return View(categories);
+        //}
 
         // POST: CategoriesController/Delete/5
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Delete(int id, Categories pCategories)
+        public async Task<IActionResult> Delete(int id)
         {
             try
             {
-                int result = await categoriesBL.DeleteCategoriesAsync(new Categories { CATEGORY_ID = id});
-                return RedirectToAction(nameof(Index));
+                int result = await categoriesBL.DeleteCategoriesAsync(new Categories { CATEGORY_ID = id });
+                return Ok(new { success = true, message = "Categoría eliminada correctamente." });
             }
             catch (Exception ex)
             {
-                ViewBag.Error = ex.Message;
-                return View(pCategories);
+                return BadRequest(new { success = false, message = ex.Message });
             }
         }
     }

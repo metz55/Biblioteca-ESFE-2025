@@ -86,27 +86,27 @@ namespace Library.Client.MVC.Controllers
         }
 
         // GET: AcquisitionTypesController/Delete/5
-        public async Task<IActionResult> Delete(int id)
-        {
-            var editions = await acquisitionTypesBL.GetAcquisitionTypesByIdAsync(new AcquisitionTypes { ACQUISITION_ID = id });
-            ViewBag.ShowMenu = true;
-            return View(editions);
-        }
+        //public async Task<IActionResult> Delete(int id)
+        //{
+        //    var editions = await acquisitionTypesBL.GetAcquisitionTypesByIdAsync(new AcquisitionTypes { ACQUISITION_ID = id });
+        //    ViewBag.ShowMenu = true;
+        //    return View(editions);
+        //}
 
         // POST: CategoriesController/Delete/5
+
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Delete(int id, AcquisitionTypes pAcquisitionTypes)
+        public async Task<IActionResult> Delete(int id)
         {
             try
             {
                 int result = await acquisitionTypesBL.DeleteAcquisitionTypesAsync(new AcquisitionTypes { ACQUISITION_ID = id });
-                return RedirectToAction(nameof(Index));
+                return Ok(new { success = true, message = "Tipo de adquisición eliminado correctamente." });
             }
             catch (Exception ex)
             {
-                ViewBag.Error = ex.Message;
-                return View(pAcquisitionTypes);
+                return BadRequest(new { success = false, message = ex.Message });
             }
         }
     }

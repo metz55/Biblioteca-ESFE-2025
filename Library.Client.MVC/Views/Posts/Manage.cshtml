@@ -19,7 +19,6 @@
     h1 {
         font-weight: 700;
         color: #2c3e50;
-        text-align: center;
         margin-bottom: 2rem;
         letter-spacing: 1px;
     }
@@ -134,84 +133,90 @@
     }
 </style>
 
-<div class="card">
+<div class="card shadow-sm border-0 mt-4">
     <div class="card-body">
-        <div class="container my-5">
+        <div class="container">
             @if (ViewBag.message != null)
             {
+                <!-- TOASTS -->
                 <div class="position-fixed bottom-0 end-0 p-3" style="z-index: 5">
                     <div id="toastError" class="toast align-items-center bg-danger border-0" role="alert" aria-live="assertive" aria-atomic="true" style="display: none;">
                         <div class="d-flex">
-                            <div class="toast-body text-white" style="font-weight: bold;">
+                            <div class="toast-body text-white fw-bold">
                                 @ViewBag.message
                             </div>
-                            <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
+                            <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast"></button>
                         </div>
                     </div>
-
                     <div id="toastSuccess" class="toast align-items-center bg-success border-0" role="alert" aria-live="assertive" aria-atomic="true" style="display: none;">
                         <div class="d-flex">
-                            <div class="toast-body text-white" style="font-weight: bold;">
+                            <div class="toast-body text-white fw-bold">
                                 @ViewBag.message
                             </div>
-                            <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
+                            <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast"></button>
                         </div>
                     </div>
                 </div>
             }
-            <h1 class="mb-4">Administrar Publicaciones</h1>
 
-            <div class="d-flex justify-content-between align-items-center mb-3">
-                <form class="d-flex" method="get">
-                    <input type="text" name="search" class="form-control me-2" placeholder="Buscar por título o contenido..." />
-                    <button type="submit" class="btn btn-outline-primary">Buscar</button>
-                </form>
-                <a asp-action="Create" class="btn btn-primary">Crear Nuevo</a>
+            <!-- TÍTULO -->
+            <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center mb-4">
+                <h1 class="mb-3 mb-md-0" style="font-family: 'Poppins', sans-serif; font-weight: 600;">Administrar Publicaciones</h1>
+                <a asp-action="Create" class="btn btn-primary d-block d-md-inline-block">Crear Nuevo</a>
             </div>
 
+            <!-- BUSCADOR -->
+            <form class="row g-2 mb-4" method="get">
+                <div class="col-md-9 col-sm-12">
+                    <input type="text" name="search" class="form-control" style="border-radius: 25px 0 0 25px;" placeholder="Buscar por título o contenido..." />
+                </div>
+                <div class="col-md-3 col-sm-12">
+                    <button type="submit" class="btn btn-primary w-100" style="border-radius: 0 25px 25px 0; font-weight: 600; box-shadow: 0 3px 8px rgb(13 110 253 / 0.4);">
+                        Buscar
+                    </button>
+                </div>
+            </form>
+
+            <!-- PUBLICACIONES -->
             @if (Model.Any())
             {
-                <div class="container">
-                    @for (int i = 0; i < Model.Count(); i += 3)
+                <div class="row g-4">
+                    @foreach (var item in Model)
                     {
-                        <div class="row g-4 mb-12">
-                            @foreach (var item in Model.Skip(i).Take(3))
-                            {
-                                <div class="col-lg-4 col-md-6">
-                                    <div class="card h-100">
-                                        <div class="card-body">
-                                            <h5 class="card-title">@item.TITLE</h5>
-                                            <p class="card-text">
-                                                @Html.Raw(item.CONTENT) <!-- Muestra el contenido convertido a HTML -->
-                                            </p>
-                                        </div>
-                                        <div class="card-footer d-flex justify-content-between flex-wrap gap-3">
-                                            <small class="text-muted">Publicado: @item.CREATED_AT.ToString("dd/MM/yyyy")</small>
-                                            <div class="d-flex gap-2 flex-wrap">
-                                                <a href="@Url.Action("Edit", new { id = item.ID })" class="btn btn-sm btn-warning">Editar</a>
-                                                <form asp-action="Delete" method="post" style="display:inline;" onsubmit="return confirm('¿Eliminar este post?');">
-                                                    <input type="hidden" name="id" value="@item.ID" />
-                                                    <button id="btnDelete" type="submit" class="btn btn-sm btn-danger">Eliminar</button>
-                                                </form>
-                                                @if (item.IS_PINNED)
-                                                {
-                                                    <form asp-action="Unpin" method="post" style="display:inline;">
-                                                        <input type="hidden" name="postId" value="@item.ID" />
-                                                        <button id="btnUnpin" type="submit" class="btn btn-sm btn-danger">Desfijar</button>
-                                                    </form>
-                                                }
-                                                else
-                                                {
-                                                    <form asp-action="Pin" method="post" style="display:inline;">
-                                                        <input type="hidden" name="postId" value="@item.ID" />
-                                                        <button id="btnPin" type="submit" class="btn btn-sm btn-primary">Fijar</button>
-                                                    </form>
-                                                }
-                                            </div>
-                                        </div>
+                        <div class="col-lg-4 col-md-6">
+                            <div class="card h-100">
+                                <div class="card-body">
+                                    <h5 class="card-title text-truncate">@item.TITLE</h5>
+                                    <p class="card-text">@Html.Raw(item.CONTENT)</p>
+                                </div>
+                                <div class="card-footer d-flex flex-column gap-2">
+                                    <small class="text-muted">Publicado: @item.CREATED_AT.ToString("dd/MM/yyyy")</small>
+                                    <div class="d-flex flex-wrap gap-2">
+                                        <a href="@Url.Action("Edit", new { id = item.ID })" class="btn btn-info" style="background: #1D4ED8">Editar</a>
+                                        <form asp-action="Delete" method="post" id="deleteForm_@item.ID">
+                                            <input type="hidden" name="id" value="@item.ID" />
+                                            <button type="button" class="btn btn-danger" style="background-color: #EF4444"
+                                                    onclick="confirmDelete('@item.ID', '@item.TITLE')">
+                                                Eliminar
+                                            </button>
+                                        </form>
+                                        @if (item.IS_PINNED)
+                                        {
+                                            <form asp-action="Unpin" method="post">
+                                                <input type="hidden" name="postId" value="@item.ID" />
+                                                <button type="submit" class="btn btn-secondary" style="background-color: #64748B">Desfijar</button>
+                                            </form>
+                                        }
+                                        else
+                                        {
+                                            <form asp-action="Pin" method="post">
+                                                <input type="hidden" name="postId" value="@item.ID" />
+                                                <button type="submit" class="btn btn-secondary" style="background-color: #64748B">Fijar</button>
+                                            </form>
+                                        }
                                     </div>
                                 </div>
-                            }
+                            </div>
                         </div>
                     }
                 </div>
@@ -220,26 +225,62 @@
             {
                 <div class="alert alert-warning text-center">No hay publicaciones disponibles.</div>
             }
-
         </div>
     </div>
 </div>
+@section Scripts {
 
-<script>
-    document.addEventListener("DOMContentLoaded", function () {
-        var message = '@ViewBag.message';
-        var success = '@ViewBag.success';
-
-        if (message && success === 'False') {
-            var toastError = new bootstrap.Toast(document.getElementById('toastError'));
-            document.getElementById('toastError').style.display = 'block';
-            toastError.show();
+    <script>
+        function confirmDelete(postId, postTitle) {
+            Swal.fire({
+                title: '¿Estás seguro?',
+                text: `¡No podrás revertir la eliminación de "${postTitle}"!`,
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#EF4444',
+                cancelButtonColor: '#6c757d',
+                confirmButtonText: 'Sí, eliminar',
+                cancelButtonText: 'Cancelar'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    document.getElementById(`deleteForm_${postId}`).submit();
+                }
+            });
         }
+    </script>
 
-        if (message && success === 'True') {
-            var toastSuccess = new bootstrap.Toast(document.getElementById('toastSuccess'));
-            document.getElementById('toastSuccess').style.display = 'block';
-            toastSuccess.show();
-        }
-    });
-</script>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            @if (TempData["success"] != null && (bool)TempData["success"])
+            {
+                    <text>
+                        Swal.fire({
+                            icon: 'success',
+                            title: '¡Éxito!',
+                            text: '@TempData["messageSuccess"]',
+                            confirmButtonText: 'Aceptar',
+                            confirmButtonColor: '#28a745'
+                        });
+                    </text>
+            }
+        });
+    </script>
+
+    <script>
+        $(document).ready(function() {
+            @if (TempData["EditSuccess"] != null && (bool)TempData["EditSuccess"])
+            {
+                <text>
+                    Swal.fire({
+                        icon: 'success',
+                        title: '¡Éxito!',
+                        text: 'La publicacion ha sido editada correctamente.',
+                        confirmButtonColor: '#3085d6',
+                        confirmButtonText: 'Aceptar'
+                    });
+                </text>
+            }
+        });
+    </script>
+}

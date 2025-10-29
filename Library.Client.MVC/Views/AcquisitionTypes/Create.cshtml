@@ -4,131 +4,65 @@
     ViewData["Title"] = "Crear Tipo de Adquisición";
 }
 
+<link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet">
+
 <style>
-    body {
-        overflow-x: hidden;
-        background-color: #f8f9fa;
-    }
-
-    .table-form-card {
-        background: white;
-        border-radius: 15px;
-        box-shadow: 0 0 15px rgba(0,0,0,0.1);
-        padding: 30px;
-        margin: 40px auto;
-        max-width: 800px;
-    }
-
-        .table-form-card h2 {
-            text-align: center;
-            color: #22c55e;
-            font-weight: bold;
-            margin-bottom: 20px;
-        }
-
-    table.form-table {
-        width: 100%;
-        border-collapse: collapse;
-    }
-
-        table.form-table th, table.form-table td {
-            padding: 12px;
-            border: 1px solid #dee2e6;
-            vertical-align: middle;
-        }
-
-        table.form-table th {
-            background-color: #f1f5f9;
-            text-align: right;
-            width: 30%;
-            font-weight: 600;
-        }
-
-    .form-control {
-        width: 100%;
-    }
-
-    .btn svg {
-        margin-right: 6px;
+    #contenedor-principal {
+        border-radius: 1rem;
     }
 
     @@media (max-width: 768px) {
-        .table-form-card
+        .margenEdit {
+            padding: 0 10px;
+        }
 
-    {
-        padding: 20px;
-        margin: 20px 15px;
+        .btn-group-responsive .btn {
+            margin-bottom: 10px;
+        }
     }
 
-    table.form-table th, table.form-table td {
-        display: block;
-        width: 100%;
-        text-align: left;
-    }
-
-    table.form-table th {
-        margin-top: 15px;
-        background: none;
-        border: none;
-    }
-
-    table.form-table td {
-        border: none;
-    }
-
-    .btn {
-        width: 100%;
-        margin-bottom: 10px;
-    }
-
-    .btn-group {
-        display: flex;
-        flex-direction: column;
-        gap: 10px;
-    }
-
+    .form-label {
+        font-weight: 500;
     }
 </style>
 
-<div class="table-form-card">
-    <h2>➕ Crear Nuevo Tipo de Adquisición</h2>
+<div class="card" id="contenedor-principal">
+    <div class="card-body">
+        <div class="container-fluid">
+            <h1 class="card-title text-center" style="font-family: 'Poppins', sans-serif; font-weight: 600;">
+                Crear Nuevo Tipo de Adquisición
+            </h1>
+            <hr />
+            <div class="row justify-content-center">
+                <div class="col-12 col-md-8 col-lg-6 margenEdit">
+                    <form asp-action="Create">
+                        <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
 
-    <form asp-action="Create">
-        <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
+                        <div class="form-group mb-3">
+                            <label asp-for="ACQUISITION_TYPE" class="form-label"></label>
+                            <input asp-for="ACQUISITION_TYPE" class="form-control" placeholder="Ej. Compra, Donación..." />
+                            <span asp-validation-for="ACQUISITION_TYPE" class="text-danger"></span>
+                        </div>
 
-        <table class="form-table">
-            <tr>
-                <th><label asp-for="ACQUISITION_TYPE"></label></th>
-                <td>
-                    <input asp-for="ACQUISITION_TYPE" class="form-control" placeholder="Ej. Compra, Donación..." />
-                    <span asp-validation-for="ACQUISITION_TYPE" class="text-danger"></span>
-                </td>
-            </tr>
-        </table>
-
-        <div class="text-center mt-4 btn-group">
-            <button type="submit" class="btn btn-success d-inline-flex align-items-center px-4">
-                <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" fill="currentColor" class="bi bi-floppy" viewBox="0 0 16 16">
-                    <path d="M11 2H9v3h2z" />
-                    <path d="M1.5 0h11.586a1.5 1.5 0 0 1 1.06.44l1.415 1.414A1.5 1.5 0 0 1 16 2.914V14.5a1.5 1.5 0 0 1-1.5 1.5h-13A1.5 1.5 0 0 1 0 14.5v-13A1.5.5 0 0 1 1.5 0M1 1.5v13a.5.5 0 0 0 .5.5H2v-4.5A1.5 1.5 0 0 1 3.5 9h9a1.5 1.5 0 0 1 1.5 1.5V15h.5a.5.5 0 0 0 .5-.5V2.914a.5.5 0 0 0-.146-.353l-1.415-1.415A.5.5 0 0 0 13.086 1H13v4.5A1.5 1.5 0 0 1 11.5 7h-7A1.5 1.5 0 0 1 3 5.5V1H1.5a.5.5 0 0 0-.5.5m3 4a.5.5 0 0 0 .5.5h7a.5.5 0 0 0 .5-.5V1H4zM3 15h10v-4.5a.5.5 0 0 0-.5-.5h-9a.5.5 0 0 0-.5.5z" />
-                </svg>
-                Guardar
-            </button>
-
-            <a asp-action="Index" class="btn btn-secondary d-inline-flex align-items-center px-4">
-                <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" fill="currentColor" class="bi bi-reply-fill" viewBox="0 0 16 16">
-                    <path d="M5.921 11.9 1.353 8.62a.72.72 0 0 1 0-1.238L5.921 4.1A.716.716 0 0 1 7 4.719V6c1.5 0 6 0 7 8-2.5-4.5-7-4-7-4v1.281c0 .56-.606.898-1.079.62z" />
-                </svg>
-                Regresar
-            </a>
+                        <div class="d-flex justify-content-center mt-4">
+                            <button type="submit" class="btn btn-success me-2">
+                                <i class="bi bi-floppy"></i> Guardar
+                            </button>
+                            <a asp-action="Index" class="btn btn-secondary">
+                                <i class="bi bi-reply-fill"></i> Regresar
+                            </a>
+                        </div>
+                    </form>
+                </div>
+            </div>
         </div>
-    </form>
+    </div>
 </div>
-@section Scripts {
-@{
-    await Html.RenderPartialAsync("_ValidationScriptsPartial");
-}
 
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
     <script>
         document.querySelector('.main-content')?.classList.remove('with-menu');
         document.querySelector('.main-content')?.classList.add('full-width');

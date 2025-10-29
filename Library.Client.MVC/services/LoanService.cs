@@ -97,7 +97,7 @@ public class LoanService
             var date = await _loansDatesBL.GetExpiredDatesByIdLoanAsync(new Loans(){LOAN_ID = loan.LOAN_ID});
             Categories categories = await _categoriesBL.GetCategoriesByIdAsync(new Categories { CATEGORY_ID = loan.Books.ID_CATEGORY });
             ExpiredLoansDates.AddRange(date);
-            // ExpiredLoans[ExpiredLoans.IndexOf(loan)].Books.Categories = categories;
+            ExpiredLoans[ExpiredLoans.IndexOf(loan)].Books.Categories = categories;
             
         }
     
@@ -145,7 +145,7 @@ public class LoanService
                         emailMessage = $"{student.StudentName}, el plazo de devolución de su libro \"{loan.Books.TITLE}\" venció {d} La mora ha aumentado $0.50 centavos. Mora a pagar: ${mora}";
                     }
                 }
-                // Console.WriteLine(emailMessage);
+                 Console.WriteLine(emailMessage);
                 EmailDTO emailDto = new EmailDTO
                 {
                     Message = emailMessage,
@@ -196,7 +196,7 @@ public class LoanService
                 {
                     emailMessage = $"{student.StudentName}, la devolución de tu libro prestado, \"{loan.Books.TITLE}\" debes realizarla dentro de {dias + 1} días.";
                 }
-                // Console.WriteLine(emailMessage);
+                Console.WriteLine(emailMessage);
                 EmailDTO emailDto = new EmailDTO
                 {
                     Message = emailMessage,
@@ -215,113 +215,123 @@ public class LoanService
 
     }
 
-    public async Task SendEmailLoanCreated(Loans pLoan, LoanDates loanDates)
+    public async Task<bool> SendEmailLoanCreated(Loans pLoan, LoanDates loanDates)
     {
-        try{
+        try
+        {
             Student student = await GetStudentById(pLoan.ID_LENDER);
+            if (student == null || string.IsNullOrWhiteSpace(student.StudentCode))
+            {
+                Console.WriteLine("No se encontró estudiante válido para enviar correo.");
+                return false;
+            }
+
             Categories categories = await _categoriesBL.GetCategoriesByIdAsync(new Categories { CATEGORY_ID = pLoan.Books.ID_CATEGORY });
             var BookTitle = pLoan.Books.TITLE;
             var subject = "Préstamo de Libro";
             var message = $"Hola {student.StudentName}, tu préstamo del libro \"{BookTitle}\", se ha efectuado de manera exitosa. Esta es la información de tu préstamo:";
             var body = $@"
-                <html>
-                    <head>
-                        <style>
-                            body {{
-                                background-color: #f4f4f9;
-                                font-family: Arial, sans-serif;
-                                color: #333;
-                            }}
-                            .email-container {{
-                                background-color: #fff;
-                                padding: 20px;
-                                margin: 0 auto;
-                                width: 80%;
-                                max-width: 600px;
-                                box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-                                border-radius: 10px;
-                            }}
-                            .header-image {{
-                                text-align: center;
-                                margin-bottom: 20px;
-                            }}
-                            .header-image img {{
-                                width: 100%;
-                                height: auto;
-                                border-radius: 10px 10px 0 0;
-                            }}
-                            h1 {{
-                                color: #1b6ec2;
-                                font-size: 24px;
-                                margin-bottom: 10px;
-                            }}
-                            h3 {{
-                                color: #555;
-                                font-size: 16px;
-                                margin-bottom: 10px;
-                            }}
-                            p {{
-                                font-size: 16px;
-                                line-height: 1.6;
-                            }}
-                            hr {{
-                                border: 0;
-                                height: 1px;
-                                background-color: #ddd;
-                                margin: 20px 0;
-                            }}
-                            .warning {{
-                                color: #c82333;
-                                font-size: 18px;
-                                font-weight: bold;
-                            }}
-                        </style>
-                    </head>
-                    <body>
-                        <div class='email-container'>
-                            <div class='header-image'>
-                                <img src='https://i.postimg.cc/Sx3vRhh1/Imagen4.png' alt='Header Image'/>
-                            </div>
-                            <h1>Estimado/a {student.StudentName} {student.StudentLastName}</h1>
-                            <h2>Información de Préstamo de Libro</h2>
-                            <p>{message}</p>
-                            <br/>
-                            <h3>Nombre del prestatario: {student.StudentName} {student.StudentLastName}</h3>
-                            <h3>Código: {student.StudentCode}</h3>
-                            <hr/>
-                            <h3>Título del Libro: {BookTitle}</h3>
-                            <h3>Categoría: {categories.CATEGORY_NAME}</h3>
-                            <hr/>
-                            <h3>Prestado el: {pLoan.REGISTRATION_DATE.ToShortDateString()}</h3>
-                            <h3>Debes devolverlo el: {loanDates.END_DATE.ToShortDateString()} | {((loanDates.END_DATE - DateTime.Now).Days != 0 ? "en "+(loanDates.END_DATE - DateTime.Now).Days + " días" : "Mañana")}</h3>
-                            <hr/>
-                            <p class='warning'>
-                                Recuerda que si no entregas el libro a tiempo, la mora aumentará $0.50 centavos cada día de retraso.
-                            </p>
+            <html>
+                <head>
+                    <style>
+                        body {{
+                            background-color: #f4f4f9;
+                            font-family: Arial, sans-serif;
+                            color: #333;
+                        }}
+                        .email-container {{
+                            background-color: #fff;
+                            padding: 20px;
+                            margin: 0 auto;
+                            width: 80%;
+                            max-width: 600px;
+                            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+                            border-radius: 10px;
+                        }}
+                        .header-image {{
+                            text-align: center;
+                            margin-bottom: 20px;
+                        }}
+                        .header-image img {{
+                            width: 100%;
+                            height: auto;
+                            border-radius: 10px 10px 0 0;
+                        }}
+                        h1 {{
+                            color: #1b6ec2;
+                            font-size: 24px;
+                            margin-bottom: 10px;
+                        }}
+                        h3 {{
+                            color: #555;
+                            font-size: 16px;
+                            margin-bottom: 10px;
+                        }}
+                        p {{
+                            font-size: 16px;
+                            line-height: 1.6;
+                        }}
+                        hr {{
+                            border: 0;
+                            height: 1px;
+                            background-color: #ddd;
+                            margin: 20px 0;
+                        }}
+                        .warning {{
+                            color: #c82333;
+                            font-size: 18px;
+                            font-weight: bold;
+                        }}
+                    </style>
+                </head>
+                <body>
+                    <div class='email-container'>
+                        <div class='header-image'>
+                            <img src='https://i.postimg.cc/Sx3vRhh1/Imagen4.png' alt='Header Image'/>
                         </div>
-                    </body>
-                </html>";
+                        <h1>Estimado/a {student.StudentName} {student.StudentLastName}</h1>
+                        <h2>Información de Préstamo de Libro</h2>
+                        <p>{message}</p>
+                        <br/>
+                        <h3>Nombre del prestatario: {student.StudentName} {student.StudentLastName}</h3>
+                        <h3>Código: {student.StudentCode}</h3>
+                        <hr/>
+                        <h3>Título del Libro: {BookTitle}</h3>
+                        <h3>Categoría: {categories.CATEGORY_NAME}</h3>
+                        <hr/>
+                        <h3>Prestado el: {pLoan.REGISTRATION_DATE.ToShortDateString()}</h3>
+                        <h3>Debes devolverlo el: {loanDates.END_DATE.ToShortDateString()} | {((loanDates.END_DATE - DateTime.Now).Days != 0 ? "en " + (loanDates.END_DATE - DateTime.Now).Days + " días" : "Mañana")}</h3>
+                        <hr/>
+                        <p class='warning'>
+                            Recuerda que si no entregas el libro a tiempo, la mora aumentará $0.50 centavos cada día de retraso.
+                        </p>
+                    </div>
+                </body>
+            </html>";
 
-                EmailDTO emailDTO = new EmailDTO
-                {
-                    Subject = subject,
-                    ReceptorName = student.StudentName,
-                    ReceptorEmail = student.StudentCode.ToLower() +  "@esfe.agape.edu.sv",
-                    EmailBody = body,
-                    IsLoanReminder = false
-                };
+            EmailDTO emailDTO = new EmailDTO
+            {
+                Subject = subject,
+                ReceptorName = student.StudentName,
+                ReceptorEmail = student.StudentCode.ToLower() + "@esfe.agape.edu.sv",
+                EmailBody = body,
+                IsLoanReminder = false
+            };
 
-                await _emailService.SendEmailAsync(emailDTO);
+            bool emailSent = await _emailService.SendEmailAsync(emailDTO);
+            if (!emailSent)
+            {
+                Console.WriteLine("No se pudo enviar el correo de confirmación del préstamo.");
+                return false;
+            }
+
+            return true;
         }
-        catch(Exception e)
+        catch (Exception e)
         {
-            Console.WriteLine("Error al construir el email de creación de préstamo " + e.Message);
-            return;
+            Console.WriteLine("Error al construir el email de creación de préstamo: " + e.Message);
+            return false;
         }
-
-
-    
-
     }
 
 
